@@ -23,4 +23,4 @@ independent branches or pull requests.
 
 | Seq | Milestone | Branch | Pull Request | Status | Handoff |
 |---:|---|---|---|---|---|
-| 001 | Phase 0A — Repository Bootstrap | `chore/phase0-foundation` | Pending | Ready for PR | `PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |
+| 001 | Phase 0A — Repository Bootstrap | `chore/phase0-foundation` | #1 | PR Open | `PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |`PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |

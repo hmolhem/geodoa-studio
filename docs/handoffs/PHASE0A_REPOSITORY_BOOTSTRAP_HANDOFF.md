@@ -5,8 +5,8 @@
 - Project: GeoDOA Studio
 - Milestone: Phase 0A — Repository Bootstrap
 - Branch: `chore/phase0-foundation`
-- Pull Request: Pending
-- Status: Ready for PR
+- Pull Request: #1
+- Status: PR Open
 - Scientific implementation: None
 
 ## Objective
