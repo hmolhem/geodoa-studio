@@ -7,7 +7,7 @@
 - Branch: `chore/phase0-python-toolchain`
 - Pull Request: #2
 - Merge Commit: `fac6b1d4208a1d529943b3e5dfb10260b15e7540`
-- Status: Closed ? merged via PR #2
+- Status: Closed — merged via PR #2
 - Scientific implementation: None
 
 ## Objective
