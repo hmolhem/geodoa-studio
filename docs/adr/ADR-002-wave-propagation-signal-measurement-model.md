@@ -1,12 +1,13 @@
 # ADR-002 — Wave, Propagation, Signal, and Measurement Model
 
-- **Status:** Proposed — Phase 0C Gates A–F completed in design; repository acceptance reconciliation pending
+- **Status:** Accepted — all Phase 0C acceptance Gates A–F passed
 - **Phase:** 0C — Scientific Foundations
 - **Scope:** Wave, propagation, medium, motion, measurement, snapshot, covariance, source-statistics, FMCW, and MIMO measurement semantics
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `GEODOA_STUDIO_MASTER_START_HANDOFF.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
 - **Acceptance audit:** `ADR-002_ACCEPTANCE_AUDIT.md`
 - **Golden reference evidence:** `../science/golden_reference/ADR-002_GOLDEN_REFERENCE_PROBLEMS.md`
 - **Boundary/failure evidence:** `ADR-002_BOUNDARY_FAILURE_ANALYSIS.md`
+- **Final acceptance record:** `ADR-002_FINAL_ACCEPTANCE_RECORD.md`
 - **Supersedes:** None
 - **Superseded by:** None
 
