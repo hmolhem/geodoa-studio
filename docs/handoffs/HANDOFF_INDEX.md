@@ -23,4 +23,5 @@ independent branches or pull requests.
 
 | Seq | Milestone | Branch | Pull Request | Status | Handoff |
 |---:|---|---|---|---|---|
-| 001 | Phase 0A — Repository Bootstrap | `chore/phase0-foundation` | #1 | PR Open | `PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |
+| 001 | Phase 0A — Repository Bootstrap | `chore/phase0-foundation` | #1 | Closed | `PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |
+| 002 | Phase 0B — Python Engineering Toolchain | `chore/phase0-python-toolchain` | #2 | Verification PASS — merge pending | `PHASE0B_PYTHON_ENGINEERING_TOOLCHAIN_HANDOFF.md` |

@@ -6,7 +6,8 @@
 - Milestone: Phase 0A — Repository Bootstrap
 - Branch: `chore/phase0-foundation`
 - Pull Request: #1
-- Status: PR Open
+- Merge Commit: `67e776b11040c33bab28d2cdf4b0ae6742c4bc86`
+- Status: Closed — merged via PR #1
 - Scientific implementation: None
 
 ## Objective
