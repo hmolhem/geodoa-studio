@@ -12,7 +12,7 @@
 | A | Physical consistency | PASS |
 | B | Mathematical consistency | PASS |
 | C | Dimensional and unit consistency | PASS |
-| D | Software semantic consistency | Pending |
+| D | Software semantic consistency | PASS |
 | E | Hand-calculated reference evidence | Pending |
 | F | Boundary and failure analysis | Pending |
 
@@ -79,7 +79,7 @@ Are the coordinate mappings, far-field expansion, delay/phase signs, reference t
 2. **Far-field first-order expansion — PASS after correction.** The derivation now introduces an explicit localization/expansion origin `r_0`, writes `r_s = r_0 + R u_hat`, and shows that `r_0` cancels from the final relative-distance relation.
 3. **Delay-to-phase sign chain — PASS.** Under `exp(-j omega t)`, delay contributes `exp(+j omega Delta tau)` and therefore produces the declared negative receive spatial exponent after substitution.
 4. **Translation invariance — PASS.** Translating sensor positions and phase reference together leaves the manifold unchanged; translating only the sensor positions multiplies it by a common phasor `exp[-j k t^T u_hat]`.
-5. **Phase-reference transformation law — PASS after correction.** Changing the phase reference from `r_ref` to `r_ref'` multiplies the manifold by a common phasor.
+5. **Phase-reference transformation law — PASS after correction.** Changing the phase reference multiplies the manifold by a common phasor.
 6. **Direction-cosine and spatial-frequency mapping — PASS.** `u`, `kappa_x = k u`, and `psi = kappa_x Delta` are mutually consistent under their declared context.
 7. **Noninteger phase-reference lattice coordinate — PASS after correction.** `mu_ref = (x_ref-x_L)/Delta` is real-valued, so the reference need not lie on a lattice point.
 8. **Tolerance-admitted lattice algebra — PASS after correction.** Exact grid-reconstructed positions are distinguished from authoritative coordinates and the residual bound is preserved.
@@ -135,169 +135,215 @@ Are all physical quantities, normalized quantities, angular quantities, lattice 
 
 ### C.2 Canonical dimensional inventory — PASS
 
-The re-audited ADR now makes the dimensional inventory explicit:
-
-- positions, distances, wavelength, aperture, lattice spacings, and physical residuals: `m`;
-- frequency `f`: `Hz = s^-1`;
-- temporal angular frequency `omega`: semantic `rad/s`;
-- propagation speed `v_p`: `m/s`;
-- time and delay: `s`;
-- angle and phase: semantic `rad`;
-- wavenumber `k` and projected angular spatial frequency `kappa_x`: semantic `rad/m`;
-- normalized lattice spatial frequency `psi`: semantic `rad` per unit dimensionless lattice-index increment;
-- direction cosine, normalized position, lattice coordinates/residuals/tolerance, reference lattice coordinate, integer indices/lags, and gcd factors: dimensionless;
-- ideal steering coefficients: dimensionless complex coefficients.
-
-Radians are SI-dimensionless but are retained as semantic unit labels so angular quantities are not confused with arbitrary scalars or cyclic frequency.
+The ADR explicitly separates physical SI quantities, semantic angular quantities, dimensionless normalized quantities, integer/grid quantities, and dimensionless complex manifold coefficients.
 
 ### C.3 Wavelength relation — PASS
 
-```math
-\lambda=\frac{v_p}{f}
-```
-
-has dimensions
-
-```text
-(m/s)/(1/s)=m.
-```
+`lambda = v_p/f` has dimensions `(m/s)/(1/s)=m`.
 
 ### C.4 Delay relation — PASS
 
-```math
-\Delta\tau_n
-=
--\frac{(\mathbf r_n-\mathbf r_{\mathrm{ref}})^T\hat{\mathbf u}}{v_p}
-```
-
-has dimensions
-
-```text
-m / (m/s) = s.
-```
+The relative-distance projection divided by `v_p` has units of seconds.
 
 ### C.5 Temporal phase argument — PASS
 
-`omega Delta tau` has semantic units
-
-```text
-(rad/s) * s = rad,
-```
-
-and is SI-dimensionless, as required by `exp()`.
+`omega Delta tau` has semantic units radians and is SI-dimensionless, as required by `exp()`.
 
 ### C.6 Wavenumber and spatial phase — PASS
 
-```math
-k=\frac{\omega}{v_p}=\frac{2\pi}{\lambda}
-```
-
-has semantic units `rad/m`. Therefore
-
-```math
-k(\mathbf r_n-\mathbf r_{\mathrm{ref}})^T\hat{\mathbf u}
-```
-
-has semantic units `rad` and is a valid exponential argument.
+`k = omega/v_p = 2 pi/lambda` has semantic units `rad/m`; multiplying by projected distance yields a phase in radians.
 
 ### C.7 Direction cosine and wavelength-normalized position — PASS
 
-`u = u_hat dot x_hat` is dimensionless. Likewise
-
-```math
-q_n=\frac{x_n-x_{\mathrm{ref}}}{\lambda}
-```
-
-is dimensionless.
+Both `u` and `q_n` are dimensionless.
 
 ### C.8 Projected angular spatial frequency — PASS
 
-```math
-\kappa_x=ku=\frac{2\pi}{\lambda}u
-```
-
-has semantic units `rad/m`. Hence `kappa_x (x_n-x_ref)` is a phase in radians and is SI-dimensionless.
+`kappa_x = k u` has semantic units `rad/m`.
 
 ### C.9 Normalized lattice spatial frequency — PASS after semantic tightening
 
-```math
-\psi=\kappa_x\Delta
-```
-
-has semantic units `rad`. It represents phase increment per one-unit change of the dimensionless lattice index. The ADR now states this explicitly instead of leaving `psi` as an unlabeled dimensionless number.
-
-**Resolution status: PASS.**
+`psi = kappa_x Delta` is SI-dimensionless but semantically a phase increment in radians per unit lattice-index increment.
 
 ### C.10 Lattice normalized residual versus physical residual — PASS after tightening
 
-```math
-z_n=\frac{x_n-x_L}{\Delta},
-\qquad
-\varepsilon_n=z_n-m_n,
-\qquad
-\rho_n=|\varepsilon_n|
-```
-
-are dimensionless. The numerical tolerance `tau_lat` is also dimensionless.
-
-The ADR now separately defines
-
-```math
-\eta_n=x_n-\tilde x_n=\varepsilon_n\Delta,
-```
-
-which has units `m`, with
-
-```math
-|\eta_n|\le\tau_{\mathrm{lat}}\Delta.
-```
-
-This prevents normalized numerical residual from being confused with a physical distance error.
-
-**Resolution status: PASS.**
+`epsilon_n`, `rho_n`, and `tau_lat` are dimensionless; `eta_n = epsilon_n Delta` is a physical residual in meters.
 
 ### C.11 Pair-difference residual bound — PASS
 
-```math
-|(x_i-x_j)-\ell_{ij}\Delta|
-\le
-2\tau_{\mathrm{lat}}\Delta
-```
-
-has meters on both sides.
+Both sides of the residual bound have units of meters.
 
 ### C.12 Primitive-lattice quantities — PASS
 
-`m_n`, `m_0`, `d_n`, `g`, and primitive integer indices are dimensionless; `Delta` and `Delta_prim = g Delta` are meters.
+Integer/gcd quantities are dimensionless; declared and primitive spacings are meters.
 
 ### C.13 Reference lattice coordinate — PASS
 
-```math
-\mu_{\mathrm{ref}}=\frac{x_{\mathrm{ref}}-x_L}{\Delta}
-```
-
-is real-valued and dimensionless. Therefore `(m_n-mu_ref) psi` is a phase in radians and a valid exponential argument.
+`mu_ref` is real-valued and dimensionless.
 
 ### C.14 Alias criterion — PASS
 
-```math
-k(x_i-x_j)(u_2-u_1)\in2\pi\mathbb Z
-```
-
-has semantic units of radians on the left and right, with both SI-dimensionless.
+The pair-difference alias phase criterion is dimensionally valid.
 
 ### C.15 Angle-grid derivative — PASS after clarification
 
-```math
-\frac{du}{d\theta}=\cos\theta
-```
-
-assumes `theta` is expressed in radians. The ADR now explicitly prohibits silent substitution of degree-valued numerical inputs into this differential relation.
+The derivative `du/dtheta = cos(theta)` assumes internal radian representation; degree-valued boundaries require conversion.
 
 ### C.16 Gate C decision
 
 **Gate C status: PASS.**
 
-No unresolved dimensional inconsistency remains in ADR-001. Physical SI quantities, normalized dimensionless quantities, integer/grid quantities, and semantic angular quantities are explicitly separated. Every declared exponential and trigonometric argument is dimensionally valid, and degree/radian conversion is constrained to explicit boundaries.
+No unresolved dimensional inconsistency remains in ADR-001.
 
-Gate C does not imply software-semantic, Golden Reference, or boundary/failure acceptance. Gates D–F remain independent and pending.
+---
+
+## Gate D — Software Semantic Consistency
+
+### D.1 Audit question
+
+Can every scientific distinction in ADR-001 map into the GeoDOA domain architecture without hidden unit inference, silent convention switching, destructive canonicalization, duplicated authoritative state, identity loss, or implementation-specific reinterpretation?
+
+### D.2 Cross-document architecture compatibility — PASS after clarification
+
+The Master Start Handoff defines a clean/domain-centric architecture with immutable domain entities, typed value objects, pure numerical kernels, replaceable behavior contracts, boundary validation, and typed results. ADR-001 is compatible with that architecture after making the following semantic responsibilities explicit:
+
+- `LinearArrayGeometry` represents intrinsic 1-D physical geometry and stable channel identity;
+- `ReferenceFrame1D`-style semantics embed that 1-D geometry into 3-D propagation space;
+- `AngleConvention`-style semantics belong at configuration/import boundaries rather than altering canonical scientific-kernel behavior;
+- `ManifoldProvider` consumes canonical validated geometry/direction/wave context and returns a typed result;
+- coarray consumers require validated lattice semantics rather than raw-coordinate rounding.
+
+### D.3 Finding D-001 — Intrinsic 1-D geometry versus embedded 3-D positions — RESOLVED
+
+The Master Start Handoff describes the initial geometry domain as one-dimensional, while the physical manifold derivation uses 3-D vectors `r_n`. Storing independent authoritative 1-D and 3-D coordinate tables would create duplicated state that could diverge.
+
+ADR-001 now states that the authoritative linear geometry contains intrinsic coordinates `x_n` plus stable channel identity, while a `ReferenceFrame1D`-style object provides the explicit spatial embedding
+
+```math
+\mathbf r_n=\mathbf r_{\mathrm{origin}}+x_n\hat{\mathbf x}.
+```
+
+External/global 3-D coordinates require an explicit transform/import relation rather than silent projection.
+
+**Resolution status: PASS.**
+
+### D.4 Finding D-002 — Angle convention boundary versus canonical core — RESOLVED
+
+A configurable `AngleConvention` can be useful for file/UI/import compatibility, but allowing every estimator or kernel to interpret raw numeric angles under its own convention would violate the project-wide scientific contract.
+
+ADR-001 now requires explicit conversion at validated boundaries to the canonical internal representation. Scientific kernels operate on canonical radians, direction cosines, or validated unit look vectors and do not infer angle semantics from UI labels.
+
+**Resolution status: PASS.**
+
+### D.5 Finding D-003 — Stable channel identity versus ordering/masking — RESOLVED
+
+ADR-001 now distinguishes persistent channel identity from authoritative sequence order, sorted geometric order, and active-channel selection. Sorting and masking are derived views/configurations and may not renumber or delete physical identities in the authoritative geometry.
+
+**Resolution status: PASS.**
+
+### D.6 Finding D-004 — Active mask versus geometry mutation/reference mutation — RESOLVED
+
+An active-channel mask is a processing view/configuration over the declared geometry. It does not mutate the geometry, recompute the default geometry-level phase reference, or silently create a new physical array identity.
+
+A genuine hardware/physical-array change creates a new geometry/configuration identity.
+
+**Resolution status: PASS.**
+
+### D.7 Finding D-005 — Lattice declaration versus lattice validation evidence — RESOLVED
+
+A declared lattice records design/provenance semantics. A lattice-validation result records whether authoritative coordinates satisfy a candidate/declared lattice under a tolerance and preserves residuals/diagnostics.
+
+ADR-001 now requires downstream integer-lag consumers to receive validated lattice semantics or exact-by-construction generator provenance. They may not independently reconstruct integer lags by rounding raw coordinates.
+
+**Resolution status: PASS.**
+
+### D.8 Finding D-006 — Derived geometry views versus authoritative state — RESOLVED
+
+Sorting, translation normalization, reflection comparison, primitive-lattice reduction, wavelength normalization, and scan-domain conversion are explicit derived operations. They preserve source identity/transformation metadata and may not silently mutate authoritative geometry/configuration.
+
+**Resolution status: PASS.**
+
+### D.9 Finding D-007 — Direction-domain type ambiguity — RESOLVED
+
+Angle, direction cosine, 3-D unit look direction, projected spatial angular frequency, and declared/primitive-grid phase increments are mathematically related but semantically distinct. ADR-001 now requires explicit value/grid semantics and conversions rather than an unlabeled scalar or array whose meaning depends on caller convention.
+
+**Resolution status: PASS.**
+
+### D.10 Finding D-008 — Scan-grid semantic loss — RESOLVED
+
+A scan grid must preserve whether it is uniform in angle, direction cosine, `kappa_x`, declared-grid `psi`, or primitive-grid frequency. Conversion creates a derived grid/view and retains the context needed to interpret output.
+
+**Resolution status: PASS.**
+
+### D.11 Finding D-009 — Manifold/result provenance — RESOLVED
+
+A complex manifold vector alone is not a sufficient high-level scientific result. The domain/application result contract must retain enough frame, phase-reference, direction/convention, active-channel, frequency/medium, and provenance context to interpret or compare it correctly. Pure low-level kernels may remain NumPy-oriented after canonicalization.
+
+**Resolution status: PASS.**
+
+### D.12 Finding D-010 — Ambiguity diagnostic versus silent canonicalization — RESOLVED
+
+Projection ambiguity, spatial aliasing, reflection equivalence, or common-phase manifold equivalence may be reported through diagnostics/results. They must not silently collapse user-requested directions or geometries into a representative value without preserving the original values and the transformation/equivalence rationale.
+
+**Resolution status: PASS.**
+
+### D.13 ADR-numbering reconciliation — PASS
+
+The Master Start Handoff contained preliminary recommended ADR numbers before the Phase 0C scientific decomposition was complete. The Phase 0C roadmap now explicitly records that ADR-001 through ADR-004 are the authoritative scientific numbering and that architecture/run-identity/GUI/fairness decisions retain their subject matter but will receive later non-conflicting identifiers.
+
+This prevents two documents from assigning different meanings to the same ADR number.
+
+### D.14 Domain mapping summary — PASS
+
+ADR-001 now requires semantic roles for:
+
+```text
+LinearArrayGeometry-style intrinsic geometry
+ReferenceFrame1D-style 3-D embedding
+AngleConvention-style boundary conversion
+validated 3-D look direction
+explicit phase-reference value/policy
+WaveParameters-style frequency/speed context
+lattice declaration
+lattice validation result
+active-channel view/mask
+sorted/normalized/reflected derived views
+angle/u/kappa/psi typed scan domains
+typed manifold result
+ambiguity/equivalence diagnostic result
+```
+
+Exact Python class names remain an implementation-level decision. The gate requires semantic separability, not premature class proliferation.
+
+### D.15 Pure numerical kernel compatibility — PASS
+
+The semantic requirements do not force numerical kernels to manipulate heavyweight domain objects. Boundary/application/domain layers may validate and convert to canonical NumPy arrays/scalars, call pure numerical kernels, and then package outputs into typed results with preserved metadata.
+
+This is consistent with the Master Start Handoff's object-oriented-without-class-inflation principle.
+
+### D.16 Forbidden implicit behavior audit — PASS
+
+ADR-001 now explicitly prohibits silent:
+
+- unit guessing;
+- degree/radian reinterpretation;
+- origin shifting;
+- reference-channel selection after sorting;
+- active-mask reference recomputation;
+- channel identity mutation;
+- wavelength normalization as physical-state replacement;
+- lattice snapping;
+- physical-uncertainty/tolerance conflation;
+- integer coarray manufacture by rounding;
+- angle/u/kappa/psi semantic collapse;
+- declared/primitive-grid ambiguity;
+- reflection/alias canonicalization;
+- common-phase-factor misclassification as physical manifold distortion.
+
+### D.17 Gate D decision
+
+**Gate D status: PASS.**
+
+After cross-document reconciliation, ADR-001 maps cleanly to the GeoDOA layered/domain architecture without requiring duplicated authoritative geometry state, hidden convention switches, destructive derived views, unlabeled scientific arrays at public boundaries, or downstream reconstruction of scientific semantics.
+
+Gate D does not imply Golden Reference or boundary/failure acceptance. Gates E and F remain independent and pending.
