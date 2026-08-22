@@ -13,7 +13,7 @@ GeoDOA Studio shall treat array-geometry dimension, propagation-space dimension,
 
 The initial physical array scope is one-dimensional: nominal sensor phase centers lie on the local `+x` array axis. The scientific direction model is nevertheless embedded in three-dimensional Euclidean space. For an ideal scalar 1-D array, the geometry-only receive manifold observes only the projection of the source look direction onto the array axis.
 
-The canonical geometry-only receive manifold is derived from propagation delay using the temporal phasor convention `exp(-j omega t)`. For a look-direction unit vector `u_hat`, a propagation speed `v_p`, frequency `f`, wavenumber `k = 2 pi f / v_p`, sensor phase-center position `r_n`, and explicit phase-reference point `r_ref`, the nominal receive coefficient is
+The canonical geometry-only receive manifold is derived from propagation delay using the temporal phasor convention `exp(-j omega t)`. For a look-direction unit vector `u_hat`, a propagation speed `v_p`, frequency `f`, wavenumber `k = 2 pi f / v_p`, declared nominal sensor phase-center/reference position `r_n`, and explicit spatial phase-reference point `r_ref`, the nominal receive coefficient is
 
 ```math
 a_n(\hat{\mathbf u}, f)
@@ -106,9 +106,13 @@ These belong respectively to ADR-002, ADR-003, ADR-004, and supporting scientifi
 
 ## 5. Core Terminology
 
-### 5.1 Sensor phase center
+### 5.1 Declared nominal sensor phase-center/reference position
 
-`r_n` denotes the physical phase-center position associated with channel `n` in the active coordinate frame. A sensor identity and its position are related but distinct pieces of information.
+`r_n` denotes the **declared nominal sensor phase-center/reference position** associated with channel `n` in the geometry model and active coordinate frame. It is the position used by the nominal geometry-only spatial-phase model.
+
+This definition does not claim that a real electromagnetic or acoustic element has one immutable physical phase center under all frequencies, arrival directions, loading states, platform configurations, or environmental conditions. Frequency-, angle-, environment-, installation-, or calibration-dependent departures from the nominal reference position or nominal manifold belong to ADR-003.
+
+A sensor identity and its declared nominal position are related but distinct pieces of information.
 
 ### 5.2 Array-geometry dimension
 
@@ -136,7 +140,13 @@ An ideal scalar linear array on the `x` axis observes only `u_x`. Therefore a 1-
 
 ### 6.1 Local array frame
 
-The initial canonical local frame is right-handed with the linear-array axis along `+x`.
+The initial canonical local frame is right-handed. The linear-array axis is `+x`. Because a purely 1-D geometry does not physically determine rotation about its own axis, GeoDOA **chooses** `+y` as the canonical reference broadside axis. The `+z` axis completes the right-handed frame, so that
+
+```math
+\hat{\mathbf z}
+=
+\hat{\mathbf x}\times\hat{\mathbf y}.
+```
 
 For an ideal 1-D geometry,
 
@@ -148,7 +158,9 @@ x_n\\0\\0
 \end{bmatrix}.
 ```
 
-The choice of a local array frame does not destroy or replace externally measured global coordinates. Global-to-local transforms, when introduced, must be explicit and provenance-preserving.
+The `+y` reference is therefore a project coordinate convention, not a direction inferred uniquely from the 1-D sensor positions themselves.
+
+The choice of a local array frame does not destroy or replace externally measured global or platform coordinates. Any global-to-local or platform-to-local transform must be explicit and provenance-preserving.
 
 ### 6.2 Broadside in 3-D
 
@@ -178,7 +190,7 @@ For initial 1-D DOA visualization and one-parameter angle estimation, GeoDOA def
 
 Within this slice:
 
-- `theta = 0` is the `+y` broadside reference direction;
+- `theta = 0` is the chosen `+y` broadside reference direction;
 - `theta > 0` rotates toward `+x`;
 - `theta < 0` rotates toward `-x`;
 - `theta = +pi/2` is `+x` endfire;
@@ -318,23 +330,33 @@ The minus sign is therefore a consequence of the declared look-direction and tem
 
 ## 9. Phase Reference and Translation Invariance
 
-### 9.1 Explicit spatial phase reference
+### 9.1 Explicit and stable spatial phase reference
 
 The manifold is defined relative to an explicit spatial point `r_ref`.
 
-The standard analytical default policy is the centroid of the active sensor phase centers,
+The standard analytical default is the centroid of the **declared nominal physical geometry**, computed from the full declared geometry definition rather than from the currently active-channel subset:
 
 ```math
-\mathbf r_c
+\mathbf r_{\mathrm{geom}}
 =
-\frac{1}{N_a}
-\sum_{n\in\mathcal A}
+\frac{1}{N_g}
+\sum_{n\in\mathcal G}
 \mathbf r_n,
 ```
 
-where `A` is the active-channel set and `N_a` is its size.
+where `G` is the declared nominal geometry channel set and `N_g` is its size.
 
-The centroid default is ordering-independent and translates with the array. Calibration or measurement workflows may explicitly select a named physical reference channel or another spatial reference point. Core scientific semantics shall never infer the phase reference from whichever channel happens to appear first after sorting.
+This geometry-level reference is ordering-independent, translates with the physical geometry, and remains stable when an active-channel mask changes. Disabling or enabling a channel shall not silently redefine the default spatial phase reference.
+
+Calibration or measurement workflows may explicitly select a named physical reference channel or another declared spatial point. Such an override is part of configuration/provenance. Core scientific semantics shall never infer the phase reference from whichever channel happens to appear first after sorting.
+
+GeoDOA therefore treats the following as distinct concepts:
+
+```text
+geometry coordinate origin
+spatial phase reference
+active-channel mask
+```
 
 ### 9.2 Translation invariance
 
@@ -630,10 +652,20 @@ Spatial aliasing occurs when different observable directional coordinates produc
 \qquad q\in\mathbb Z.
 ```
 
-For a conventional ULA with primitive spacing `Delta`, the full visible `u` interval maps inside the principal spatial-frequency interval when
+For a conventional ULA with primitive spacing `Delta`:
+
+- `Delta <= lambda/2` gives the usual no-grating-lobe condition for distinct directions in the **open** visible interval `u in (-1,1)`;
+- at exactly `Delta = lambda/2`, the two endfire endpoints `u = +1` and `u = -1` map to `psi = +pi` and `psi = -pi` and are identical on an integer lattice because
 
 ```math
-\Delta\le\frac{\lambda}{2}.
+\exp(-jm\pi)=\exp(+jm\pi),
+\qquad m\in\mathbb Z;
+```
+
+- strict injectivity over the entire **closed** interval `u in [-1,1]` therefore requires
+
+```math
+\Delta<\frac{\lambda}{2}.
 ```
 
 For sparse or nonuniform geometries, ambiguity shall be diagnosed from the full geometry/manifold rather than inferred solely from a nearest-neighbor rule.
@@ -671,7 +703,7 @@ ADR-001 is not eligible for approval until deterministic hand-computable Golden 
 - **GRP-002:** two-sensor steering-vector phase, including the `d = lambda/2`, `theta = 30 deg` result;
 - **GRP-003:** translation invariance and phase-reference change;
 - **GRP-004:** two distinct 3-D directions with identical `u_x` and therefore identical ideal 1-D manifolds;
-- **GRP-005:** spatial aliasing for a lattice array, including a `d = lambda` example;
+- **GRP-005:** spatial aliasing for a lattice array, including a `d = lambda` example and the `d = lambda/2` endfire-endpoint boundary case;
 - **GRP-006:** lattice validation and integer difference-coarray lag construction.
 
 The Golden Reference Problems shall be independently solvable using paper, pencil, and a basic calculator and shall later serve as software regression-test oracles.
@@ -683,12 +715,14 @@ Later implementation governed by this ADR must satisfy the following constraints
 - scientific kernels shall not hard-code a 2-D `sin(theta)` representation when the general direction-vector inner product is appropriate;
 - physical channel identity shall survive sorting and derived views;
 - no core algorithm shall silently shift the coordinate origin;
-- phase-reference policy shall be explicit and reproducible;
+- the default geometry-level phase reference shall remain stable under active-channel masking;
+- explicit phase-reference overrides shall be reproducible and provenance-preserving;
 - unit conversion shall occur at defined boundaries rather than being inferred from numerical magnitude;
 - lattice integerization shall require explicit lattice context and validation;
 - numerical lattice tolerance shall not be reused as physical position uncertainty;
 - angle, direction cosine, `kappa_x`, and `psi` shall remain semantically distinguishable;
 - ambiguity diagnostics shall distinguish projection ambiguity from spatial aliasing;
+- `d = lambda/2` shall not be reported as strictly injective over both closed-interval endfire endpoints;
 - common phase changes caused only by reference choice shall not be misclassified as physical manifold distortion.
 
 ## 18. Alternatives Considered and Rejected
@@ -713,19 +747,23 @@ Rejected for the initial human-facing slice because broadside-referenced angle i
 
 Rejected because sorting is a derived geometry operation and must not change the scientific phase reference or calibration association.
 
-### 18.6 Store geometry only in wavelengths
+### 18.6 Recompute the default phase reference from the active-channel subset
+
+Rejected as the default policy because channel masking would silently rephase the manifold and complicate cross-run comparison and calibration provenance. Active subsets use the stable geometry-level default reference unless an explicit override is declared.
+
+### 18.7 Store geometry only in wavelengths
 
 Rejected because physical sensors do not move when operating frequency changes. Wavelength normalization is a frequency-referenced derived view.
 
-### 18.7 Silently sort or translation-normalize input positions
+### 18.8 Silently sort or translation-normalize input positions
 
 Rejected because it destroys physical/channel provenance and can misassociate calibration and hardware channels.
 
-### 18.8 Round arbitrary pair differences into integer lags
+### 18.9 Round arbitrary pair differences into integer lags
 
 Rejected because it manufactures lattice structure that may not physically or mathematically exist.
 
-### 18.9 Reflection-normalize every geometry
+### 18.10 Reflection-normalize every geometry
 
 Rejected because reflection changes orientation relative to the declared array axis even when some geometry metrics are equivalent.
 
@@ -736,9 +774,11 @@ Rejected because reflection changes orientation relative to the declared array a
 - steering-vector sign is traceable to physical delay and temporal convention;
 - the initial 1-D implementation remains compatible with later 2-D/3-D spatial extensions;
 - calibration and hardware channel identity are protected from geometry sorting;
+- active-channel masking does not silently redefine the default phase reference;
 - coarray integer lags cannot be fabricated by numerical rounding;
 - physical and wavelength-normalized geometry remain unambiguous;
 - projection ambiguity and spatial aliasing can be diagnosed separately;
+- the half-wavelength endfire endpoint condition is represented explicitly;
 - future Dash, CLI, notebook, fixed-point, and FPGA paths can share the same scientific definitions.
 
 ### 19.2 Costs and constraints
@@ -769,7 +809,7 @@ ADR-001 remains **Proposed** until all Phase 0C acceptance gates pass.
 
 | Gate | Requirement | Current Status |
 |---|---|---|
-| A | Physical consistency | Pending formal audit |
+| A | Physical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | B | Mathematical consistency | Pending formal audit |
 | C | Dimensional and unit consistency | Pending formal audit |
 | D | Software semantic consistency | Pending formal audit |
