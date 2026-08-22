@@ -23,6 +23,25 @@ The objective is to establish a coherent set of scientific Architecture Decision
 - how ground truth, verification, validation, Monte Carlo experiments, and reproducibility are defined;
 - how scientific correctness is demonstrated before implementation is treated as trusted.
 
+### 2.1 Relationship to the Master Start Handoff ADR list
+
+The Master Start Handoff was intentionally written before Phase 0C scientific decomposition was complete. Its Phase 0 roadmap therefore contained a **preliminary recommended ADR numbering** in which, for example, `ADR-002` was suggested for units/normalization and later numbers were suggested for layered architecture, run identity, GUI technology, and comparison fairness.
+
+This Phase 0C roadmap is the later, more specific governing plan for the **scientific ADR series**. It supersedes that preliminary numbering assignment, but it does not discard the underlying subjects.
+
+The authoritative Phase 0C scientific numbering is now:
+
+```text
+ADR-001  Coordinate, Direction, and Spatial Conventions
+ADR-002  Wave, Propagation, Signal, and Measurement Model
+ADR-003  Sensor Imperfections, Mutual Coupling, and Calibration
+ADR-004  Validation, Reproducibility, and Scientific Evidence
+```
+
+Topics from the Master Start Handoff such as layered architecture, configuration/result identity, GUI technology, and geometry-comparison fairness remain valid planned decisions. They shall receive later non-conflicting ADR numbers or other explicitly governed decision records after the Phase 0C scientific series. No future document should cite the preliminary Master Start Handoff ADR numbers as if they were final identities.
+
+This clarification changes numbering/provenance only; it does not weaken or remove the architectural requirements in the Master Start Handoff.
+
 ## 3. Scientific ADR Set
 
 ### ADR-001 — Coordinate, Direction, and Spatial Conventions
