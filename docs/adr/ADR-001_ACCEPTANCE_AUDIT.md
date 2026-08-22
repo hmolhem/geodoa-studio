@@ -9,7 +9,7 @@
 
 | Gate | Requirement | Status |
 |---|---|---|
-| A | Physical consistency | CONDITIONAL — corrections required |
+| A | Physical consistency | PASS |
 | B | Mathematical consistency | Pending |
 | C | Dimensional and unit consistency | Pending |
 | D | Software semantic consistency | Pending |
@@ -28,7 +28,7 @@ Does ADR-001 represent a physically self-consistent ideal 1-D array embedded in 
    A one-dimensional array may be embedded in three-dimensional propagation space. The ideal scalar linear-array geometry observes only the projection of the source look direction onto the array axis.
 
 2. **3-D broadside set versus canonical 2-D slice — PASS.**
-   For an array on the `x` axis, the 3-D broadside set is `u_x = 0`; the `+y` direction is correctly treated as a reference broadside direction only within the selected canonical `xy` slice.
+   For an array on the `x` axis, the 3-D broadside set is `u_x = 0`; the `+y` direction is correctly treated as a chosen reference broadside direction only within the selected canonical `xy` slice.
 
 3. **Look direction versus propagation direction — PASS.**
    Defining `u_hat` from array to source and incident propagation as `-u_hat` is physically coherent.
@@ -67,18 +67,14 @@ Does ADR-001 represent a physically self-consistent ideal 1-D array embedded in 
 9. **Direction cosine and projected spatial frequency — PASS.**
    `u_x`, `kappa_x = k u_x`, and lattice-normalized `psi = kappa_x Delta` correctly represent distinct levels of the spatial model.
 
-10. **Projection ambiguity versus spatial aliasing — PASS in principle.**
+10. **Projection ambiguity versus spatial aliasing — PASS.**
     The ADR correctly treats loss of 3-D directional information caused by 1-D projection as different from aliasing caused by spatial sampling.
 
-### A.3 Required correction A-001 — Stable default spatial phase reference
+### A.3 Finding A-001 — Stable default spatial phase reference — RESOLVED
 
-Current draft defines the standard analytical default phase reference as the centroid of the **active** sensor phase centers.
+The original draft used the centroid of the active sensor subset as the default phase reference. This was physically legal but would have caused the default reference to move whenever the active-channel mask changed.
 
-This is physically legal but undesirable as the default project contract because changing an active-channel mask changes the reference point even though the underlying physical array coordinate frame has not changed. The resulting manifold is rephased by a direction-dependent common factor. That factor is harmless for many relative-phase DOA calculations, but it complicates direct manifold comparison, calibration provenance, coherent-source conventions, and cross-run reproducibility.
-
-**Required correction:** define the default analytical spatial phase reference as a stable geometry-level reference that does not change merely because channels are disabled. A suitable baseline is the centroid of the declared nominal physical geometry, computed from the full geometry definition and preserved as geometry metadata. Active-channel processing may use the same fixed reference. Explicit calibration or measurement workflows may override the default with a named reference channel or another declared spatial point.
-
-The ADR should explicitly distinguish:
+ADR-001 now defines the analytical default as the centroid of the **declared nominal geometry**, not the active subset. The contract explicitly distinguishes:
 
 ```text
 geometry coordinate origin
@@ -86,55 +82,54 @@ spatial phase reference
 active-channel mask
 ```
 
-Changing the active-channel mask must not silently redefine the default phase reference.
+Channel masking no longer silently changes the default phase reference. Explicit overrides remain allowed when declared as configuration/provenance.
 
-### A.4 Required correction A-002 — Half-wavelength endpoint ambiguity
+**Resolution status: PASS.**
 
-The current draft states that, for a conventional ULA with primitive spacing `Delta`, the full visible `u` interval maps inside the principal spatial-frequency interval when
+### A.4 Finding A-002 — Half-wavelength endpoint ambiguity — RESOLVED
 
-```math
-\Delta\le\frac{\lambda}{2}.
-```
+ADR-001 now distinguishes the usual no-grating-lobe statement over the open visible interval from strict injectivity over the closed interval.
 
-This requires a boundary clarification. At exactly
+At
 
 ```math
 \Delta=\frac{\lambda}{2},
 ```
 
-the two closed-interval endfire coordinates `u = +1` and `u = -1` produce `psi = +pi` and `psi = -pi`, which are identical on an integer lattice:
+`u = +1` and `u = -1` produce `psi = +pi` and `psi = -pi`, which are identical for integer lattice samples:
 
 ```math
-\exp(-j m \pi)=\exp(+j m \pi),
-\qquad m\in\mathbb Z.
+\exp(-jm\pi)=\exp(+jm\pi).
 ```
 
-Therefore:
+ADR-001 therefore states:
 
-- `Delta <= lambda/2` is appropriate for the usual statement that no distinct grating-lobe replica occurs in the **open** visible interval;
-- at equality, the two endfire endpoints remain aliased;
-- strict injectivity over the **closed** `u in [-1,1]` interval requires `Delta < lambda/2`.
+- `Delta <= lambda/2` for the usual no-grating-lobe condition within the open visible interval;
+- endpoint ambiguity remains at equality;
+- strict injectivity over closed `u in [-1,1]` requires `Delta < lambda/2`.
 
-**Required correction:** state this endpoint condition explicitly so that GeoDOA does not later label the `Delta = lambda/2`, `u = ±1` case as strictly unambiguous.
+**Resolution status: PASS.**
 
-### A.5 Required clarification A-003 — Nominal phase center versus true electromagnetic phase center
+### A.5 Finding A-003 — Nominal versus true phase center — RESOLVED
 
-The draft calls `r_n` the physical phase-center position associated with channel `n`. For the ideal geometry contract this should be tightened to avoid implying that a real antenna element has one immutable phase center under all frequency, angle, loading, and platform conditions.
+`r_n` is now defined as the **declared nominal sensor phase-center/reference position used by the geometry model**, rather than as an immutable true electromagnetic phase center.
 
-**Required clarification:** ADR-001 should define `r_n` as the **declared nominal sensor phase-center/reference position used by the geometry model**. Frequency-, angle-, environment-, or calibration-dependent deviations from that nominal representation belong to ADR-003 and the true/calibrated manifold model.
+Frequency-, angle-, environment-, installation-, or calibration-dependent deviations are explicitly deferred to ADR-003.
 
-This preserves the usefulness of a clean geometry coordinate without overclaiming physical exactness.
+**Resolution status: PASS.**
 
-### A.6 Required clarification A-004 — Complete canonical frame orientation
+### A.6 Finding A-004 — Complete canonical frame orientation — RESOLVED
 
-The draft declares a right-handed local frame with the array axis along `+x` and later chooses `+y` as the canonical broadside reference in the `xy` slice. For a 1-D array, rotation about the array axis is not determined by geometry alone.
+ADR-001 now states that a purely 1-D geometry does not physically determine rotation about its array axis. GeoDOA therefore chooses `+y` as the canonical reference broadside axis, with `+z = +x × +y` completing the right-handed frame.
 
-**Required clarification:** state explicitly that `+y` is a **chosen canonical reference broadside axis**, not a direction physically determined by the 1-D geometry, and that `+z` completes the right-handed frame. Any mapping from a global/platform frame into this local canonical frame must be explicit and provenance-preserving.
+Any platform/global-to-local transform must remain explicit and provenance-preserving.
+
+**Resolution status: PASS.**
 
 ### A.7 Gate A decision
 
-**Gate A status: CONDITIONAL — NOT YET PASS.**
+**Gate A status: PASS.**
 
-The core physical model is sound. No fundamental steering-vector or direction-sign error was found. Gate A can become PASS after corrections A-001 and A-002 and clarifications A-003 and A-004 are incorporated into ADR-001 and re-audited.
+The re-audited ADR-001 is physically self-consistent within its declared ideal geometry-only scope. No unresolved physical contradiction remains in the coordinate, direction, relative-delay, receive-phase, stable-reference, lattice, or ambiguity conventions governed by ADR-001.
 
-No later acceptance gate is automatically implied by Gate A; Gates B–F remain independent audits.
+Gate A does not imply mathematical, dimensional, software-semantic, reference-evidence, or failure-boundary acceptance. Gates B–F remain independent and pending.
