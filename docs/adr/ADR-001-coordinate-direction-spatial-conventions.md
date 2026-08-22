@@ -474,20 +474,26 @@ GeoDOA shall never silently collapse duplicate positions. Accidental duplicate s
 
 ## 11. Canonical Units and Normalized Representations
 
-### 11.1 Canonical internal units
+### 11.1 Canonical internal units and dimensional semantics
 
-The scientific core uses:
+The scientific core uses the following canonical representations:
 
-- physical distance: meter (`m`);
-- frequency: hertz (`Hz`);
-- propagation speed: meter per second (`m/s`);
-- wavelength: meter (`m`);
+- physical position, distance, aperture, lattice spacing, wavelength, and physical lattice residual: meter (`m`);
+- frequency `f`: hertz (`Hz = s^-1`);
+- temporal angular frequency `omega`: radian per second (`rad/s`);
+- propagation speed `v_p`: meter per second (`m/s`);
 - time and delay: second (`s`);
-- angle: radian (`rad`);
-- phase: radian (`rad`);
-- projected angular spatial frequency: radian per meter (`rad/m`);
+- angle and phase: radian (`rad`);
+- wavenumber `k` and projected angular spatial frequency `kappa_x`: radian per meter (`rad/m`);
+- normalized lattice spatial frequency `psi`: radian of phase increment per unit lattice-index increment; numerically/SI-dimensionally dimensionless but semantically represented as `rad`;
+- direction vector components, direction cosine `u`, wavelength-normalized position `q_n`, lattice coordinates `z_n`, lattice residuals `epsilon_n` and `rho_n`, lattice tolerance `tau_lat`, real-valued reference lattice coordinate `mu_ref`, integer indices/lags, and gcd factors: dimensionless;
+- ideal geometry-only steering/manifold coefficients: dimensionless complex coefficients of unit magnitude;
 - power ratio: dimensionless;
 - dB quantities: explicit logarithmic display/metric representations, not hidden linear values.
+
+In SI, plane angle and phase are dimensionless derived quantities. GeoDOA nevertheless retains the semantic labels `rad`, `rad/s`, and `rad/m` because doing so prevents confusion between ordinary cyclic frequency and angular frequency, between cycles-per-meter and angular spatial frequency, and between an arbitrary dimensionless scalar and a phase quantity.
+
+All arguments passed to `exp`, `sin`, `cos`, and other transcendental functions must be dimensionless; phase arguments are interpreted semantically in radians.
 
 ### 11.2 Wavelength is derived
 
@@ -495,9 +501,41 @@ The scientific core uses:
 \lambda(f)=\frac{v_p}{f}.
 ```
 
+Dimensionally,
+
+```text
+(m/s) / (1/s) = m.
+```
+
 The propagation speed is explicit; it is not assumed to be the speed of light by every domain object.
 
-### 11.3 Wavelength-normalized position
+### 11.3 Wavenumber and receive-phase dimensions
+
+With
+
+```math
+\omega=2\pi f,
+\qquad
+k=\frac{\omega}{v_p}=\frac{2\pi}{\lambda},
+```
+
+`k` has semantic units `rad/m`. Therefore
+
+```math
+k(\mathbf r_n-\mathbf r_{\mathrm{ref}})^T\hat{\mathbf u}
+```
+
+has units of radians and is dimensionless in the SI dimensional sense, as required for a complex exponential.
+
+Likewise,
+
+```math
+\omega\Delta\tau_n
+```
+
+has units of radians and is a valid exponential phase argument.
+
+### 11.4 Wavelength-normalized position
 
 Relative wavelength-normalized position is
 
@@ -517,10 +555,10 @@ If normalized positions are accepted as input, a reference wavelength or enough 
 
 A declared 1-D lattice consists of:
 
-- a physical lattice origin `x_L`;
+- a physical lattice origin `x_L` in meters;
 - a positive base spacing `Delta` in meters;
-- integer sensor indices `m_n`;
-- an explicit numerical lattice tolerance.
+- integer sensor indices `m_n`, dimensionless;
+- an explicit dimensionless numerical lattice tolerance.
 
 The exact declared grid relation is
 
@@ -562,7 +600,7 @@ The candidate lattice is accepted only if
 \max_n\rho_n\le\tau_{\mathrm{lat}},
 ```
 
-for an explicitly declared numerical tolerance `tau_lat`.
+for an explicitly declared dimensionless numerical tolerance `tau_lat`.
 
 Equivalently,
 
@@ -574,7 +612,25 @@ x_L+(m_n+\varepsilon_n)\Delta,
 |\varepsilon_n|\le\tau_{\mathrm{lat}}.
 ```
 
-The tolerance is a numerical grid-alignment tolerance, not a physical manufacturing or survey uncertainty. Physical position uncertainty is a separate sensor-model quantity governed by ADR-003.
+The corresponding signed physical grid residual is
+
+```math
+\eta_n
+=
+x_n-\tilde x_n
+=
+\varepsilon_n\Delta,
+```
+
+with units of meters and bound
+
+```math
+|\eta_n|
+\le
+\tau_{\mathrm{lat}}\Delta.
+```
+
+Thus `epsilon_n`, `rho_n`, and `tau_lat` are dimensionless normalized-grid quantities, whereas `eta_n` is a physical-distance residual. Numerical grid-alignment residual is not physical manufacturing or survey uncertainty; physical position uncertainty is a separate sensor-model quantity governed by ADR-003.
 
 ### 12.3 No blind integerization
 
@@ -606,15 +662,17 @@ x_i-x_j
 (\varepsilon_i-\varepsilon_j)\Delta.
 ```
 
-Therefore the deviation from the ideal lattice difference satisfies
+Every term in this equation has units of meters. Therefore the deviation from the ideal lattice difference satisfies
 
 ```math
 \left|
 (x_i-x_j)-\ell_{ij}\Delta
 \right|
 \le
-2\tau_{\mathrm{lat}}\Delta.
+2\tau_{\mathrm{lat}}\Delta,
 ```
+
+where the right-hand side is also a physical distance in meters.
 
 Physical pair difference, grid-reconstructed pair difference, normalized difference, and integer lag are distinct representations and must remain distinguishable.
 
@@ -653,6 +711,8 @@ and
 \Delta_{\mathrm{prim}}=g\Delta.
 ```
 
+The integer quantities `m_n`, `m_0`, `d_n`, `g`, and `tilde m_n` are dimensionless; `Delta` and `Delta_prim` have units of meters.
+
 Then the exact grid-reconstructed positions satisfy
 
 ```math
@@ -685,7 +745,7 @@ u_x
 u\in[-1,1].
 ```
 
-This is the fundamental direction coordinate observed by the ideal 1-D geometry-only manifold.
+This is the fundamental dimensionless direction coordinate observed by the ideal 1-D geometry-only manifold.
 
 For the canonical `xy` slice,
 
@@ -701,7 +761,7 @@ with the declared principal domain
 \theta\in[-\pi/2,\pi/2].
 ```
 
-On this interval, `sin(theta)` is one-to-one, so the angle and direction-cosine parameterizations are mutually invertible.
+On this interval, `sin(theta)` is one-to-one, so the angle and direction-cosine parameterizations are mutually invertible. `theta` is represented semantically in radians.
 
 ### 13.2 Projected angular spatial frequency
 
@@ -713,13 +773,15 @@ Define
 =\frac{2\pi}{\lambda}u,
 ```
 
-with units `rad/m`. Then
+with semantic units `rad/m`. Then
 
 ```math
 a_n
 =
 \exp[-j\kappa_x(x_n-x_{\mathrm{ref}})].
 ```
+
+The product `kappa_x (x_n-x_ref)` is a phase in radians and is dimensionless in the SI dimensional sense.
 
 ### 13.3 Normalized lattice spatial frequency
 
@@ -732,7 +794,9 @@ For declared lattice spacing `Delta`, define
 =\frac{2\pi\Delta}{\lambda}u.
 ```
 
-For an exact lattice position `x_n = x_L + m_n Delta`, define the real-valued reference lattice coordinate
+Because `kappa_x` has semantic units `rad/m` and `Delta` has units `m`, `psi` is a phase increment in radians per unit increment of the dimensionless lattice index. In SI dimensional analysis it is dimensionless, but GeoDOA retains the semantic unit `rad`.
+
+For an exact lattice position `x_n = x_L + m_n Delta`, define the real-valued, dimensionless reference lattice coordinate
 
 ```math
 \mu_{\mathrm{ref}}
@@ -747,6 +811,8 @@ a_n
 =
 \exp[-j(m_n-\mu_{\mathrm{ref}})\psi].
 ```
+
+The exponential argument is a phase in radians and is dimensionless in SI dimensional analysis.
 
 If `mu_ref` happens to be an integer, it may be denoted by an integer reference index. For tolerance-admitted coordinates, the authoritative physical-coordinate manifold remains the governing expression and the integer-lattice form is a grid-model representation rather than a silent replacement.
 
@@ -804,7 +870,7 @@ k(x_i-x_j)(u_2-u_1)
 2\pi\mathbb Z.
 ```
 
-This pair-difference criterion is invariant to the spatial phase-reference choice.
+The left-hand side is a phase in radians and is dimensionless in the SI dimensional sense. This pair-difference criterion is invariant to the spatial phase-reference choice.
 
 For an exact declared integer lattice with relative-index gcd `g`, the relative phase structure is periodic in the declared-grid normalized spatial frequency `psi` with fundamental period
 
@@ -814,7 +880,7 @@ For an exact declared integer lattice with relative-index gcd `g`, the relative 
 \frac{2\pi}{g}.
 ```
 
-Equivalently, using the primitive spacing
+`Delta psi_fund` is a phase increment in radians. Equivalently, using the primitive spacing
 
 ```math
 \Delta_{\mathrm{prim}}=g\Delta,
@@ -830,7 +896,7 @@ k\Delta_{\mathrm{prim}}u
 g\psi,
 ```
 
-the fundamental period is `2 pi`.
+the fundamental period is `2 pi` radians.
 
 Thus the familiar identity
 
@@ -872,6 +938,8 @@ u=\sin\theta,
 \frac{du}{d\theta}=\cos\theta.
 ```
 
+With `theta` expressed in radians, the derivative is dimensionless per radian; since radians are SI-dimensionless, the relation is dimensionally consistent. Numerical differentiation or grid-spacing conversion must not silently substitute degrees into this relation without conversion.
+
 Likewise, a uniform direction-cosine grid maps to a uniform `kappa_x` grid only at fixed frequency/medium, and to a uniform `psi` grid only for fixed declared lattice spacing.
 
 GeoDOA shall therefore distinguish conceptual scan domains such as:
@@ -908,7 +976,10 @@ Later implementation governed by this ADR must satisfy the following constraints
 - the default geometry-level phase reference shall remain stable under active-channel masking;
 - explicit phase-reference overrides shall be reproducible and provenance-preserving;
 - unit conversion shall occur at defined boundaries rather than being inferred from numerical magnitude;
+- angle inputs to scientific kernels shall use radians internally; degree-valued UI or file inputs require explicit boundary conversion;
+- angular and spatial angular frequencies shall retain semantic `rad` metadata even though radians are SI-dimensionless;
 - lattice integerization shall require explicit lattice context and validation;
+- normalized lattice residuals and physical lattice residuals shall remain distinct quantities;
 - tolerance-admitted physical coordinates shall not be silently snapped to reconstructed grid positions;
 - numerical lattice tolerance shall not be reused as physical position uncertainty;
 - angle, direction cosine, `kappa_x`, declared-grid `psi`, and primitive-grid spatial frequency shall remain semantically distinguishable;
@@ -973,6 +1044,9 @@ Rejected because the literal vector representation changes by a common phasor wh
 - calibration and hardware channel identity are protected from geometry sorting;
 - active-channel masking does not silently redefine the default phase reference;
 - phase-reference changes have an explicit common-phasor transformation law;
+- canonical units and dimensionless normalized quantities are explicitly separated;
+- semantic radian metadata is preserved for phase and angular/spatial angular frequency;
+- normalized and physical lattice residuals are explicitly distinguished;
 - tolerance-admitted lattice coordinates retain explicit residuals rather than false exact equalities;
 - coarray integer lags cannot be fabricated by numerical rounding;
 - declared and primitive lattice periodicities are mathematically distinguished;
@@ -986,8 +1060,9 @@ Rejected because the literal vector representation changes by a common phasor wh
 
 - APIs must carry more explicit context than a minimal `steering_vector(theta)` function;
 - unit, reference, lattice, and residual metadata must be preserved;
+- boundary layers must perform explicit unit conversion, especially degrees to radians;
 - some convenient automatic normalization operations become explicit derived transformations;
-- later validation must test invariance, projective manifold equivalence, and ambiguity behavior, not only nominal numerical outputs.
+- later validation must test invariance, projective manifold equivalence, dimensional consistency, and ambiguity behavior, not only nominal numerical outputs.
 
 These costs are intentional because GeoDOA prioritizes scientific traceability over convenience shortcuts.
 
@@ -1012,7 +1087,7 @@ ADR-001 remains **Proposed** until all Phase 0C acceptance gates pass.
 |---|---|---|
 | A | Physical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | B | Mathematical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| C | Dimensional and unit consistency | Pending formal audit |
+| C | Dimensional and unit consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | D | Software semantic consistency | Pending formal audit |
 | E | Hand-calculated reference evidence | Pending GRP-001 through GRP-006 |
 | F | Boundary and failure analysis | Pending formal audit |
@@ -1038,3 +1113,4 @@ Supporting scientific notes may derive individual results at greater pedagogical
 5. **Never treat 3-D propagation capability as proof of unique 3-D DOA observability.**
 6. **Never choose a steering-vector sign without declaring the direction and temporal-phasor conventions that produce it.**
 7. **Never call two manifolds distinguishable merely because they differ by a common phase-reference factor.**
+8. **Never use a dimensionless numerical representation to erase the semantic distinction between angle, phase, normalized position, and lattice index.**
