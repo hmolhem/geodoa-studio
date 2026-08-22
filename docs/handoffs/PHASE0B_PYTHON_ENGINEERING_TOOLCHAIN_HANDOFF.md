@@ -89,6 +89,9 @@ Validated commands:
 ```text
 ruff check .
 ruff format --check .
+```
+
+Both pass.
 
 ## Static Type Policy
 
@@ -102,21 +105,46 @@ mypy is configured for Python 3.12 with explicit type-quality checks including:
 
 Validated command:
 
-`mypy src`
+```text
+mypy src
+```
 
 Result:
 
-`Success: no issues found in 1 source file`
+```text
+Success: no issues found in 1 source file
+```
+
 ## Test Policy
 
 pytest is configured to use:
 
 ```text
 testpaths = ["tests"]
+```
 
+with:
+
+```text
 -ra
 --strict-markers
 --strict-config
+```
+
+Initial infrastructure test:
+
+```text
+tests/test_package_import.py
+```
+
+The test verifies that the installed project package can be imported.
+
+Local result:
+
+```text
+1 passed
+```
+
 ## Editable Installation Verification
 
 The project was successfully installed in editable mode with:
