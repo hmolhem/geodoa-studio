@@ -200,14 +200,23 @@ The interval `[-pi/2, pi/2]` is a chosen one-to-one parameterization of the cano
 
 ## 7. Look Direction and Propagation Direction
 
-GeoDOA distinguishes the direction from the array reference toward the source from the direction in which the incident wave propagates.
+GeoDOA distinguishes the source look direction from the direction in which the incident wave propagates.
 
-The **look direction** is
+For the far-field derivation, introduce an explicit array-localization/expansion origin `r_0` and write the source position as
+
+```math
+\mathbf r_s
+=
+\mathbf r_0+R\hat{\mathbf u},
+\qquad R>0.
+```
+
+The **look direction** is therefore
 
 ```math
 \hat{\mathbf u}
 =
-\text{unit vector from the array reference toward the source}.
+\frac{\mathbf r_s-\mathbf r_0}{\|\mathbf r_s-\mathbf r_0\|_2}.
 ```
 
 For an incident wave arriving from that source, the **propagation direction** is
@@ -216,7 +225,9 @@ For an incident wave arriving from that source, the **propagation direction** is
 \hat{\mathbf p}=-\hat{\mathbf u}.
 ```
 
-These terms shall not be used interchangeably in scientific APIs, documentation, or derivations.
+The localization/expansion origin `r_0`, geometry coordinate origin, and spatial phase-reference point `r_ref` are conceptually distinct. In the far-field plane-wave model, a common `u_hat` is used across the array aperture; the validity of that approximation is governed by ADR-002.
+
+These terms and reference points shall not be used interchangeably in scientific APIs, documentation, or derivations.
 
 ## 8. Temporal Phasor Convention and Receive-Phase Derivation
 
@@ -232,10 +243,20 @@ as the temporal phasor convention for the scientific derivations governed by thi
 
 ### 8.2 Relative propagation distance
 
-Let a far source be located at
+With
 
 ```math
-\mathbf r_s=R\hat{\mathbf u}.
+\mathbf r_s
+=
+\mathbf r_0+R\hat{\mathbf u},
+```
+
+let
+
+```math
+\boldsymbol\delta_n
+=
+\mathbf r_n-\mathbf r_0.
 ```
 
 The exact source-to-sensor distance is
@@ -243,7 +264,9 @@ The exact source-to-sensor distance is
 ```math
 R_n
 =
-\|R\hat{\mathbf u}-\mathbf r_n\|_2.
+\|\mathbf r_s-\mathbf r_n\|_2
+=
+\|R\hat{\mathbf u}-\boldsymbol\delta_n\|_2.
 ```
 
 Under the first-order plane-wave expansion,
@@ -251,16 +274,34 @@ Under the first-order plane-wave expansion,
 ```math
 R_n
 \approx
-R-\hat{\mathbf u}^T\mathbf r_n.
+R-\hat{\mathbf u}^T\boldsymbol\delta_n.
 ```
 
-Relative to an explicit spatial phase-reference point `r_ref`,
+Define likewise
+
+```math
+\boldsymbol\delta_{\mathrm{ref}}
+=
+\mathbf r_{\mathrm{ref}}-\mathbf r_0,
+```
+
+so that
+
+```math
+R_{\mathrm{ref}}
+\approx
+R-\hat{\mathbf u}^T\boldsymbol\delta_{\mathrm{ref}}.
+```
+
+Subtracting eliminates the arbitrary expansion origin:
 
 ```math
 R_n-R_{\mathrm{ref}}
 \approx
 -(\mathbf r_n-\mathbf r_{\mathrm{ref}})^T\hat{\mathbf u}.
 ```
+
+Thus the final relative-distance relation is independent of the choice of `r_0` within the same first-order plane-wave model.
 
 ### 8.3 Relative delay
 
@@ -354,6 +395,7 @@ GeoDOA therefore treats the following as distinct concepts:
 
 ```text
 geometry coordinate origin
+far-field expansion/localization origin
 spatial phase reference
 active-channel mask
 ```
@@ -378,7 +420,31 @@ then
 
 and the relative manifold is unchanged.
 
-If the reference is not translated, translation changes the steering vector only by a common direction-dependent complex phase factor. Relative inter-channel phase remains unchanged.
+If sensor positions are translated by `t` while the phase reference is held fixed,
+
+```math
+\mathbf a'(\hat{\mathbf u})
+=
+\exp[-jk\mathbf t^T\hat{\mathbf u}]
+\mathbf a(\hat{\mathbf u}).
+```
+
+The change is therefore a common direction-dependent phase factor across all channels; relative inter-channel phase remains unchanged.
+
+### 9.3 Phase-reference change law
+
+If the physical geometry is fixed and the phase reference changes from `r_ref` to `r_ref'`, then
+
+```math
+\mathbf a_{\mathrm{ref}'}(\hat{\mathbf u})
+=
+\exp\!\left[
++jk(\mathbf r_{\mathrm{ref}'}-\mathbf r_{\mathrm{ref}})^T\hat{\mathbf u}
+\right]
+\mathbf a_{\mathrm{ref}}(\hat{\mathbf u}).
+```
+
+Thus changing only the spatial phase reference multiplies the steering vector by a common unit-magnitude phasor and does not change relative inter-channel phase.
 
 ## 10. Physical Coordinates, Channel Identity, and Derived Views
 
@@ -456,13 +522,17 @@ A declared 1-D lattice consists of:
 - integer sensor indices `m_n`;
 - an explicit numerical lattice tolerance.
 
-The ideal relation is
+The exact declared grid relation is
 
 ```math
-x_n=x_L+m_n\Delta,
+\tilde x_n=x_L+m_n\Delta,
 \qquad
-m_n\in\mathbb Z.
+m_n\in\mathbb Z,
 ```
+
+where `tilde x_n` denotes the grid-reconstructed/design position associated with integer index `m_n`.
+
+If authoritative physical coordinates are numerically represented values of that declared grid, they remain stored as `x_n`; GeoDOA does not silently overwrite them with `tilde x_n`.
 
 ### 12.2 Lattice validation
 
@@ -478,13 +548,15 @@ m_n
 \operatorname{round}(z_n),
 ```
 
-and the dimensionless residual is
+and define the dimensionless lattice residual
 
 ```math
-\rho_n=|z_n-m_n|.
+\varepsilon_n=z_n-m_n,
+\qquad
+\rho_n=|\varepsilon_n|.
 ```
 
-The lattice is accepted only if
+The candidate lattice is accepted only if
 
 ```math
 \max_n\rho_n\le\tau_{\mathrm{lat}},
@@ -492,53 +564,110 @@ The lattice is accepted only if
 
 for an explicitly declared numerical tolerance `tau_lat`.
 
+Equivalently,
+
+```math
+x_n
+=
+x_L+(m_n+\varepsilon_n)\Delta,
+\qquad
+|\varepsilon_n|\le\tau_{\mathrm{lat}}.
+```
+
 The tolerance is a numerical grid-alignment tolerance, not a physical manufacturing or survey uncertainty. Physical position uncertainty is a separate sensor-model quantity governed by ADR-003.
 
 ### 12.3 No blind integerization
 
 Arbitrary real-valued pair differences shall not be divided by an arbitrary spacing and blindly rounded into integer coarray lags. Integer lag semantics exist only after lattice validity has been established.
 
-### 12.4 Integer difference lags
+### 12.4 Integer difference lags and residual bound
 
-For a validated lattice,
+For the exact grid-reconstructed positions,
 
 ```math
-x_i-x_j=(m_i-m_j)\Delta,
+\tilde x_i-\tilde x_j
+=
+(m_i-m_j)\Delta,
 ```
 
-and the integer difference lag is
+so the associated integer difference lag is
 
 ```math
 \ell_{ij}=m_i-m_j.
 ```
 
-Physical lag, normalized lag, and integer lag are distinct representations and must remain distinguishable.
+For authoritative coordinates admitted through numerical tolerance,
+
+```math
+x_i-x_j
+=
+(m_i-m_j)\Delta
++
+(\varepsilon_i-\varepsilon_j)\Delta.
+```
+
+Therefore the deviation from the ideal lattice difference satisfies
+
+```math
+\left|
+(x_i-x_j)-\ell_{ij}\Delta
+\right|
+\le
+2\tau_{\mathrm{lat}}\Delta.
+```
+
+Physical pair difference, grid-reconstructed pair difference, normalized difference, and integer lag are distinct representations and must remain distinguishable.
 
 ### 12.5 Declared versus primitive lattice
 
 The declared lattice preserves design provenance. It shall not be silently replaced by a coarser equivalent lattice.
 
-For integer indices, let
+Choose any anchor index `m_0` and define relative integer indices
+
+```math
+d_n=m_n-m_0.
+```
+
+For a nondegenerate geometry, define
 
 ```math
 g
 =
-\gcd\{m_i-m_j\;|\; i,j\},
+\gcd\{|d_n|:\ d_n\neq0\}.
 ```
 
-with `g > 0` for a nondegenerate geometry. A gcd-normalized primitive representation may be derived using
+Equivalently, `g` is the gcd of the nonzero pairwise integer differences. If all indices are identical, the geometry is degenerate for this purpose and no positive primitive spacing is defined.
+
+A gcd-normalized primitive representation is obtained from
 
 ```math
-\Delta_{\mathrm{prim}}=g\Delta,
+\tilde m_n
+=
+\frac{m_n-m_0}{g}
+\in\mathbb Z,
 ```
 
-and correspondingly reduced translated integer indices whose pairwise gcd is one.
+and
 
-This primitive representation is a derived geometry-analysis view. The originally declared `Delta` remains part of provenance because it may represent a fabrication grid, optimization grid, or published-array construction rule.
+```math
+\Delta_{\mathrm{prim}}=g\Delta.
+```
+
+Then the exact grid-reconstructed positions satisfy
+
+```math
+\tilde x_n
+=
+\tilde x_0
++
+\tilde m_n\Delta_{\mathrm{prim}}.
+```
+
+The relative primitive indices have gcd one. This primitive representation is a derived geometry-analysis view. The originally declared `Delta` remains part of provenance because it may represent a fabrication grid, optimization grid, or published-array construction rule.
 
 ### 12.6 Lattice spacing is not nearest-neighbor spacing
 
-`Delta` is a grid basis. It is not generally equal to every sensor spacing, the minimum pairwise separation, or the nearest-neighbor distance.
+`Delta` is a declared grid basis. It is not generally equal to every sensor spacing, the minimum pairwise separation, or the nearest-neighbor distance. Likewise, `Delta_prim` is a derived primitive grid basis and need not equal the declared design-grid spacing.
 
 ## 13. Direction Cosine and Spatial Frequency
 
@@ -563,8 +692,16 @@ For the canonical `xy` slice,
 ```math
 u=\sin\theta,
 \qquad
-\theta=\arcsin\nu.
+\theta=\arcsin\nu,
 ```
+
+with the declared principal domain
+
+```math
+\theta\in[-\pi/2,\pi/2].
+```
+
+On this interval, `sin(theta)` is one-to-one, so the angle and direction-cosine parameterizations are mutually invertible.
 
 ### 13.2 Projected angular spatial frequency
 
@@ -586,7 +723,7 @@ a_n
 
 ### 13.3 Normalized lattice spatial frequency
 
-For lattice spacing `Delta`, define
+For declared lattice spacing `Delta`, define
 
 ```math
 \psi
@@ -595,17 +732,25 @@ For lattice spacing `Delta`, define
 =\frac{2\pi\Delta}{\lambda}u.
 ```
 
-For a lattice position `m_n`, the relative manifold is
+For an exact lattice position `x_n = x_L + m_n Delta`, define the real-valued reference lattice coordinate
+
+```math
+\mu_{\mathrm{ref}}
+=
+\frac{x_{\mathrm{ref}}-x_L}{\Delta}.
+```
+
+The phase reference need not itself be a lattice point. The exact-lattice manifold can therefore be written
 
 ```math
 a_n
 =
-\exp[-j(m_n-m_{\mathrm{ref}})\psi]
+\exp[-j(m_n-\mu_{\mathrm{ref}})\psi].
 ```
 
-when the phase reference is represented on the same lattice. More generally, the physical-reference formulation remains authoritative.
+If `mu_ref` happens to be an integer, it may be denoted by an integer reference index. For tolerance-admitted coordinates, the authoritative physical-coordinate manifold remains the governing expression and the integer-lattice form is a grid-model representation rather than a silent replacement.
 
-Angle `theta`, direction cosine `u`, physical spatial frequency `kappa_x`, and normalized lattice spatial frequency `psi` are distinct domain concepts and shall not be represented by one ambiguously named variable.
+Angle `theta`, direction cosine `u`, physical spatial frequency `kappa_x`, declared-grid normalized spatial frequency `psi`, and primitive-grid normalized spatial frequency are distinct domain concepts and shall not be represented by one ambiguously named variable.
 
 ## 14. Ambiguity and Identifiability
 
@@ -629,7 +774,7 @@ implies
 \mathbf a(\hat{\mathbf u}_2)
 ```
 
-for the ideal scalar geometry-only model.
+for the ideal scalar geometry-only model with the same frequency and reference convention.
 
 Thus 3-D propagation capability does not imply unique 3-D DOA observability.
 
@@ -639,38 +784,81 @@ The canonical `xy` slice selects the half-plane `u_y >= 0`. A direction in the o
 
 Directional element patterns, polarization, non-collinear geometry, or other physical information may alter this conclusion; those effects are outside the geometry-only model and belong to ADR-003.
 
-### 14.3 Spatial aliasing
+### 14.3 Manifold equivalence and spatial aliasing
 
-Projection ambiguity and spatial aliasing are distinct.
+Spatial aliasing is defined by indistinguishable **relative inter-channel phase structure**, not by literal equality of steering-vector coordinates under every arbitrary phase-reference choice.
 
-Spatial aliasing occurs when different observable directional coordinates produce equivalent sampled spatial manifolds. For an integer lattice,
+For geometry-only unit-magnitude steering vectors, two direction parameters `u_1` and `u_2` are spatially equivalent when there exists a common phase `phi` such that
+
+```math
+\mathbf a(u_2)
+=
+e^{j\phi}\mathbf a(u_1).
+```
+
+Equivalently, for every sensor pair `i,j`,
+
+```math
+k(x_i-x_j)(u_2-u_1)
+\in
+2\pi\mathbb Z.
+```
+
+This pair-difference criterion is invariant to the spatial phase-reference choice.
+
+For an exact declared integer lattice with relative-index gcd `g`, the relative phase structure is periodic in the declared-grid normalized spatial frequency `psi` with fundamental period
+
+```math
+\Delta\psi_{\mathrm{fund}}
+=
+\frac{2\pi}{g}.
+```
+
+Equivalently, using the primitive spacing
+
+```math
+\Delta_{\mathrm{prim}}=g\Delta,
+```
+
+and primitive normalized spatial frequency
+
+```math
+\psi_{\mathrm{prim}}
+=
+k\Delta_{\mathrm{prim}}u
+=
+g\psi,
+```
+
+the fundamental period is `2 pi`.
+
+Thus the familiar identity
 
 ```math
 \exp[-jm(\psi+2\pi q)]
 =
-\exp[-jm\psi],
-\qquad q\in\mathbb Z.
+\exp[-jm\psi]
 ```
 
-For a conventional ULA with primitive spacing `Delta`:
+is always a valid `2 pi` periodicity statement for integer `m`, but `2 pi` need not be the **fundamental** period of the relative manifold when all relative indices share a gcd greater than one.
+
+For a conventional ULA with consecutive primitive indices, `g = 1` and `Delta_prim = Delta`. In that case:
 
 - `Delta <= lambda/2` gives the usual no-grating-lobe condition for distinct directions in the **open** visible interval `u in (-1,1)`;
-- at exactly `Delta = lambda/2`, the two endfire endpoints `u = +1` and `u = -1` map to `psi = +pi` and `psi = -pi` and are identical on an integer lattice because
-
-```math
-\exp(-jm\pi)=\exp(+jm\pi),
-\qquad m\in\mathbb Z;
-```
-
-- strict injectivity over the entire **closed** interval `u in [-1,1]` therefore requires
+- at exactly `Delta = lambda/2`, the two endfire endpoints `u = +1` and `u = -1` are spatially equivalent;
+- strict injectivity over the entire **closed** interval `u in [-1,1]` requires
 
 ```math
 \Delta<\frac{\lambda}{2}.
 ```
 
-For sparse or nonuniform geometries, ambiguity shall be diagnosed from the full geometry/manifold rather than inferred solely from a nearest-neighbor rule.
+For a general exact lattice geometry, ambiguity is governed by the primitive spacing and the full pair-difference structure. For arbitrary nonuniform real geometries, ambiguity shall be diagnosed directly from the full pair-difference/manifold criterion rather than inferred from a nearest-neighbor rule.
 
-### 14.4 Lattice validity is not spatial unambiguity
+### 14.4 Projection ambiguity is not spatial aliasing
+
+Projection ambiguity occurs when physically distinct 3-D directions have the same observable projection `u_x`. Spatial aliasing occurs when distinct observable `u` values produce spatially equivalent sampled manifolds. These are different mechanisms and must be diagnosed separately.
+
+### 14.5 Lattice validity is not spatial unambiguity
 
 A geometry may be perfectly lattice-valid and still spatially aliased. Lattice validation is a geometric/numerical statement; spatial unambiguity is an observability statement.
 
@@ -684,14 +872,15 @@ u=\sin\theta,
 \frac{du}{d\theta}=\cos\theta.
 ```
 
-Likewise, a uniform direction-cosine grid maps to a uniform `kappa_x` grid only at fixed frequency/medium, and to a uniform `psi` grid only for fixed lattice spacing.
+Likewise, a uniform direction-cosine grid maps to a uniform `kappa_x` grid only at fixed frequency/medium, and to a uniform `psi` grid only for fixed declared lattice spacing.
 
 GeoDOA shall therefore distinguish conceptual scan domains such as:
 
 - angle grid;
 - direction-cosine grid;
 - projected-spatial-frequency grid;
-- normalized-lattice-spatial-frequency grid.
+- declared-grid normalized-spatial-frequency grid;
+- primitive-grid normalized-spatial-frequency grid.
 
 Conversions must be explicit and carry the frequency, medium, and lattice context required to make them meaningful.
 
@@ -703,8 +892,8 @@ ADR-001 is not eligible for approval until deterministic hand-computable Golden 
 - **GRP-002:** two-sensor steering-vector phase, including the `d = lambda/2`, `theta = 30 deg` result;
 - **GRP-003:** translation invariance and phase-reference change;
 - **GRP-004:** two distinct 3-D directions with identical `u_x` and therefore identical ideal 1-D manifolds;
-- **GRP-005:** spatial aliasing for a lattice array, including a `d = lambda` example and the `d = lambda/2` endfire-endpoint boundary case;
-- **GRP-006:** lattice validation and integer difference-coarray lag construction.
+- **GRP-005:** spatial aliasing for a lattice array, including a `d = lambda` example, the `d = lambda/2` endfire-endpoint boundary case, and a gcd-greater-than-one lattice periodicity example;
+- **GRP-006:** lattice validation, residual bound, primitive-lattice reduction, and integer difference-coarray lag construction.
 
 The Golden Reference Problems shall be independently solvable using paper, pencil, and a basic calculator and shall later serve as software regression-test oracles.
 
@@ -715,13 +904,16 @@ Later implementation governed by this ADR must satisfy the following constraints
 - scientific kernels shall not hard-code a 2-D `sin(theta)` representation when the general direction-vector inner product is appropriate;
 - physical channel identity shall survive sorting and derived views;
 - no core algorithm shall silently shift the coordinate origin;
+- far-field expansion/localization origin and spatial phase reference shall remain distinct concepts;
 - the default geometry-level phase reference shall remain stable under active-channel masking;
 - explicit phase-reference overrides shall be reproducible and provenance-preserving;
 - unit conversion shall occur at defined boundaries rather than being inferred from numerical magnitude;
 - lattice integerization shall require explicit lattice context and validation;
+- tolerance-admitted physical coordinates shall not be silently snapped to reconstructed grid positions;
 - numerical lattice tolerance shall not be reused as physical position uncertainty;
-- angle, direction cosine, `kappa_x`, and `psi` shall remain semantically distinguishable;
-- ambiguity diagnostics shall distinguish projection ambiguity from spatial aliasing;
+- angle, direction cosine, `kappa_x`, declared-grid `psi`, and primitive-grid spatial frequency shall remain semantically distinguishable;
+- ambiguity diagnostics shall use relative-manifold/pair-difference equivalence and distinguish projection ambiguity from spatial aliasing;
+- periodicity diagnostics shall account for gcd reduction rather than assuming that `2 pi` is always the fundamental declared-grid period;
 - `d = lambda/2` shall not be reported as strictly injective over both closed-interval endfire endpoints;
 - common phase changes caused only by reference choice shall not be misclassified as physical manifold distortion.
 
@@ -755,9 +947,9 @@ Rejected as the default policy because channel masking would silently rephase th
 
 Rejected because physical sensors do not move when operating frequency changes. Wavelength normalization is a frequency-referenced derived view.
 
-### 18.8 Silently sort or translation-normalize input positions
+### 18.8 Silently snap tolerance-admitted positions to a lattice
 
-Rejected because it destroys physical/channel provenance and can misassociate calibration and hardware channels.
+Rejected because numerical validation of intended grid membership does not authorize destruction of the authoritative physical coordinates or concealment of residuals.
 
 ### 18.9 Round arbitrary pair differences into integer lags
 
@@ -767,15 +959,24 @@ Rejected because it manufactures lattice structure that may not physically or ma
 
 Rejected because reflection changes orientation relative to the declared array axis even when some geometry metrics are equivalent.
 
+### 18.11 Define spatial aliasing by exact steering-vector equality only
+
+Rejected because the literal vector representation changes by a common phasor when the spatial phase reference changes. Relative inter-channel phase equivalence is the reference-invariant mathematical criterion relevant to geometry-only DOA observability.
+
 ## 19. Consequences
 
 ### 19.1 Positive consequences
 
 - steering-vector sign is traceable to physical delay and temporal convention;
+- the far-field derivation no longer conflates expansion origin with spatial phase reference;
 - the initial 1-D implementation remains compatible with later 2-D/3-D spatial extensions;
 - calibration and hardware channel identity are protected from geometry sorting;
 - active-channel masking does not silently redefine the default phase reference;
+- phase-reference changes have an explicit common-phasor transformation law;
+- tolerance-admitted lattice coordinates retain explicit residuals rather than false exact equalities;
 - coarray integer lags cannot be fabricated by numerical rounding;
+- declared and primitive lattice periodicities are mathematically distinguished;
+- spatial aliasing is defined in a phase-reference-invariant manner;
 - physical and wavelength-normalized geometry remain unambiguous;
 - projection ambiguity and spatial aliasing can be diagnosed separately;
 - the half-wavelength endfire endpoint condition is represented explicitly;
@@ -784,9 +985,9 @@ Rejected because reflection changes orientation relative to the declared array a
 ### 19.2 Costs and constraints
 
 - APIs must carry more explicit context than a minimal `steering_vector(theta)` function;
-- unit, reference, and lattice metadata must be preserved;
+- unit, reference, lattice, and residual metadata must be preserved;
 - some convenient automatic normalization operations become explicit derived transformations;
-- later validation must test invariance and ambiguity behavior, not only nominal numerical outputs.
+- later validation must test invariance, projective manifold equivalence, and ambiguity behavior, not only nominal numerical outputs.
 
 These costs are intentional because GeoDOA prioritizes scientific traceability over convenience shortcuts.
 
@@ -810,7 +1011,7 @@ ADR-001 remains **Proposed** until all Phase 0C acceptance gates pass.
 | Gate | Requirement | Current Status |
 |---|---|---|
 | A | Physical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| B | Mathematical consistency | Pending formal audit |
+| B | Mathematical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | C | Dimensional and unit consistency | Pending formal audit |
 | D | Software semantic consistency | Pending formal audit |
 | E | Hand-calculated reference evidence | Pending GRP-001 through GRP-006 |
@@ -836,3 +1037,4 @@ Supporting scientific notes may derive individual results at greater pedagogical
 4. **Never confuse an angular coordinate with the spatial quantity actually observed by the array.**
 5. **Never treat 3-D propagation capability as proof of unique 3-D DOA observability.**
 6. **Never choose a steering-vector sign without declaring the direction and temporal-phasor conventions that produce it.**
+7. **Never call two manifolds distinguishable merely because they differ by a common phase-reference factor.**
