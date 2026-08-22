@@ -1,9 +1,12 @@
 # ADR-001 — Coordinate, Direction, and Spatial Conventions
 
-- **Status:** Proposed — scientific review in progress
+- **Status:** Accepted — all Phase 0C acceptance Gates A–F passed
 - **Phase:** 0C — Scientific Foundations
 - **Scope:** Coordinate, direction, spatial-phase, unit, reference, and lattice conventions
 - **Depends on:** `GEODOA_STUDIO_MASTER_START_HANDOFF.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
+- **Acceptance audit:** `ADR-001_ACCEPTANCE_AUDIT.md`
+- **Golden reference evidence:** `../science/golden_reference/ADR-001_GOLDEN_REFERENCE_PROBLEMS.md`
+- **Boundary/failure evidence:** `ADR-001_BOUNDARY_FAILURE_ANALYSIS.md`
 - **Supersedes:** None
 - **Superseded by:** None
 
@@ -54,6 +57,14 @@ a_n(\theta,f)
 Physical coordinates and channel identity are preserved. Sorting, translation normalization, wavelength normalization, primitive-lattice reduction, and reflection comparison are derived views or analyses and shall not destructively replace the physical representation.
 
 Canonical physical units are SI. Physical positions are stored in meters; wavelength-normalized positions are frequency-referenced derived quantities. Integer coarray lag indices are valid only after an explicit lattice has been declared or validated within an explicit numerical tolerance. Arbitrary real-valued position differences shall never be converted into integer lags by blind rounding.
+
+For nearest-integer lattice validation, the admissible numerical tolerance domain is
+
+```math
+0\le\tau_{\mathrm{lat}}<\frac12.
+```
+
+This bound guarantees that the accepted tolerance does not include the half-grid tie where the nearest integer ceases to be unique. It does not prescribe the eventual default numerical tolerance.
 
 ## 2. Context and Decision Drivers
 
@@ -594,7 +605,7 @@ A declared 1-D lattice consists of:
 - a physical lattice origin `x_L` in meters;
 - a positive base spacing `Delta` in meters;
 - integer sensor indices `m_n`, dimensionless;
-- an explicit dimensionless numerical lattice tolerance.
+- an explicit dimensionless numerical lattice tolerance when numerical validation is required.
 
 The exact declared grid relation is
 
@@ -632,13 +643,19 @@ and define the dimensionless lattice residual
 \rho_n=|\varepsilon_n|.
 ```
 
+Nearest-integer lattice validation requires a finite tolerance satisfying
+
+```math
+\boxed{0\le\tau_{\mathrm{lat}}<\frac12}.
+```
+
+The strict upper bound excludes the half-grid tie at which a candidate coordinate is equally close to two integer lattice indices. Consequently, the scientific contract does not depend on a programming-language-specific half-integer rounding convention.
+
 The candidate lattice is accepted only if
 
 ```math
-\max_n\rho_n\le\tau_{\mathrm{lat}},
+\max_n\rho_n\le\tau_{\mathrm{lat}}.
 ```
-
-for an explicitly declared dimensionless numerical tolerance `tau_lat`.
 
 Equivalently,
 
@@ -1018,7 +1035,7 @@ Conversions must be explicit and carry the frequency, medium, lattice, and conve
 
 ## 16. Deterministic Reference Expectations
 
-ADR-001 is not eligible for approval until deterministic hand-computable Golden Reference Problems cover at least the following contracts:
+ADR-001 approval is supported by deterministic hand-computable Golden Reference Problems covering at least the following contracts:
 
 - **GRP-001:** two-sensor propagation-distance and relative-delay calculation;
 - **GRP-002:** two-sensor steering-vector phase, including the `d = lambda/2`, `theta = 30 deg` result;
@@ -1027,7 +1044,13 @@ ADR-001 is not eligible for approval until deterministic hand-computable Golden 
 - **GRP-005:** spatial aliasing for a lattice array, including a `d = lambda` example, the `d = lambda/2` endfire-endpoint boundary case, and a gcd-greater-than-one lattice periodicity example;
 - **GRP-006:** lattice validation, residual bound, primitive-lattice reduction, and integer difference-coarray lag construction.
 
-The Golden Reference Problems shall be independently solvable using paper, pencil, and a basic calculator and shall later serve as software regression-test oracles.
+The accepted hand solutions and expected values are recorded in:
+
+```text
+docs/science/golden_reference/ADR-001_GOLDEN_REFERENCE_PROBLEMS.md
+```
+
+These problems are independently solvable using paper, pencil, and a basic calculator and shall later serve as software regression-test oracles.
 
 ## 17. Required Software Semantics Implied by This ADR
 
@@ -1106,6 +1129,7 @@ Later implementation governed by ADR-001 shall not:
 - infer physical units from numeric magnitude;
 - pass degree-valued raw numbers to radian-expecting scientific kernels;
 - silently replace physical coordinates with wavelength-normalized coordinates;
+- accept a nonfinite, negative, or `tau_lat >= 0.5` nearest-integer lattice tolerance;
 - silently snap tolerance-admitted coordinates to a reconstructed lattice;
 - reuse numerical lattice tolerance as physical position uncertainty;
 - infer an integer lattice inside a coarray consumer from arbitrary real coordinates;
@@ -1168,6 +1192,10 @@ Rejected because the literal vector representation changes by a common phasor wh
 
 Rejected because it creates mirrored or inconsistent results across simulator, manifold, estimator, plots, and hardware backends. External conventions are converted explicitly to one canonical core convention.
 
+### 18.14 Allow lattice tolerance to include the half-grid tie
+
+Rejected because a coordinate at a half-integer normalized grid location is equally close to two candidate integer indices. The accepted nearest-integer validation contract therefore requires `tau_lat < 0.5` and remains independent of language-specific tie-breaking rules.
+
 ## 19. Consequences
 
 ### 19.1 Positive consequences
@@ -1183,6 +1211,7 @@ Rejected because it creates mirrored or inconsistent results across simulator, m
 - semantic radian metadata is preserved for phase and angular/spatial angular frequency;
 - normalized and physical lattice residuals are explicitly distinguished;
 - lattice declaration and lattice validation evidence are different semantic objects;
+- nearest-integer lattice validation has a unique admissible tolerance domain;
 - tolerance-admitted lattice coordinates retain explicit residuals rather than false exact equalities;
 - coarray integer lags cannot be fabricated by downstream rounding;
 - declared and primitive lattice periodicities are mathematically distinguished;
@@ -1206,9 +1235,9 @@ These costs are intentional because GeoDOA prioritizes scientific traceability o
 
 ## 20. Deferred Implementation-Level Decisions
 
-The following do not block the scientific convention but are deferred to implementation design:
+The following do not block the accepted scientific convention but are deferred to implementation design:
 
-- exact numerical default value and scale policy for `tau_lat`;
+- exact numerical default value and scale policy for `tau_lat`, subject to the accepted scientific bound `0 <= tau_lat < 0.5`;
 - exact Python class names and module placement for direction, reference, lattice, mask, and grid value objects;
 - serialization schema for coordinate frames and phase references;
 - exact shape convention for canonical internal NumPy arrays used by low-level kernels;
@@ -1220,18 +1249,18 @@ These are implementation decisions, not permission to collapse distinct scientif
 
 ## 21. Acceptance-Gate Status
 
-ADR-001 remains **Proposed** until all Phase 0C acceptance gates pass.
+ADR-001 is **Accepted**. All six Phase 0C acceptance gates passed with explicit evidence.
 
 | Gate | Requirement | Current Status |
 |---|---|---|
-| A | Physical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| B | Mathematical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| C | Dimensional and unit consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| D | Software semantic consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| E | Hand-calculated reference evidence | Pending GRP-001 through GRP-006 |
-| F | Boundary and failure analysis | Pending formal audit |
+| A | Physical consistency | PASS — `ADR-001_ACCEPTANCE_AUDIT.md` |
+| B | Mathematical consistency | PASS — `ADR-001_ACCEPTANCE_AUDIT.md` |
+| C | Dimensional and unit consistency | PASS — `ADR-001_ACCEPTANCE_AUDIT.md` |
+| D | Software semantic consistency | PASS — `ADR-001_ACCEPTANCE_AUDIT.md` |
+| E | Hand-calculated reference evidence | PASS — `../science/golden_reference/ADR-001_GOLDEN_REFERENCE_PROBLEMS.md` |
+| F | Boundary and failure analysis | PASS — `ADR-001_BOUNDARY_FAILURE_ANALYSIS.md` and `ADR-001_ACCEPTANCE_AUDIT.md` |
 
-Approval requires explicit evidence for all six gates. Completion of this Markdown file alone is not approval.
+Acceptance means that ADR-001 is the authoritative GeoDOA scientific contract for its declared scope. It does **not** claim that Phase 1 software has already implemented or verified the contract; later implementation must reproduce the Golden Reference expectations and obey the boundary/failure behaviors.
 
 ## 22. Relationships to Later Scientific Contracts
 
@@ -1254,3 +1283,39 @@ Supporting scientific notes may derive individual results at greater pedagogical
 7. **Never call two manifolds distinguishable merely because they differ by a common phase-reference factor.**
 8. **Never use a dimensionless numerical representation to erase the semantic distinction between angle, phase, normalized position, and lattice index.**
 9. **Never let a derived software view silently become authoritative physical state.**
+10. **Never turn an ambiguity, incompatibility, or model-boundary condition into an apparently unique valid result by silence.**
+
+## 24. Accepted Boundary and Failure Contract
+
+The detailed Gate F analysis is recorded in:
+
+```text
+docs/adr/ADR-001_BOUNDARY_FAILURE_ANALYSIS.md
+```
+
+ADR-001 adopts the following response classes for later software/API design:
+
+- **REJECT** — the requested object or operation is scientifically undefined or violates an invariant of this ADR;
+- **INCOMPATIBLE / REQUIRE OTHER MODEL** — the scenario is meaningful but requires ADR-002, ADR-003, or another provider rather than the nominal geometry-only contract;
+- **DIAGNOSTIC / WARN** — the calculation may proceed, but ambiguity, conditioning, aliasing, or interpretation limits must remain explicit;
+- **VALID** — the condition lies within the declared scientific contract.
+
+Material accepted boundaries include:
+
+- finite nonempty declared geometry and stable unique channel identity;
+- explicit treatment of zero/insufficient directional aperture;
+- valid finite coordinate frame and unit look direction;
+- physical `u in [-1,1]` and canonical `theta in [-pi/2, pi/2]` unless an explicit external convention is converted at a boundary;
+- positive finite physical frequency and propagation speed for this manifold contract;
+- explicit incompatibility rather than silent use when near-field/wideband physics exceeds the selected model;
+- projection ambiguity, front/back ambiguity, spatial aliasing, and half-wavelength endpoint equivalence as first-class diagnostics;
+- angle-conditioning sensitivity near endfire;
+- finite positive lattice spacing and `0 <= tau_lat < 0.5` for nearest-integer validation;
+- failed lattice validation prohibiting integer-lag consumers while leaving real physical pair-difference analysis valid;
+- preservation of declared versus primitive lattice provenance;
+- active-channel masking as a view that cannot silently redefine geometry or the default phase reference;
+- traceable sorting/normalization/reflection operations;
+- exact-vector and common-phase-equivalent manifold comparisons as distinct metrics;
+- nonideal propagation/sensor effects requiring the appropriate later scientific contract or an explicit nominal-baseline label.
+
+These boundary rules are normative consequences of ADR-001 and must be reflected in later compatibility validators, domain constructors, diagnostics, and regression tests.
