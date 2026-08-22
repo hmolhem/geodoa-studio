@@ -162,7 +162,27 @@ The `+y` reference is therefore a project coordinate convention, not a direction
 
 The choice of a local array frame does not destroy or replace externally measured global or platform coordinates. Any global-to-local or platform-to-local transform must be explicit and provenance-preserving.
 
-### 6.2 Broadside in 3-D
+### 6.2 Intrinsic 1-D coordinate versus embedded 3-D position
+
+For the initial software domain, a linear geometry has one intrinsic physical coordinate per channel,
+
+```math
+x_n\in\mathbb R,
+```
+
+expressed in meters along the declared array axis. A `ReferenceFrame1D`-type domain concept supplies the spatial embedding needed by propagation/manifold code. In the canonical frame,
+
+```math
+\mathbf r_n
+=
+\mathbf r_{\mathrm{origin}}+x_n\hat{\mathbf x}.
+```
+
+Therefore `LinearArrayGeometry` does not need to duplicate a second authoritative 3-D coordinate table merely to support 3-D propagation mathematics. The intrinsic coordinates plus explicit frame/embedding are the source from which embedded positions are derived.
+
+If externally measured 3-D/global coordinates are available, their relation to the intrinsic 1-D model must be expressed through an explicit transform or import/projection record. They shall not silently replace the intrinsic geometry or be silently projected onto the array axis.
+
+### 6.3 Broadside in 3-D
 
 For a linear array on the `x` axis, broadside is not one unique 3-D direction. The broadside direction set is
 
@@ -172,7 +192,7 @@ u_x=0,
 
 that is, the set of unit look directions lying in the `yz` plane.
 
-### 6.3 Canonical 2-D slice
+### 6.4 Canonical 2-D slice
 
 For initial 1-D DOA visualization and one-parameter angle estimation, GeoDOA defines a canonical `xy` slice with
 
@@ -446,7 +466,7 @@ If the physical geometry is fixed and the phase reference changes from `r_ref` t
 
 Thus changing only the spatial phase reference multiplies the steering vector by a common unit-magnitude phasor and does not change relative inter-channel phase.
 
-## 10. Physical Coordinates, Channel Identity, and Derived Views
+## 10. Physical Coordinates, Channel Identity, Active Views, and Derived Views
 
 ### 10.1 Physical coordinates are authoritative
 
@@ -456,19 +476,27 @@ Input physical coordinates shall be preserved in canonical SI units. GeoDOA shal
 
 Each physical channel has a stable identity independent of its position in a sorted geometry view. This is required so that later calibration, gain/phase mismatch, channel dropout, measured manifolds, and hardware channel mappings remain attached to the correct physical channel.
 
+Authoritative channel order and `sensor_id`/channel identity are not interchangeable concepts. A stable identity must remain available even when an algorithm consumes a permutation or subset of channels.
+
 ### 10.3 Sorting is a derived view
 
-Geometry algorithms may request sorted positions, but sorting must preserve the permutation between authoritative channel order and sorted geometric order.
+Geometry algorithms may request sorted positions, but sorting must return or preserve the permutation between authoritative channel order and sorted geometric order. A sorting operation shall not mutate the stored channel order of an immutable geometry entity.
 
-### 10.4 Translation-normalized geometry is derived
+### 10.4 Active-channel selection is a derived view/configuration
 
-A translation-normalized representation may be used for geometry comparison, hashing, caching, or catalog search. Such a representation shall not overwrite the physical coordinates.
+An active-channel mask selects a processing view of the declared geometry. It does not delete channels, renumber channel identities, recompute the default geometry-level phase reference, or mutate the authoritative geometry.
 
-### 10.5 Reflection is not default canonicalization
+If a new physical array definition is intended after hardware modification, that change creates a new geometry/configuration identity rather than being represented as an undocumented mask mutation.
 
-A reflected geometry can share some geometry/coarray metrics with the original while reversing orientation relative to the declared `+x` axis. Reflection equivalence is therefore an optional analysis, not a default canonicalization rule.
+### 10.5 Translation-normalized geometry is derived
 
-### 10.6 Colocated channels
+A translation-normalized representation may be used for geometry comparison, hashing, caching, or catalog search. Such a representation shall not overwrite the physical coordinates. The normalization rule and resulting permutation/reference, if any, must be explicit enough to reconstruct how the derived representation was obtained.
+
+### 10.6 Reflection is not default canonicalization
+
+A reflected geometry can share some geometry/coarray metrics with the original while reversing orientation relative to the declared `+x` axis. Reflection equivalence is therefore an optional analysis, not a default canonicalization rule. A reflected comparison/signature shall identify that reflection equivalence was requested rather than silently replacing the geometry identity.
+
+### 10.7 Colocated channels
 
 GeoDOA shall never silently collapse duplicate positions. Accidental duplicate scalar channels are a validation error by default. Explicitly modeled colocated channels may be supported when their distinct physical identity or sensor response is declared. The detailed sensor-response semantics belong to ADR-003.
 
@@ -495,7 +523,15 @@ In SI, plane angle and phase are dimensionless derived quantities. GeoDOA nevert
 
 All arguments passed to `exp`, `sin`, `cos`, and other transcendental functions must be dimensionless; phase arguments are interpreted semantically in radians.
 
-### 11.2 Wavelength is derived
+### 11.2 Unit conversion belongs at boundaries
+
+Validated GUI, CLI, API, and file-schema boundaries may accept supported display/input units when the unit is explicitly labeled. They convert those values to canonical domain units before constructing authoritative domain objects.
+
+The scientific core shall not infer units from magnitude or naming conventions such as `0.5`, `30`, or `half_lambda`. A bare numerical array entering a low-level numerical kernel is interpreted only according to that kernel's typed/scoped contract, never by heuristic unit detection.
+
+Changing display units must not change the physical domain state or its scientific identity.
+
+### 11.3 Wavelength is derived
 
 ```math
 \lambda(f)=\frac{v_p}{f}.
@@ -509,7 +545,7 @@ Dimensionally,
 
 The propagation speed is explicit; it is not assumed to be the speed of light by every domain object.
 
-### 11.3 Wavenumber and receive-phase dimensions
+### 11.4 Wavenumber and receive-phase dimensions
 
 With
 
@@ -535,7 +571,7 @@ Likewise,
 
 has units of radians and is a valid exponential phase argument.
 
-### 11.4 Wavelength-normalized position
+### 11.5 Wavelength-normalized position
 
 Relative wavelength-normalized position is
 
@@ -569,6 +605,8 @@ m_n\in\mathbb Z,
 ```
 
 where `tilde x_n` denotes the grid-reconstructed/design position associated with integer index `m_n`.
+
+A lattice declaration is provenance/configuration: it records the intended grid basis and integer indices when those are known by construction. A lattice-validation result is evidence: it records whether authoritative coordinates are consistent with a candidate/declared lattice under a stated tolerance, together with residuals and diagnostics. These are not the same domain object or semantic state.
 
 If authoritative physical coordinates are numerically represented values of that declared grid, they remain stored as `x_n`; GeoDOA does not silently overwrite them with `tilde x_n`.
 
@@ -631,6 +669,8 @@ with units of meters and bound
 ```
 
 Thus `epsilon_n`, `rho_n`, and `tau_lat` are dimensionless normalized-grid quantities, whereas `eta_n` is a physical-distance residual. Numerical grid-alignment residual is not physical manufacturing or survey uncertainty; physical position uncertainty is a separate sensor-model quantity governed by ADR-003.
+
+A successful validation may produce a typed/structured `ValidatedLattice`-style derived result containing the declaration/candidate, integer indices, reconstructed positions, normalized and physical residuals, primitive reduction, and validation status. Downstream coarray integer indexing shall consume this validated result or an exact-by-construction lattice declaration whose validity is part of generator provenance; it shall not reconstruct integer semantics independently from raw coordinates.
 
 ### 12.3 No blind integerization
 
@@ -763,7 +803,25 @@ with the declared principal domain
 
 On this interval, `sin(theta)` is one-to-one, so the angle and direction-cosine parameterizations are mutually invertible. `theta` is represented semantically in radians.
 
-### 13.2 Projected angular spatial frequency
+### 13.2 Direction representations are distinct value semantics
+
+A 3-D unit look direction, canonical-slice angle, direction cosine, projected spatial angular frequency, and normalized lattice spatial frequency are related but not interchangeable representations.
+
+Software may provide explicit constructors/converters such as conceptually
+
+```text
+LookDirection3D
+CanonicalSliceAngle
+DirectionCosine
+ProjectedSpatialAngularFrequency
+DeclaredGridSpatialPhaseIncrement
+```
+
+but the exact class names are deferred. Conversion functions must validate the required domain and context. A low-level manifold kernel may consume a validated unit look vector directly; convenience interfaces may accept angle or direction-cosine value objects and convert explicitly.
+
+An `AngleConvention`-type boundary/configuration object describes how external/user angle values are interpreted and converted to the canonical internal convention. It does not authorize scientific kernels to switch sign/reference conventions implicitly at runtime.
+
+### 13.3 Projected angular spatial frequency
 
 Define
 
@@ -783,7 +841,7 @@ a_n
 
 The product `kappa_x (x_n-x_ref)` is a phase in radians and is dimensionless in the SI dimensional sense.
 
-### 13.3 Normalized lattice spatial frequency
+### 13.4 Normalized lattice spatial frequency
 
 For declared lattice spacing `Delta`, define
 
@@ -928,6 +986,10 @@ Projection ambiguity occurs when physically distinct 3-D directions have the sam
 
 A geometry may be perfectly lattice-valid and still spatially aliased. Lattice validation is a geometric/numerical statement; spatial unambiguity is an observability statement.
 
+### 14.6 Ambiguity diagnostics are results, not silent canonicalization
+
+Software may return ambiguity/equivalence diagnostics, equivalence classes, or warnings. It shall not silently collapse two distinct requested directions into one canonical value, nor silently alter a scan grid to remove an ambiguity. Any reduction to a representative value is a separate explicit analysis operation and must preserve the original requested values and diagnostic reason.
+
 ## 15. Scan-Grid Semantics
 
 A uniform angle grid is not a uniform direction-cosine grid because
@@ -950,7 +1012,9 @@ GeoDOA shall therefore distinguish conceptual scan domains such as:
 - declared-grid normalized-spatial-frequency grid;
 - primitive-grid normalized-spatial-frequency grid.
 
-Conversions must be explicit and carry the frequency, medium, and lattice context required to make them meaningful.
+A scan grid is a typed domain/view object with an explicit coordinate domain and context. It is not merely an unlabeled NumPy vector. Conversion between scan domains creates a new derived grid or view; it does not mutate the source grid or discard the mapping/provenance needed to interpret results.
+
+Conversions must be explicit and carry the frequency, medium, lattice, and convention context required to make them meaningful.
 
 ## 16. Deterministic Reference Expectations
 
@@ -967,26 +1031,88 @@ The Golden Reference Problems shall be independently solvable using paper, penci
 
 ## 17. Required Software Semantics Implied by This ADR
 
-Later implementation governed by this ADR must satisfy the following constraints:
+ADR-001 constrains software meaning without fixing final class names or implementation details.
 
-- scientific kernels shall not hard-code a 2-D `sin(theta)` representation when the general direction-vector inner product is appropriate;
-- physical channel identity shall survive sorting and derived views;
-- no core algorithm shall silently shift the coordinate origin;
-- far-field expansion/localization origin and spatial phase reference shall remain distinct concepts;
-- the default geometry-level phase reference shall remain stable under active-channel masking;
-- explicit phase-reference overrides shall be reproducible and provenance-preserving;
-- unit conversion shall occur at defined boundaries rather than being inferred from numerical magnitude;
-- angle inputs to scientific kernels shall use radians internally; degree-valued UI or file inputs require explicit boundary conversion;
-- angular and spatial angular frequencies shall retain semantic `rad` metadata even though radians are SI-dimensionless;
-- lattice integerization shall require explicit lattice context and validation;
-- normalized lattice residuals and physical lattice residuals shall remain distinct quantities;
-- tolerance-admitted physical coordinates shall not be silently snapped to reconstructed grid positions;
-- numerical lattice tolerance shall not be reused as physical position uncertainty;
-- angle, direction cosine, `kappa_x`, declared-grid `psi`, and primitive-grid spatial frequency shall remain semantically distinguishable;
-- ambiguity diagnostics shall use relative-manifold/pair-difference equivalence and distinguish projection ambiguity from spatial aliasing;
-- periodicity diagnostics shall account for gcd reduction rather than assuming that `2 pi` is always the fundamental declared-grid period;
-- `d = lambda/2` shall not be reported as strictly injective over both closed-interval endfire endpoints;
-- common phase changes caused only by reference choice shall not be misclassified as physical manifold distortion.
+### 17.1 Concept-to-domain mapping
+
+The implementation must provide unambiguous domain representations for at least the following roles:
+
+| Scientific concept | Required software semantic role |
+|---|---|
+| Intrinsic 1-D physical coordinates and stable channel identity | Immutable `LinearArrayGeometry`-style entity |
+| Local array axis/origin/broadside orientation and embedding into 3-D | `ReferenceFrame1D`-style value object |
+| External angle interpretation/sign/reference | `AngleConvention`-style boundary/configuration value |
+| Canonical 3-D look direction | Validated unit-direction value |
+| Spatial phase reference | Explicit reference-point/reference-policy value, distinct from coordinate origin |
+| Frequency and propagation speed context | Typed `WaveParameters`-style value object; detailed medium semantics deferred to ADR-002 |
+| Declared design lattice | Immutable lattice-declaration value with origin, spacing, and integer indices |
+| Lattice validation evidence | Typed validation result with residuals/status; not the same object as the declaration |
+| Active-channel selection | Immutable mask/subset view or configuration referencing stable channel identities |
+| Sorted/normalized/reflected representations | Derived views/results preserving source identity and transformation metadata |
+| Angle/u/kappa/psi scan domains | Distinct typed grid/value semantics with explicit conversions |
+| Manifold output | Typed result that records reference/convention/context rather than a context-free complex vector |
+| Ambiguity/equivalence analysis | Diagnostic result; never silent canonicalization |
+
+Exact Python names are deferred, but collapsing semantically distinct rows of this table into one ambiguous scalar/array field is not permitted.
+
+### 17.2 Geometry and frame responsibilities
+
+`LinearArrayGeometry` owns intrinsic 1-D coordinates, stable channel identities, and immutable geometry provenance. It does not own propagation-wave assumptions and does not need to store a redundant authoritative 3-D position table for the initial 1-D scope.
+
+`ReferenceFrame1D`-style semantics own the local embedding/orientation needed to derive 3-D positions and transform to/from platform/global frames. Geometry-family generators produce the same geometry contract and shall not invent family-specific angle or phase conventions.
+
+### 17.3 Boundary conventions versus canonical core convention
+
+External schemas may support named angle conventions or degree-valued input, but conversion to the canonical internal convention occurs before scientific kernels are called. A manifold kernel shall not branch on UI-specific labels such as `degrees`, `broadside_sine`, or `endfire_cosine` and silently reinterpret raw numeric arrays.
+
+Likewise, normalized-position input may be accepted only at a validated boundary with explicit wavelength/frequency/medium context and shall be converted to canonical physical coordinates before construction of the authoritative geometry.
+
+### 17.4 Derived views shall not become hidden state
+
+Sorting, active masking, translation normalization, reflection comparison, primitive-lattice reduction, wavelength normalization, and scan-domain conversion are explicit derived operations. They shall either return typed derived values/results or produce a new immutable configuration/entity when the operation represents a genuinely new physical definition.
+
+They shall not mutate an existing authoritative geometry/configuration in place.
+
+### 17.5 Lattice consumer rule
+
+Coarray and other integer-lag consumers shall require validated integer-lattice semantics. They must consume either:
+
+- an exact-by-construction lattice declaration whose generator provenance establishes exactness; or
+- a successful lattice-validation result containing the accepted indices, residuals, tolerance, and source geometry identity.
+
+A downstream component shall not independently call `round((x_i-x_j)/Delta)` on raw coordinates to manufacture integer lags.
+
+### 17.6 Reference and identity propagation
+
+A manifold/result produced under a spatial phase reference, coordinate frame, active-channel view, or scan-domain mapping must retain enough metadata to interpret that output and compare it correctly with another output.
+
+Common-phase-equivalent manifolds may be compared with a reference-invariant metric when appropriate, but software shall not erase the original reference convention before provenance is recorded.
+
+### 17.7 Scientific kernels versus adapters
+
+Pure numerical kernels may operate on canonical NumPy arrays and scalars after domain validation/conversion. They do not need to carry GUI/schema objects internally. The application/domain layer is responsible for providing canonical arrays plus the metadata/result contract needed to reconstruct scientific meaning.
+
+This preserves both efficient numerical code and semantic correctness.
+
+### 17.8 Forbidden implicit behavior
+
+Later implementation governed by ADR-001 shall not:
+
+- hard-code a 2-D `sin(theta)` representation where the general direction-vector inner product is appropriate;
+- silently shift the coordinate origin;
+- silently select the first sorted channel as phase reference;
+- recompute the default phase reference from an active subset;
+- mutate sensor/channel identity during sorting or masking;
+- infer physical units from numeric magnitude;
+- pass degree-valued raw numbers to radian-expecting scientific kernels;
+- silently replace physical coordinates with wavelength-normalized coordinates;
+- silently snap tolerance-admitted coordinates to a reconstructed lattice;
+- reuse numerical lattice tolerance as physical position uncertainty;
+- infer an integer lattice inside a coarray consumer from arbitrary real coordinates;
+- use one unlabeled scalar/vector type for angle, direction cosine, `kappa_x`, and `psi` without explicit semantic context;
+- silently choose declared versus primitive lattice spatial frequency;
+- silently canonicalize reflected geometries or aliased directions;
+- classify a common phase-reference factor as physical manifold distortion.
 
 ## 18. Alternatives Considered and Rejected
 
@@ -1018,21 +1144,29 @@ Rejected as the default policy because channel masking would silently rephase th
 
 Rejected because physical sensors do not move when operating frequency changes. Wavelength normalization is a frequency-referenced derived view.
 
-### 18.8 Silently snap tolerance-admitted positions to a lattice
+### 18.8 Store independent authoritative 1-D and 3-D coordinate tables for the same initial linear geometry
+
+Rejected because duplicated authoritative state can diverge. The 1-D intrinsic coordinates plus explicit frame/embedding derive the 3-D positions required by propagation calculations.
+
+### 18.9 Silently snap tolerance-admitted positions to a lattice
 
 Rejected because numerical validation of intended grid membership does not authorize destruction of the authoritative physical coordinates or concealment of residuals.
 
-### 18.9 Round arbitrary pair differences into integer lags
+### 18.10 Round arbitrary pair differences into integer lags
 
 Rejected because it manufactures lattice structure that may not physically or mathematically exist.
 
-### 18.10 Reflection-normalize every geometry
+### 18.11 Reflection-normalize every geometry
 
 Rejected because reflection changes orientation relative to the declared array axis even when some geometry metrics are equivalent.
 
-### 18.11 Define spatial aliasing by exact steering-vector equality only
+### 18.12 Define spatial aliasing by exact steering-vector equality only
 
 Rejected because the literal vector representation changes by a common phasor when the spatial phase reference changes. Relative inter-channel phase equivalence is the reference-invariant mathematical criterion relevant to geometry-only DOA observability.
+
+### 18.13 Let each estimator or GUI interpret angle conventions independently
+
+Rejected because it creates mirrored or inconsistent results across simulator, manifold, estimator, plots, and hardware backends. External conventions are converted explicitly to one canonical core convention.
 
 ## 19. Consequences
 
@@ -1040,17 +1174,20 @@ Rejected because the literal vector representation changes by a common phasor wh
 
 - steering-vector sign is traceable to physical delay and temporal convention;
 - the far-field derivation no longer conflates expansion origin with spatial phase reference;
+- intrinsic 1-D geometry and 3-D propagation embedding have non-overlapping software responsibilities;
 - the initial 1-D implementation remains compatible with later 2-D/3-D spatial extensions;
 - calibration and hardware channel identity are protected from geometry sorting;
-- active-channel masking does not silently redefine the default phase reference;
+- active-channel masking does not silently redefine geometry or the default phase reference;
 - phase-reference changes have an explicit common-phasor transformation law;
 - canonical units and dimensionless normalized quantities are explicitly separated;
 - semantic radian metadata is preserved for phase and angular/spatial angular frequency;
 - normalized and physical lattice residuals are explicitly distinguished;
+- lattice declaration and lattice validation evidence are different semantic objects;
 - tolerance-admitted lattice coordinates retain explicit residuals rather than false exact equalities;
-- coarray integer lags cannot be fabricated by numerical rounding;
+- coarray integer lags cannot be fabricated by downstream rounding;
 - declared and primitive lattice periodicities are mathematically distinguished;
 - spatial aliasing is defined in a phase-reference-invariant manner;
+- scan domains cannot silently change meaning through an unlabeled array;
 - physical and wavelength-normalized geometry remain unambiguous;
 - projection ambiguity and spatial aliasing can be diagnosed separately;
 - the half-wavelength endfire endpoint condition is represented explicitly;
@@ -1059,10 +1196,11 @@ Rejected because the literal vector representation changes by a common phasor wh
 ### 19.2 Costs and constraints
 
 - APIs must carry more explicit context than a minimal `steering_vector(theta)` function;
-- unit, reference, lattice, and residual metadata must be preserved;
-- boundary layers must perform explicit unit conversion, especially degrees to radians;
-- some convenient automatic normalization operations become explicit derived transformations;
-- later validation must test invariance, projective manifold equivalence, dimensional consistency, and ambiguity behavior, not only nominal numerical outputs.
+- unit, reference, lattice, residual, frame, and channel-identity metadata must be preserved;
+- boundary layers must perform explicit unit and convention conversion;
+- derived views need explicit result/metadata contracts;
+- some convenient automatic normalization operations become explicit transformations;
+- later validation must test invariance, identity preservation, round-trip conversions, projective manifold equivalence, dimensional consistency, and ambiguity behavior, not only nominal numerical outputs.
 
 These costs are intentional because GeoDOA prioritizes scientific traceability over convenience shortcuts.
 
@@ -1071,13 +1209,14 @@ These costs are intentional because GeoDOA prioritizes scientific traceability o
 The following do not block the scientific convention but are deferred to implementation design:
 
 - exact numerical default value and scale policy for `tau_lat`;
+- exact Python class names and module placement for direction, reference, lattice, mask, and grid value objects;
 - serialization schema for coordinate frames and phase references;
-- exact API name for direction objects and grid objects;
+- exact shape convention for canonical internal NumPy arrays used by low-level kernels;
 - geometry-hash encoding and numerical quantization policy;
 - user-interface defaults for degree/radian display;
 - detailed explicit-colocation configuration for non-scalar sensors.
 
-Any implementation-level choice must remain consistent with the scientific decisions above.
+These are implementation decisions, not permission to collapse distinct scientific semantics. Any implementation-level choice must remain consistent with the roles and forbidden behaviors defined above.
 
 ## 21. Acceptance-Gate Status
 
@@ -1088,7 +1227,7 @@ ADR-001 remains **Proposed** until all Phase 0C acceptance gates pass.
 | A | Physical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | B | Mathematical consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | C | Dimensional and unit consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
-| D | Software semantic consistency | Pending formal audit |
+| D | Software semantic consistency | PASS — see `ADR-001_ACCEPTANCE_AUDIT.md` |
 | E | Hand-calculated reference evidence | Pending GRP-001 through GRP-006 |
 | F | Boundary and failure analysis | Pending formal audit |
 
@@ -1114,3 +1253,4 @@ Supporting scientific notes may derive individual results at greater pedagogical
 6. **Never choose a steering-vector sign without declaring the direction and temporal-phasor conventions that produce it.**
 7. **Never call two manifolds distinguishable merely because they differ by a common phase-reference factor.**
 8. **Never use a dimensionless numerical representation to erase the semantic distinction between angle, phase, normalized position, and lattice index.**
+9. **Never let a derived software view silently become authoritative physical state.**
