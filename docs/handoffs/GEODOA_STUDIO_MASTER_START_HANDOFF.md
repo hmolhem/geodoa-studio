@@ -1775,18 +1775,32 @@ Detailed implementation history belongs in milestone-specific handoffs and `HAND
 
 ### 22.6 Work-Package Closure
 
+A bounded engineering work package progresses through two closure states:
+
+- **Ready for Merge**: implementation, verification, handoff, and pull-request
+  preparation are complete, but the material pull request has not yet been
+  merged.
+- **Closed**: the material pull request has been merged and the required
+  post-merge closure reconciliation has been completed.
+
 A bounded engineering work package is considered closed only when:
 
 1. its defined scope is complete;
 2. its acceptance criteria have been verified;
-3. its milestone handoff reflects the final state;
-4. its pull-request number has been recorded;
-5. the pull request has been reviewed and merged;
-6. obsolete local and remote feature branches have been removed as appropriate;
-7. local `main` has been synchronized with `origin/main`;
-8. the working tree is clean.
+3. its milestone handoff records the verified pre-merge state and pull-request
+   number;
+4. `HANDOFF_INDEX.md` records the work package and its pre-merge state;
+5. the material pull request has been reviewed, required CI has passed, and the
+   pull request has been merged;
+6. the authoritative final merge commit is known from Git/GitHub history;
+7. obsolete local and remote feature branches have been removed as appropriate;
+8. post-merge closure reconciliation records the final merge identity and
+   changes the milestone handoff and index status to `Closed`;
+9. local `main` has been synchronized with `origin/main`; and
+10. the working tree is clean.
 
-Only after these conditions are satisfied should the next bounded engineering work package begin.
+Only after these conditions are satisfied should the next bounded engineering
+work package begin.
 
 ### 22.7 Historical Traceability
 
@@ -1819,3 +1833,44 @@ Clean Main Baseline
 ```
 
 This governance policy applies throughout the project, including geometry modeling, sensor modeling, coarray processing, DOA estimation, Monte Carlo benchmarking, calibrated manifolds, fixed-point development, and FPGA/SoC integration.
+
+### 22.8 Post-Merge Closure Reconciliation
+
+The authoritative final merge commit of a material pull request cannot be known
+until that pull request has actually been merged.
+
+GeoDOA Studio shall therefore never invent, predict, or pre-record a final merge
+SHA in a pre-merge handoff.
+
+Before merge, the milestone handoff and `HANDOFF_INDEX.md` may use a state such
+as `Ready for Merge` or `Verification PASS — merge pending`.
+
+After the material pull request is merged, final closure metadata shall be
+reconciled from the merged and synchronized `main` branch.
+
+When direct edits to `main` are not explicitly authorized, this reconciliation
+shall use a small documentation-only branch and pull request.
+
+A post-merge closure reconciliation:
+
+- is an administrative continuation of the preceding bounded engineering work
+  package;
+- is not a new engineering milestone;
+- does not receive a new sequential `HANDOFF_INDEX.md` entry;
+- does not require a separate milestone handoff unless independent engineering
+  scope or decisions are introduced;
+- may update the preceding milestone's final status, material merge commit,
+  closure evidence, and directly related governance documentation;
+- shall not introduce unrelated scientific, product, algorithmic, or software
+  implementation changes.
+
+The reconciliation pull request remains preserved normally in Git history, but
+its merge commit is not the material merge identity of the engineering
+milestone.
+
+The reconciliation pull request does not trigger another closure-reconciliation
+cycle.
+
+This rule prevents recursive chains of documentation-only closure pull requests
+while preserving authoritative milestone history.
+

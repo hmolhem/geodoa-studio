@@ -6,7 +6,8 @@
 - Milestone: Phase 0B — Python Engineering Toolchain
 - Branch: `chore/phase0-python-toolchain`
 - Pull Request: #2
-- Status: Implementation and verification complete; final merge pending
+- Merge Commit: `fac6b1d4208a1d529943b3e5dfb10260b15e7540`
+- Status: Closed ? merged via PR #2
 - Scientific implementation: None
 
 ## Objective
@@ -322,5 +323,13 @@ Phase 0B becomes fully closed when:
 9. local `main` is synchronized with `origin/main`;
 10. the repository working tree is clean.
 
-Until those repository lifecycle operations are complete, Phase 0B is
-implementation-complete but not repository-closed.
+All repository lifecycle conditions for the material Phase 0B work package
+were satisfied. Pull Request #2 was merged into `main` at merge commit
+`fac6b1d4208a1d529943b3e5dfb10260b15e7540`. The local and remote feature branches were removed, local
+`main` was synchronized with `origin/main`, and a clean working tree was
+verified.
+
+The final merge metadata is recorded through the project's post-merge closure
+reconciliation procedure.
+
+**Final Status: Closed.**
