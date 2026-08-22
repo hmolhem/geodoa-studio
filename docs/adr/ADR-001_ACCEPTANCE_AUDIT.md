@@ -13,7 +13,7 @@
 | B | Mathematical consistency | PASS |
 | C | Dimensional and unit consistency | PASS |
 | D | Software semantic consistency | PASS |
-| E | Hand-calculated reference evidence | Pending |
+| E | Hand-calculated reference evidence | PASS |
 | F | Boundary and failure analysis | Pending |
 
 ## Gate A — Physical Consistency
@@ -347,3 +347,171 @@ ADR-001 now explicitly prohibits silent:
 After cross-document reconciliation, ADR-001 maps cleanly to the GeoDOA layered/domain architecture without requiring duplicated authoritative geometry state, hidden convention switches, destructive derived views, unlabeled scientific arrays at public boundaries, or downstream reconstruction of scientific semantics.
 
 Gate D does not imply Golden Reference or boundary/failure acceptance. Gates E and F remain independent and pending.
+
+---
+
+## Gate E — Hand-Calculated Reference Evidence
+
+### E.1 Audit question
+
+Do deterministic, manually inspectable reference problems exercise every material ADR-001 contract strongly enough to serve as analytical evidence now and software regression-test oracles later?
+
+### E.2 Reference artifact — PASS
+
+The reference set is recorded in:
+
+```text
+docs/science/golden_reference/ADR-001_GOLDEN_REFERENCE_PROBLEMS.md
+```
+
+It contains complete hand solutions, explicit numerical assumptions, expected results, and future test-oracle statements for GRP-001 through GRP-006.
+
+The examples deliberately use `v_p = 3.0e8 m/s` and `f = 1.0e9 Hz` where convenient so `lambda = 0.3 m` and the arithmetic remains independently checkable. This is an explicit reference-problem model choice, not a hidden substitution for every propagation medium.
+
+### E.3 GRP-001 — Two-sensor propagation distance and relative delay — PASS
+
+For `d = lambda/2`, `theta = 30 deg`, `u = 1/2`, and sensor-0 reference, the hand solution gives:
+
+```text
+relative path difference = -0.075 m
+relative delay = -2.5e-10 s = -0.25 ns = -T/4
+```
+
+This directly exercises the look-direction projection and delay sign. The sign is part of the oracle, not merely the magnitude.
+
+### E.4 GRP-002 — Steering phase and phase-reference semantics — PASS
+
+For the same geometry and direction, the ADR-001 default centroid reference gives
+
+```math
+\mathbf a_c
+=
+\begin{bmatrix}
+e^{+j\pi/4}\\e^{-j\pi/4}
+\end{bmatrix},
+```
+
+while an explicit sensor-0 reference gives
+
+```math
+\mathbf a_0
+=
+\begin{bmatrix}1\\-j\end{bmatrix}.
+```
+
+The two are related by the common factor `exp(-j pi/4)`.
+
+This reference is especially important because it prevents a future test suite from incorrectly hard-coding `[1,-j]^T` as the only valid vector without also fixing the phase-reference policy.
+
+### E.5 GRP-003 — Translation invariance and reference change — PASS
+
+Translating geometry and phase reference together by `t = lambda/10` leaves the manifold unchanged. Translating only the sensors with the old reference fixed gives the common factor
+
+```math
+e^{-j\pi/10}.
+```
+
+This exercises exact invariance versus reference-dependent common phase without conflating the two.
+
+### E.6 GRP-004 — 3-D projection ambiguity — PASS
+
+The two unit directions
+
+```math
+[1/2, sqrt(3)/2, 0]^T
+```
+
+and
+
+```math
+[1/2, 0, sqrt(3)/2]^T
+```
+
+are physically different but have the same `u_x = 1/2`. The hand solution therefore produces the same ideal 1-D geometry-only manifold for both.
+
+This directly verifies the ADR statement that 3-D propagation-space representation does not imply unique 3-D DOA identifiability for a scalar 1-D phase-only geometry.
+
+### E.7 GRP-005A — `d = lambda` spatial aliasing — PASS
+
+For `u_1 = 0.25` and `u_2 = -0.75`, the declared-grid spatial phases differ by `-2 pi`. Under centroid reference, the steering vectors differ by common factor `-1`, proving projective/common-phase equivalence rather than requiring literal coordinate equality.
+
+### E.8 GRP-005B — half-wavelength endpoint boundary — PASS
+
+At `d = lambda/2`, the closed-interval endpoints `u = +1` and `u = -1` produce spatially equivalent relative manifolds. Under centroid reference they differ by common factor `-1`.
+
+This protects the precise distinction between the usual open-interval no-grating-lobe statement and strict injectivity over the closed visible interval.
+
+### E.9 GRP-005C — declared versus primitive spatial periodicity — PASS
+
+For declared indices `[0,2,4]`, the relative-index gcd is `g = 2`, so the declared-grid fundamental period is
+
+```math
+2\pi/g=\pi,
+```
+
+while the primitive-grid normalized spatial frequency has the familiar `2 pi` period.
+
+This exercises the gcd-based primitive-lattice semantics introduced during Gate B.
+
+### E.10 GRP-006 — lattice validation, residuals, primitive reduction, and coarray lags — PASS
+
+The hand reference uses:
+
+```text
+x_L = 0.01 m
+Delta = 0.025 m
+m = [0,2,8,12]
+tau_lat = 1e-5
+```
+
+with slightly perturbed authoritative coordinates. It yields:
+
+```text
+max normalized residual = 8e-6 < 1e-5
+lattice validation = PASS
+physical residuals = [0, +0.2, -0.2, +0.1] micrometers
+pair-difference residual bound = 0.5 micrometers
+g = 2
+Delta_prim = 0.05 m
+primitive indices = [0,1,4,6]
+```
+
+The declared-grid and primitive-grid ordered lag matrices and unique lag sets are solved explicitly. This reference verifies that successful lattice validation does not authorize snapping physical coordinates, hiding residuals, or discarding declared-lattice provenance.
+
+### E.11 Coverage audit — PASS
+
+The Golden Reference artifact provides explicit evidence for:
+
+- relative path/delay sign;
+- temporal-to-spatial phase sign;
+- centroid default reference;
+- explicit phase-reference override;
+- common-phase reference equivalence;
+- translation invariance;
+- 1-D geometry in 3-D propagation space;
+- projection ambiguity;
+- direction-cosine semantics;
+- spatial aliasing;
+- the `d = lambda/2` closed-endpoint boundary;
+- declared versus primitive spatial periodicity;
+- lattice tolerance and residual semantics;
+- normalized versus physical residuals;
+- primitive-lattice reduction;
+- integer coarray-lag construction;
+- preservation of declared-lattice provenance.
+
+No material ADR-001 contract assigned to Gate E is left without a deterministic hand-computable example.
+
+### E.12 Analytical evidence versus implementation evidence — PASS with explicit boundary
+
+Gate E establishes **analytical reference evidence**, not software conformance. The expected values are now authoritative candidate test oracles. During Phase 1, implementation tests must reproduce these results under the same declared conventions before the corresponding scientific implementation is considered verified.
+
+Therefore Gate E does not claim that code already passes the GRPs; no ADR-001 scientific implementation exists yet to make such a claim.
+
+### E.13 Gate E decision
+
+**Gate E status: PASS.**
+
+GRP-001 through GRP-006 are sufficiently complete, deterministic, hand-computable, and contract-covering to satisfy ADR-001's Hand-Calculated Reference Evidence requirement.
+
+Gate E does not imply boundary/failure acceptance. Gate F remains independent and pending.
