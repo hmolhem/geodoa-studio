@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW NEXT — NOT ACCEPTED
+- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATE A NEXT — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -41,7 +41,7 @@ The working exploration sequence is:
 4.20  Cross-Section Reconciliation
 ```
 
-The exploration organization is complete. The governing ADR-004 draft now consolidates these candidate decisions into the reconciled `F1–F14` decision families.
+The exploration organization is complete. The governing ADR-004 draft consolidates these candidate decisions into the reconciled `F1–F14` decision families.
 
 ## 3. Roadmap Coverage Requirements
 
@@ -75,7 +75,7 @@ ADR-004 must cover at least:
 - scientific metrics versus computational/hardware metrics;
 - floating-point, fixed-point, and FPGA cross-validation.
 
-Explorations 4.1–4.20 collectively cover these roadmap requirements at candidate-contract level, and the governing draft has now been written from the reconciled decision families.
+Explorations 4.1–4.20 collectively cover these roadmap requirements at candidate-contract level, and the governing draft has now been written and passed the dedicated pre-Gate consistency review.
 
 ## 4. Initial Golden Reference Reservation
 
@@ -91,22 +91,26 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 
 ## 5. Working Rules
 
-1. Exploration is complete and the governing ADR-004 draft now exists.
-2. No acceptance Gate A before the dedicated pre-Gate consistency review passes.
-3. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
-4. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
-5. Metric computation and acceptance policy shall remain distinct.
-6. Failed/missed/unresolved trials shall not be silently deleted from benchmark evidence.
-7. Randomness and seed provenance shall be explicit enough to reconstruct a trial.
-8. Comparative claims shall preserve fairness/provenance rather than rely on uncontrolled independent realizations.
-9. A numerical match to a software baseline does not by itself establish physical validation.
-10. Hardware acceleration shall be assessed against an accepted scientific reference, not only against another hardware implementation.
-11. ADR-004 shall remain downstream of ADR-001/002/003 authority for geometry/phase, signal/covariance, and sensor/calibration semantics.
-12. Compatibility status, execution/failure status, and metric eligibility shall remain distinct.
-13. `XX^H/L` in the VP-001 baseline shall be called the uncentered sample second moment, not centered sample covariance.
-14. Divisor-`N` empirical variance used in exact finite-sample MSE decomposition shall remain distinct from divisor-`N-1` sample variance used for statistical variance estimation.
-15. VP-001 confirmatory Monte Carlo studies should prefer predeclared fixed-`N` execution with achieved uncertainty/adequacy reporting; no universal numeric `N` is accepted.
-16. Wilson score interval is the candidate VP-001 default for ordinary IID fixed-`N` Bernoulli probability reporting, not a universal ADR-004 interval method.
+1. Exploration is complete and the governing ADR-004 draft exists.
+2. The dedicated pre-Gate consistency review passed.
+3. Gate A is now authorized as the next acceptance step; Gates B–F remain not started.
+4. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
+5. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
+6. Metric computation and acceptance policy shall remain distinct.
+7. Failed/missed/unresolved trials shall not be silently deleted from benchmark evidence.
+8. Randomness and seed provenance shall be explicit enough to reconstruct a trial.
+9. Comparative claims shall preserve fairness/provenance rather than rely on uncontrolled independent realizations.
+10. A numerical match to a software baseline does not by itself establish physical validation.
+11. Hardware acceleration shall be assessed against an accepted scientific reference, not only against another hardware implementation.
+12. ADR-004 shall remain downstream of ADR-001/002/003 authority for geometry/phase, signal/covariance, and sensor/calibration semantics.
+13. Compatibility status, execution/failure status, and metric eligibility shall remain distinct.
+14. `XX^H/L` in the VP-001 baseline shall be called the uncentered sample second moment, not centered sample covariance.
+15. Divisor-`N` empirical variance used in exact finite-sample MSE decomposition shall remain distinct from divisor-`N-1` sample variance used for statistical variance estimation.
+16. VP-001 confirmatory Monte Carlo studies should prefer predeclared fixed-`N` execution with achieved uncertainty/adequacy reporting; no universal numeric `N` is accepted.
+17. Wilson score interval is the VP-001 default for ordinary IID fixed-`N` Bernoulli probability reporting, not a universal ADR-004 interval method.
+18. Source count `K`, source-covariance rank, observed subspace rank, estimator model order, and estimated-output cardinality `K_hat` shall remain distinct.
+19. VP-001 baseline end-to-end `P_D` and `P_res` metric universes and numerical-failure mappings are explicit in the governing draft.
+20. External-tool/cross-tool numerical agreement is reference/verification evidence unless a separate physical-validation contract is satisfied.
 
 ## 6. Current Status
 
@@ -133,12 +137,42 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 4.20  Cross-Section Reconciliation                   COMPLETE
 
 Governing ADR-004 draft                               COMPLETE — DRAFT ONLY
-Pre-Gate consistency review                           NEXT
-Gates A-F                                             NOT STARTED
+Pre-Gate consistency review                           PASS
+Gate A                                                AUTHORIZED — NEXT
+Gates B-F                                             NOT STARTED
 ADR-004 acceptance                                    NOT ACCEPTED
 ```
 
-## 7. Reconciled Decision Families in the Governing ADR
+## 7. Pre-Gate Review Record
+
+The dedicated review is:
+
+```text
+ADR-004_PRE_GATE_CONSISTENCY_REVIEW.md
+```
+
+It identified and resolved four pre-Gate omissions before PASS:
+
+```text
+PG-004-01  explicit P_D/P_res metric universes/denominators
+PG-004-02  explicit population variance semantics
+PG-004-03  K / rank / model-order / K_hat distinctions
+PG-004-04  explicit independent numerical / external-tool evidence role
+```
+
+The corrections are included in governing-draft commit:
+
+```text
+4675f312214ebc0eaaa64a2041bb582931cf2332
+```
+
+The reviewed governing-draft content SHA is:
+
+```text
+8cca2e3ac514cd031bee1d8c9e4c0347694ecb53
+```
+
+## 8. Reconciled Decision Families in the Governing ADR
 
 The governing draft consolidates exploration decisions into:
 
@@ -161,16 +195,14 @@ F14  VP-001 initial validation profile
 
 Detailed exploration files remain supporting rationale and traceability evidence.
 
-## 8. Immediate Work Item
+## 9. Immediate Work Item
 
-Perform a dedicated pre-Gate consistency review of `ADR-004-validation-reproducibility-scientific-evidence.md` against:
+Begin:
 
-- the reconciled decision families `F1–F14`;
-- `ADR-004_EXPLORATION_4.20_CROSS_SECTION_RECONCILIATION.md`;
-- the Phase 0C roadmap coverage requirements;
-- accepted ADR-001, ADR-002, and ADR-003 authority boundaries;
-- the exact terminology and denominator/failure/profile semantics established during reconciliation.
+```text
+ADR-004 Gate A — Physical Consistency Audit
+```
 
-The review shall explicitly check covariance-object naming, `v_N` versus `s^2`, truth/reference/calibration roles, snapshot/trial/source-count distinctions, `P_D`/`P_res` universes, compatibility/failure/metric-eligibility separation, VP-001 fixed-`N`/Wilson scoping, hardware implementation versus physical validation, and publication/provenance immutability.
+Gate A shall verify that the governing ADR-004 evidence semantics and VP-001 profile correctly distinguish model assumptions from physical truth, physical validation from computational verification, calibration from validation, synthetic hardware replay from physical sensor validation, and inherited ADR-001/002/003 physical authority.
 
-Gate A may begin only if this pre-Gate review passes.
+Gate A PASS does not imply Gates B–F PASS and does not accept ADR-004.
