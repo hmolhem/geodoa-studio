@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A-E PASS — GATE F NEXT — NOT ACCEPTED
+- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A–F PASS — FINAL CROSS-GATE RECONCILIATION NEXT — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -91,6 +91,10 @@ Detailed exploration files remain supporting rationale and traceability evidence
 25. Cache/resume/retry/replacement preserve scientific identity and do not silently resample/reuse incompatible evidence.
 26. Algorithm identity, implementation identity, fixed-point arithmetic profile, host/FPGA packing semantics, and build/artifact identity remain separately auditable.
 27. GRP expected values are independent of production software and become formal oracles only at Gate E.
+28. Failure is classified at the earliest scientifically correct layer and mapped into metrics through explicit eligibility/denominator policy.
+29. `N=0`, `N=1`, zero-vector normalized metrics, zero relative-error denominators, association ties, singular whitening, and similar boundaries have explicit typed responses.
+30. Invalid/out-of-profile conditions are not coerced into ordinary end-to-end event failures.
+31. Publication/reproducibility integrity failures do not silently become scientific results.
 
 ## 5. Pre-Gate Review Record
 
@@ -127,8 +131,6 @@ PASS
 commit 9b3f261858b435ce493189c1ee9802b68c17d78f
 ```
 
-Key result: model assumptions, simulation truth, external references, calibration, FPGA execution, and physical validation remain correctly separated.
-
 ### Gate B — Mathematical Consistency
 
 ```text
@@ -136,8 +138,6 @@ ADR-004_GATE_B_AUDIT.md
 PASS
 commit 7b6fb7e68816ca51c336b526a72e656d61c16dac
 ```
-
-Key result: bias/variance/MSE/RMSE, assignment/event denominators, covariance/rank semantics, projective/subspace invariances, CRN mathematics, and finite-precision equivalence are internally consistent.
 
 ### Gate C — Dimensional / Unit Consistency
 
@@ -147,8 +147,6 @@ PASS
 commit 07e6e8fb245835f89b9fe4cc305e4e7fee4da5e7
 ```
 
-Key result: metric units, squared-error units, covariance/eigenvalue units, dimensionless probabilities/projective metrics, dB/SNR, fixed-point scaling, and hardware performance units are consistent.
-
 ### Gate D — Software Semantic Consistency
 
 ```text
@@ -156,8 +154,6 @@ ADR-004_GATE_D_AUDIT.md
 PASS
 commit 9feae24803842759a36d66a1135708a0a36b4746
 ```
-
-Key result: hidden defaults/filtering/normalization/global RNG/reordering/provenance loss are forbidden; typed identities and immutable evidence are implementation obligations.
 
 ### Gate E — Golden / Hand Reference Evidence
 
@@ -178,11 +174,6 @@ Formal canonical reference:
 
 ```text
 GRP-018 — Bias, Variance, MSE, and RMSE by hand
-```
-
-Formal GRP-018 oracle:
-
-```text
 truth                 10 deg
 estimates             9, 10, 12, 13 deg
 errors                -1, 0, 2, 3 deg
@@ -202,7 +193,30 @@ ADR-004-SRC-03  source-level P_D opportunity counting
 ADR-004-SRC-04  projective metric / rank-one projector leakage
 ```
 
-Gate E formally promotes GRP-018 from exploration arithmetic to accepted deterministic reference evidence.
+### Gate F — Boundary / Failure Analysis
+
+```text
+ADR-004_GATE_F_AUDIT.md
+PASS
+commit 7ed78a0355f1b6934144511cd70e72a3ef1a0641
+```
+
+Boundary evidence:
+
+```text
+ADR-004_BOUNDARY_FAILURE_ANALYSIS.md
+commit d3cac6a030c66e313f50a4d25301e5a0ef9e9dc9
+```
+
+Key Gate-F result:
+
+```text
+invalid evidence, out-of-profile science, valid non-success,
+execution failure, unresolved state, and metric ineligibility
+remain distinct and have explicit response/denominator semantics.
+```
+
+The boundary analysis classifies `F-004-001` through `F-004-110` and resolves all carried-forward Gate-B/Gate-D edge conditions.
 
 ## 7. Current Status
 
@@ -214,8 +228,8 @@ Gate B — Mathematical Consistency                     PASS
 Gate C — Dimensional / Unit Consistency               PASS
 Gate D — Software Semantic Consistency                PASS
 Gate E — Hand Reference Evidence                      PASS
-Gate F — Boundary / Failure Analysis                  NEXT
-Cross-Gate reconciliation                             NOT STARTED
+Gate F — Boundary / Failure Analysis                  PASS
+Final Cross-Gate Reconciliation                       NEXT
 ADR-004 acceptance                                    NOT ACCEPTED
 Authoritative Phase-1 implementation                  NOT YET AUTHORIZED
 ```
@@ -225,9 +239,20 @@ Authoritative Phase-1 implementation                  NOT YET AUTHORIZED
 Begin:
 
 ```text
-ADR-004 Gate F — Boundary and Failure Analysis
+ADR-004 Final Cross-Gate Reconciliation
 ```
 
-Gate F shall classify boundary/invalid/failure behavior across metric domains, empty/zero denominators, association ties, nonzero-vector requirements, invalid units/configuration, out-of-profile scenarios, failed references/calibrations, stochastic replay/provenance defects, numerical failures, cache/resume/retry faults, hardware/protocol failures, and publication-evidence gaps.
+The reconciliation shall verify that:
 
-Gate F PASS will complete the individual acceptance gates but will **not** by itself accept ADR-004. A final cross-gate reconciliation is required before final acceptance.
+```text
+Gate-A physical interpretations
+Gate-B mathematics and invariances
+Gate-C unit semantics
+Gate-D software obligations
+Gate-E deterministic oracles
+Gate-F boundary/failure responses
+```
+
+form one mutually consistent final scientific evidence contract and that no correction introduced at one stage invalidates another gate.
+
+Only after this reconciliation passes may the ADR-004 final acceptance record be written. Gate F PASS by itself does **not** accept ADR-004.
