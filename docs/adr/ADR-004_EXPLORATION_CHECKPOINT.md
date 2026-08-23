@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A–F PASS — FINAL CROSS-GATE RECONCILIATION NEXT — NOT ACCEPTED
+- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A–F PASS — FINAL CROSS-GATE RECONCILIATION PASS — FINAL ACCEPTANCE NEXT — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -95,6 +95,7 @@ Detailed exploration files remain supporting rationale and traceability evidence
 29. `N=0`, `N=1`, zero-vector normalized metrics, zero relative-error denominators, association ties, singular whitening, and similar boundaries have explicit typed responses.
 30. Invalid/out-of-profile conditions are not coerced into ordinary end-to-end event failures.
 31. Publication/reproducibility integrity failures do not silently become scientific results.
+32. Final acceptance must synchronize stale draft-era lifecycle metadata in the governing ADR before status becomes Accepted.
 
 ## 5. Pre-Gate Review Record
 
@@ -208,20 +209,20 @@ ADR-004_BOUNDARY_FAILURE_ANALYSIS.md
 commit d3cac6a030c66e313f50a4d25301e5a0ef9e9dc9
 ```
 
-Key Gate-F result:
+### Final Cross-Gate Reconciliation
 
 ```text
-invalid evidence, out-of-profile science, valid non-success,
-execution failure, unresolved state, and metric ineligibility
-remain distinct and have explicit response/denominator semantics.
+ADR-004_FINAL_CROSS_GATE_RECONCILIATION.md
+PASS
+commit 09d55d8ced298b0b5e10aa428bc193c5d864a498
 ```
 
-The boundary analysis classifies `F-004-001` through `F-004-110` and resolves all carried-forward Gate-B/Gate-D edge conditions.
+The reconciliation found no blocking cross-gate scientific contradiction. It identified one administrative lifecycle-status drift (`XG-004-01`): the governing ADR header/status still contains draft-era pre-Gate/Gate-E language. That metadata must be synchronized as part of the final acceptance transaction before the ADR is marked Accepted.
 
 ## 7. Current Status
 
 ```text
-Governing ADR-004 draft                               COMPLETE — DRAFT ONLY
+Governing ADR-004 normative draft                     COMPLETE
 Pre-Gate consistency review                           PASS
 Gate A — Physical Consistency                         PASS
 Gate B — Mathematical Consistency                     PASS
@@ -229,8 +230,10 @@ Gate C — Dimensional / Unit Consistency               PASS
 Gate D — Software Semantic Consistency                PASS
 Gate E — Hand Reference Evidence                      PASS
 Gate F — Boundary / Failure Analysis                  PASS
-Final Cross-Gate Reconciliation                       NEXT
-ADR-004 acceptance                                    NOT ACCEPTED
+Final Cross-Gate Reconciliation                       PASS
+Final Acceptance Record                               NEXT
+Governing ADR lifecycle metadata synchronization      REQUIRED WITH ACCEPTANCE
+ADR-004 acceptance                                    NOT YET ACCEPTED
 Authoritative Phase-1 implementation                  NOT YET AUTHORIZED
 ```
 
@@ -239,20 +242,9 @@ Authoritative Phase-1 implementation                  NOT YET AUTHORIZED
 Begin:
 
 ```text
-ADR-004 Final Cross-Gate Reconciliation
+ADR-004 Final Acceptance Record
++
+Governing ADR lifecycle metadata/status synchronization
 ```
 
-The reconciliation shall verify that:
-
-```text
-Gate-A physical interpretations
-Gate-B mathematics and invariances
-Gate-C unit semantics
-Gate-D software obligations
-Gate-E deterministic oracles
-Gate-F boundary/failure responses
-```
-
-form one mutually consistent final scientific evidence contract and that no correction introduced at one stage invalidates another gate.
-
-Only after this reconciliation passes may the ADR-004 final acceptance record be written. Gate F PASS by itself does **not** accept ADR-004.
+The final acceptance transaction must update the governing ADR lifecycle metadata to reflect completed pre-Gate review, Gates A–F PASS, Gate-E GRP-018 evidence PASS, and Final Cross-Gate Reconciliation PASS. Only then may ADR-004 be marked Accepted and authoritative Phase-1 implementation be authorized.
