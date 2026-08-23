@@ -5,8 +5,8 @@
 - **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
-- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
-- **Next exploration section:** 3.7 — Quantization / Receiver / Dynamic-Range Effects
+- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8
+- **Next exploration section:** 3.9 — Calibration Models
 - **Acceptance gates:** Not started for ADR-003
 - **Reserved Golden Reference Problems:** GRP-014 through GRP-017
 
@@ -75,9 +75,9 @@ and, separately,
 3.4  Element Pattern and Polarization                        COMPLETE
 3.5  Mutual Coupling                                         COMPLETE
 3.6  Channel Delay, Clock Skew, and Frequency Error          COMPLETE
-3.7  Quantization / Receiver / Dynamic-Range Effects         NEXT
-3.8  Unified Sensor-Imperfection Operator                    PENDING
-3.9  Calibration Models                                      PENDING
+3.7  Quantization / Receiver / Dynamic-Range Effects         COMPLETE
+3.8  Unified Sensor-Imperfection Operator                    COMPLETE
+3.9  Calibration Models                                      NEXT
 3.10 Direct Measured / CST-Derived Manifold Calibration      PENDING
 3.11 Error Metrics and Identifiability                       PENDING
 3.12 Covariance / Eigenspace / MUSIC Error Propagation       PENDING
