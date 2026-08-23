@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
+- **Status:** EXPLORATION COMPLETE — GOVERNING DRAFT AUTHORIZED — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -41,7 +41,7 @@ The working exploration sequence is:
 4.20  Cross-Section Reconciliation
 ```
 
-The numbering is an exploration organization, not an accepted final section layout. It may be refined before the governing ADR draft as long as roadmap coverage is preserved.
+The exploration organization is now complete. Governing ADR-004 drafting should consolidate the detailed exploration decisions rather than preserve this numbering as the final ADR structure.
 
 ## 3. Roadmap Coverage Requirements
 
@@ -75,6 +75,8 @@ ADR-004 must cover at least:
 - scientific metrics versus computational/hardware metrics;
 - floating-point, fixed-point, and FPGA cross-validation.
 
+Explorations 4.1–4.20 collectively cover these roadmap requirements at candidate-contract level.
+
 ## 4. Initial Golden Reference Reservation
 
 The Phase 0C roadmap reserves:
@@ -85,10 +87,12 @@ GRP-018 — Bias, Variance, MSE, and RMSE by hand
 
 Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so that canonical GRP numbering is not changed without an explicit roadmap decision.
 
+GRP-018 remains exploration/reference content until formal Gate E evidence is created and passed.
+
 ## 5. Working Rules
 
-1. No governing ADR-004 draft before the exploration reaches cross-section reconciliation.
-2. No acceptance Gate A before a governing ADR-004 draft exists and a pre-Gate consistency review passes.
+1. Exploration is complete; the governing ADR-004 draft is now authorized.
+2. No acceptance Gate A before the governing ADR-004 draft exists and a pre-Gate consistency review passes.
 3. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
 4. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
 5. Metric computation and acceptance policy shall remain distinct.
@@ -97,6 +101,12 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 8. Comparative claims shall preserve fairness/provenance rather than rely on uncontrolled independent realizations.
 9. A numerical match to a software baseline does not by itself establish physical validation.
 10. Hardware acceleration shall be assessed against an accepted scientific reference, not only against another hardware implementation.
+11. ADR-004 shall remain downstream of ADR-001/002/003 authority for geometry/phase, signal/covariance, and sensor/calibration semantics.
+12. Compatibility status, execution/failure status, and metric eligibility shall remain distinct.
+13. `XX^H/L` in the VP-001 baseline shall be called the uncentered sample second moment, not centered sample covariance.
+14. Divisor-`N` empirical variance used in exact finite-sample MSE decomposition shall remain distinct from divisor-`N-1` sample variance used for statistical variance estimation.
+15. VP-001 confirmatory Monte Carlo studies should prefer predeclared fixed-`N` execution with achieved uncertainty/adequacy reporting; no universal numeric `N` is accepted.
+16. Wilson score interval is the candidate VP-001 default for ordinary IID fixed-`N` Bernoulli probability reporting, not a universal ADR-004 interval method.
 
 ## 6. Current Status
 
@@ -120,14 +130,39 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.17  Publication / Reproducibility Package          COMPLETE
 4.18  Cross-ADR Compatibility                        COMPLETE
 4.19  Initial Phase-1 Validation Profile             COMPLETE
-4.20  Cross-Section Reconciliation                   IN PROGRESS — NEXT
+4.20  Cross-Section Reconciliation                   COMPLETE
 
-Governing ADR-004 draft                               NOT STARTED
+Governing ADR-004 draft                               AUTHORIZED — NEXT
 Pre-Gate consistency review                           NOT STARTED
 Gates A-F                                             NOT STARTED
 ADR-004 acceptance                                    NOT ACCEPTED
 ```
 
-## 7. Immediate Work Item
+## 7. Reconciled Decision Families for Governing ADR
 
-Complete Exploration 4.20 and reconcile the full ADR-004 candidate contract across Explorations 4.1–4.19. Resolve duplicated terminology, authority boundaries, denominator/eligibility semantics, validation-versus-verification language, metric/failure/provenance interactions, Phase-1 profile assumptions, and all semantic-drift risks identified in Exploration 4.18. Only after this reconciliation may the governing ADR-004 draft be written and subjected to a pre-Gate consistency review.
+The governing draft should consolidate exploration decisions into:
+
+```text
+F1   Evidence-role separation
+F2   Typed truth/reference authority
+F3   Deterministic verification ladder
+F4   Stochastic experiment identity / RNG / CRN
+F5   Association / detection / resolution semantics
+F6   Metric semantics
+F7   Monte Carlo adequacy / uncertainty
+F8   Fair comparison
+F9   Typed non-success evidence
+F10  Multi-level scientific diagnosis
+F11  Float/fixed/HLS/RTL/FPGA evidence ladder
+F12  Provenance / configuration / immutability
+F13  Publication evidence / reproducibility package
+F14  VP-001 initial validation profile
+```
+
+Detailed exploration files remain supporting rationale and traceability evidence.
+
+## 8. Immediate Work Item
+
+Draft the governing ADR-004 from reconciled decision families `F1–F14` without copying all exploration sections verbatim. Preserve upstream ADR authority and the reconciled terminology/denominator/failure/profile semantics from Exploration 4.20.
+
+After the governing draft is complete, perform a separate pre-Gate consistency review. Gate A may begin only if that review passes.
