@@ -118,8 +118,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.15  Float / Fixed / FPGA Cross-Validation          COMPLETE
 4.16  Run Identity / Configuration / Provenance      COMPLETE
 4.17  Publication / Reproducibility Package          COMPLETE
-4.18  Cross-ADR Compatibility                        IN PROGRESS — NEXT
-4.19  Initial Phase-1 Validation Profile             NOT STARTED
+4.18  Cross-ADR Compatibility                        COMPLETE
+4.19  Initial Phase-1 Validation Profile             IN PROGRESS — NEXT
 4.20  Cross-Section Reconciliation                   NOT STARTED
 
 Governing ADR-004 draft                               NOT STARTED
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.18 and reconcile ADR-004 candidate evidence, metric, stochastic, provenance, comparison, failure, and hardware-validation contracts against the accepted conventions in ADR-001, ADR-002, and ADR-003. Identify any conflicts, duplicated semantics, hidden assumptions, or required terminology alignment before defining the initial Phase-1 validation profile.
+Complete Exploration 4.19 and define the initial Phase-1 validation profile by binding the accepted ADR-001 geometry/phase conventions, ADR-002 narrowband far-field signal/covariance semantics, ADR-003 Phase-1 ideal sensor profile, and ADR-004 candidate evidence/metric/failure/provenance rules into one explicit minimum benchmark/validation contract. Preserve the distinction between deterministic verification, stochastic Monte Carlo performance evidence, implementation cross-validation, and later physical sensor validation.
