@@ -111,8 +111,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.8   Detection / Miss / False Alarm / Resolution    COMPLETE
 4.9   Probability of Resolution                      COMPLETE
 4.10  Monte Carlo Adequacy and Convergence           COMPLETE
-4.11  Confidence Intervals / Metric Uncertainty      IN PROGRESS — NEXT
-4.12  Fair Algorithm / Geometry Comparison           NOT STARTED
+4.11  Confidence Intervals / Metric Uncertainty      COMPLETE
+4.12  Fair Algorithm / Geometry Comparison           IN PROGRESS — NEXT
 4.13  Failure-State Recording                        NOT STARTED
 4.14  Multi-Level Scientific Error Metrics           NOT STARTED
 4.15  Float / Fixed / FPGA Cross-Validation          NOT STARTED
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.11 and define uncertainty/confidence reporting for means, RMSE/MSE, Bernoulli event probabilities, paired comparisons, hierarchical/dependent trial structures, and reference uncertainty without conflating finite-Monte-Carlo uncertainty with physical/model uncertainty.
+Complete Exploration 4.12 and define scientifically fair algorithm/geometry comparison under matched conditions, controlled tuning, common random numbers where appropriate, identical truth/noise/sensor realizations, explicit computational/hardware metrics, transparent failure accounting, and uncertainty on the comparison quantity itself.
