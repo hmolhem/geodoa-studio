@@ -5,8 +5,8 @@
 - **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
-- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
-- **Next exploration section:** 3.7 — Quantization / Receiver / Dynamic-Range Effects
+- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+- **Next exploration section:** 3.8 — Unified Sensor-Imperfection Operator
 - **Acceptance gates:** Not started for ADR-003
 - **Reserved Golden Reference Problems:** GRP-014 through GRP-017
 
@@ -75,8 +75,8 @@ and, separately,
 3.4  Element Pattern and Polarization                        COMPLETE
 3.5  Mutual Coupling                                         COMPLETE
 3.6  Channel Delay, Clock Skew, and Frequency Error          COMPLETE
-3.7  Quantization / Receiver / Dynamic-Range Effects         NEXT
-3.8  Unified Sensor-Imperfection Operator                    PENDING
+3.7  Quantization / Receiver / Dynamic-Range Effects         COMPLETE
+3.8  Unified Sensor-Imperfection Operator                    NEXT
 3.9  Calibration Models                                      PENDING
 3.10 Direct Measured / CST-Derived Manifold Calibration      PENDING
 3.11 Error Metrics and Identifiability                       PENDING
@@ -504,9 +504,7 @@ For
 \]
 
 \[
-\boxed{
-g_n\approx1+\alpha_n+j\phi_n
-}.
+\boxed{g_n\approx1+\alpha_n+j\phi_n}.
 \]
 
 This is a perturbation approximation only.
@@ -519,22 +517,19 @@ For
 
 \[
 \mathbf x
-=
-\mathbf G\mathbf A\mathbf s+\mathbf n,
+=\mathbf G\mathbf A\mathbf s+\mathbf n,
 \]
 
 \[
 \mathbf R_{\rm sig}^{\rm phys}
-=
-\mathbf G\mathbf R_{\rm sig}^{\rm nom}\mathbf G^H.
+=\mathbf G\mathbf R_{\rm sig}^{\rm nom}\mathbf G^H.
 \]
 
 Elementwise,
 
 \[
 [R_{\rm sig}^{\rm phys}]_{nm}
-=
-[R_{\rm sig}^{\rm nom}]_{nm}
+=[R_{\rm sig}^{\rm nom}]_{nm}
 \rho_n\rho_m e^{j(\phi_n-\phi_m)}.
 \]
 
@@ -548,8 +543,7 @@ If data correction uses \(\mathbf G^{-1}\), then even initially white noise may 
 
 \[
 \mathbf R_{n,\rm corr}
-=
-\mathbf G^{-1}\mathbf R_n\mathbf G^{-H}.
+=\mathbf G^{-1}\mathbf R_n\mathbf G^{-H}.
 \]
 
 Near-zero gains make inverse correction ill-conditioned; a zero-response/dead channel cannot be recovered by multiplicative inversion.
@@ -560,26 +554,19 @@ For a two-sensor array,
 
 \[
 \mathbf a_{\rm nom}(u)
-=
-\begin{bmatrix}
-1\\e^{-jkdu}
-\end{bmatrix},
+=\begin{bmatrix}1\\e^{-jkdu}\end{bmatrix},
 \]
 
 and a relative phase error \(\phi_e\) on the second channel gives
 
 \[
-\boxed{
-\hat u=u_0-\frac{\phi_e}{kd}
-}.
+\boxed{\hat u=u_0-\frac{\phi_e}{kd}}.
 \]
 
 For \(d=\lambda/2\),
 
 \[
-\boxed{
-\Delta u=-\frac{\phi_e}{\pi}
-}.
+\boxed{\Delta u=-\frac{\phi_e}{\pi}}.
 \]
 
 This relation is a basis for GRP-015.
@@ -625,29 +612,19 @@ An element is not merely a spatial sample point. Its coherent receive response m
 For an uncoupled scalar-element specialization,
 
 \[
-\boxed{
-b_n=b_n(\hat{\mathbf u},f,\mathbf p,\ldots)
-}
+\boxed{b_n=b_n(\hat{\mathbf u},f,\mathbf p,\ldots)}
 \]
 
 and
 
 \[
-\boxed{
-\mathbf P(\hat{\mathbf u},f,\mathbf p)
-=
-\operatorname{diag}(b_1,\ldots,b_N)
-}
+\boxed{\mathbf P(\hat{\mathbf u},f,\mathbf p)=\operatorname{diag}(b_1,\ldots,b_N)}
 \]
 
 so that
 
 \[
-\boxed{
-\mathbf a_{\rm elem}
-=
-\mathbf P\mathbf a_{\rm geom}
-}.
+\boxed{\mathbf a_{\rm elem}=\mathbf P\mathbf a_{\rm geom}}.
 \]
 
 Element response is generally complex:
@@ -693,9 +670,7 @@ A coherent polarization representation requires an explicit transverse basis. A 
 For a normalized receive polarization vector \(\mathbf q\) and incident polarization \(\mathbf p\), a simple normalized polarization-efficiency model is
 
 \[
-\boxed{
-\eta_{\rm pol}=|\mathbf q^H\mathbf p|^2
-}.
+\boxed{\eta_{\rm pol}=|\mathbf q^H\mathbf p|^2}.
 \]
 
 For ideal linear polarization misalignment angle \(\alpha\),
@@ -738,8 +713,7 @@ For source \(q\), element response can be source-condition specific:
 
 \[
 \mathbf a_q^{\rm phys}
-=
-\mathbf P(\hat{\mathbf u}_q,f,\mathbf p_q)
+=\mathbf P(\hat{\mathbf u}_q,f,\mathbf p_q)
 \mathbf a_{\rm geom}(\hat{\mathbf u}_q,f).
 \]
 
@@ -829,9 +803,7 @@ y_n=g_nx_n,
 whereas an effective cross-channel coupling specialization can have
 
 \[
-\boxed{
-y_n=\sum_{m=1}^{N}C_{nm}x_m
-}
+\boxed{y_n=\sum_{m=1}^{N}C_{nm}x_m}
 \]
 
 with nonzero off-diagonal terms.
@@ -848,548 +820,161 @@ GeoDOA shall not begin the physical definition of coupling by assuming universal
 
 A more defensible receive-array starting point is a declared linear multiport representation.
 
-Let
+Let \(\mathbf v_{\rm oc}\) be the **array-defined open-circuit receive-response vector** under a specified incident field and EM/modeling convention. It is not automatically an uncoupled geometry-only steering vector. Depending on how it was obtained, it may already reflect array interaction physics.
 
-\[
-\boxed{\mathbf v_{\rm oc}}
-\]
-
-be the **array-defined open-circuit receive-response vector** under a specified incident field and EM/modeling convention. It is not automatically an uncoupled geometry-only steering vector. Depending on how it was obtained, it may already reflect array interaction physics.
-
-Let the antenna-array impedance matrix be
-
-\[
-\boxed{
-\mathbf Z_A=
-\begin{bmatrix}
-Z_{11}&Z_{12}&\cdots\\
-Z_{21}&Z_{22}&\cdots\\
-\vdots&\vdots&\ddots
-\end{bmatrix}
-}
-\]
-
-and let \(\mathbf Z_L\) denote the declared receiver/load termination matrix.
+Let the antenna-array impedance matrix be \(\mathbf Z_A\) and let \(\mathbf Z_L\) denote the declared receiver/load termination matrix.
 
 Under a declared Thevenin-style multiport current/voltage convention for which the corresponding inverses exist,
 
 \[
-\boxed{
-\mathbf i
-=(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}
-}
+\boxed{\mathbf i=(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}}
 \]
 
 and loaded terminal voltage is
 
 \[
-\boxed{
-\mathbf v_L
-=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}.
-}
+\boxed{\mathbf v_L=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}}.
 \]
 
-Define, within that declared convention,
+Define
 
 \[
-\boxed{
-\mathbf T_L
-=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}
-}
+\boxed{\mathbf T_L=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}}
 \]
 
-so that
+so that \(\mathbf v_L=\mathbf T_L\mathbf v_{\rm oc}\).
 
-\[
-\mathbf v_L=\mathbf T_L\mathbf v_{\rm oc}.
-\]
+This is a loaded-port transform, not a universal definition of a DOA coupling matrix. It is meaningful only together with the definitions of \(\mathbf v_{\rm oc}\), port current/voltage sign convention, reference planes, \(\mathbf Z_A\), \(\mathbf Z_L\), frequency, and physical configuration.
 
-This is a **loaded-port transform**, not a universal definition of a DOA coupling matrix. It is scientifically meaningful only together with the definitions of \(\mathbf v_{\rm oc}\), port current/voltage sign convention, reference planes, \(\mathbf Z_A\), \(\mathbf Z_L\), frequency, and physical configuration.
-
-If the available starting response is an isolated-element or geometry-only manifold rather than the array-defined open-circuit response, another explicit EM/effective mapping may be required before the loaded-port relation is scientifically valid. GeoDOA must not assume that \(\mathbf Z_A\) loading alone transforms an isolated geometry steering vector into a complete full-wave receive manifold.
+If the available starting response is an isolated-element or geometry-only manifold rather than the array-defined open-circuit response, another explicit EM/effective mapping may be required before the loaded-port relation is scientifically valid.
 
 ## 7.3 Effective cross-channel coupling specialization
 
 For a bounded model, GeoDOA may use
 
 \[
-\boxed{
-\mathbf a_c(\xi)=\mathbf C(\chi)\mathbf a_{\rm ref}(\xi)
-}
+\boxed{\mathbf a_c(\xi)=\mathbf C(\chi)\mathbf a_{\rm ref}(\xi)}
 \]
 
 where \(\xi\) denotes source-condition variables and \(\chi\) denotes sensor/system configuration variables.
 
-However, the semantic type of \(\mathbf C\) must be declared. At least the following meanings are distinct:
+The semantic type of \(\mathbf C\) must be declared: physical/network-derived operator, effective manifold operator, or aggregate empirical operator.
 
-1. **Physical/network-derived operator** — obtained from a declared multiport/loading model and defined between explicit port quantities.
-2. **Effective manifold operator** — maps one declared response model to another over a declared calibration/model domain.
-3. **Aggregate empirical operator** — fitted from data and potentially absorbing multiple physical effects, in which case it must not be labeled pure mutual coupling without evidence.
-
-Therefore
-
-\[
-\boxed{
-\mathbf a_c=\mathbf C\mathbf a
-\text{ is a declared specialization, not a universal electromagnetic law.}
-}
-\]
+Thus \(\mathbf a_c=\mathbf C\mathbf a\) is a declared specialization, not a universal electromagnetic law.
 
 ## 7.4 Impedance, scattering, and effective-coupling semantics
 
-Impedance parameters use port voltage/current semantics,
+Impedance parameters use port voltage/current semantics, \(\mathbf v=\mathbf Z\mathbf i\), whereas scattering parameters use incident/reflected port-wave semantics, \(\mathbf b_{\rm wave}=\mathbf S\mathbf a_{\rm wave}\). The port-wave symbol \(\mathbf a_{\rm wave}\) must never be confused with a steering/manifold vector.
+
+For a common real scalar reference impedance \(Z_0\) and corresponding conventional wave normalization,
 
 \[
-\mathbf v=\mathbf Z\mathbf i,
+\mathbf S=(\mathbf Z-Z_0\mathbf I)(\mathbf Z+Z_0\mathbf I)^{-1},
 \]
-
-whereas scattering parameters use incident/reflected port-wave semantics,
 
 \[
-\boxed{
-\mathbf b_{\rm wave}=\mathbf S\mathbf a_{\rm wave}.
-}
+\mathbf Z=Z_0(\mathbf I+\mathbf S)(\mathbf I-\mathbf S)^{-1},
 \]
 
-The port-wave symbol \(\mathbf a_{\rm wave}\) must never be confused with a steering/manifold vector.
+when the required inverses exist. Unequal or complex reference impedances require their own explicit normalization/conversion convention.
 
-For a common real scalar reference impedance \(Z_0\) and the corresponding conventional wave normalization, one familiar conversion is
+Consequently, \(\mathbf Z\), \(\mathbf S\), \(\mathbf T_L\), an effective \(\mathbf C\), embedded patterns, and measured/full-wave manifolds are not directly interchangeable. In particular, \(S_{21}\neq C_{21}\) as a general scientific statement.
+
+## 7.5 Dependence classes
+
+For a passive linear time-invariant array in a fixed configuration, network matrices such as \(\mathbf Z_A(f)\) and \(\mathbf S(f)\) characterize the multiport system. The receive excitation is source-condition dependent:
 
 \[
-\boxed{
-\mathbf S
-=(\mathbf Z-Z_0\mathbf I)(\mathbf Z+Z_0\mathbf I)^{-1}
-}
+\mathbf v_{\rm oc}=\mathbf v_{\rm oc}(\hat{\mathbf u},f,\mathbf p,\ldots).
 \]
 
-with the inverse relation
+An effective \(\mathbf C\) fitted between a geometry-only manifold and a full physical manifold may appear direction- or polarization-dependent because it absorbs other effects.
 
-\[
-\boxed{
-\mathbf Z
-=Z_0(\mathbf I+\mathbf S)(\mathbf I-\mathbf S)^{-1}
-}
-\]
+Network-parameter dependence, source-excitation dependence, and effective-manifold-operator dependence remain distinct.
 
-when the required inverses exist.
+## 7.6 Structural approximations
 
-Unequal or complex reference impedances require their own explicit normalization/conversion convention. Consequently, \(\mathbf Z\), \(\mathbf S\), an effective receive coupling matrix \(\mathbf C\), a loaded-port transform \(\mathbf T_L\), and a measured/full-wave manifold are not directly interchangeable scientific objects.
+Reciprocity under compatible conventions can justify symmetric network quantities such as \(Z_{nm}=Z_{mn}\), but symmetric does not mean Hermitian.
 
-In particular,
+Toeplitz coupling for a finite ULA is an approximation/specialization because edge elements can have different electromagnetic neighborhoods from interior elements. Circulant structure is not the default for an ordinary finite ULA. Banded/nearest-neighbor models require evidence or an explicit truncation policy.
 
-\[
-\boxed{S_{21}\neq C_{21}}
-\]
+Even if an impedance model is sparse/banded, \((\mathbf Z_A+\mathbf Z_L)^{-1}\) can be dense.
 
-as a general scientific statement. A measured or simulated S-parameter cannot be copied directly into a DOA coupling matrix without a declared derivation and port/reference/load semantics.
+## 7.7 Embedded patterns and double counting
 
-## 7.5 What depends on direction, polarization, frequency, and configuration
+Isolated-element response, embedded-element response, full-wave/full-array complex manifold, direct measured manifold, and separately parameterized coupling operators are distinct.
 
-For a passive linear time-invariant array in a fixed configuration, network matrices such as \(\mathbf Z_A(f)\) and \(\mathbf S(f)\) characterize the multiport system and are not generated anew merely because the incident source direction changes.
-
-The receive excitation is source-condition dependent:
-
-\[
-\boxed{
-\mathbf v_{\rm oc}
-=\mathbf v_{\rm oc}(\hat{\mathbf u},f,\mathbf p,\ldots).
-}
-\]
-
-Thus
-
-\[
-\mathbf v_L
-=\mathbf T_L(f,\text{configuration})
-\mathbf v_{\rm oc}(\hat{\mathbf u},f,\mathbf p,\ldots).
-\]
-
-An effective \(\mathbf C\) fitted directly between a geometry-only manifold and a full physical manifold may itself appear direction- or polarization-dependent because it may be absorbing embedded-element response and other effects in addition to network coupling.
-
-The following dependence classes shall therefore remain distinguishable:
-
-\[
-\boxed{
-\text{network-parameter dependence}
-\neq
-\text{source-excitation dependence}
-\neq
-\text{effective-manifold-operator dependence}.
-}
-\]
-
-Coupling-related physical response can also depend on element geometry, spacing, frequency, material/platform/radome environment, matching networks, receiver loading, active/terminated port state, and physical configuration.
-
-## 7.6 Symmetry, Toeplitz, circulant, and banded approximations
-
-Reciprocity under compatible conventions can justify symmetric network quantities such as
-
-\[
-Z_{nm}=Z_{mn},
-\]
-
-but **symmetric does not mean Hermitian**.
-
-A symmetric Toeplitz coupling matrix is a useful specialization for some idealized translationally uniform arrays:
-
-\[
-\mathbf C=
-\begin{bmatrix}
-c_0&c_1&c_2&\cdots\\
-c_1&c_0&c_1&\cdots\\
-c_2&c_1&c_0&\cdots\\
-\vdots&\vdots&\vdots&\ddots
-\end{bmatrix}.
-\]
-
-However, a finite ULA has edge elements with different electromagnetic neighborhoods from interior elements. Exact Toeplitz structure is therefore not a universal physical law for finite arrays.
-
-Likewise, a circulant matrix is not the default physical model for an ordinary finite ULA; it requires periodic/circular symmetry or another explicit justification.
-
-A nearest-neighbor or banded approximation,
-
-\[
-C_{nm}=0,
-\qquad |n-m|>P,
-\]
-
-is a truncation model that requires evidence or a declared approximation policy. It must not be inferred merely from the fact that coupling often weakens with separation.
-
-Further, even if a chosen impedance interaction model is sparse or banded,
-
-\[
-(\mathbf Z_A+\mathbf Z_L)^{-1}
-\]
-
-can be dense. Therefore sparse/banded mutual impedance does not imply a sparse/banded effective loaded transform.
-
-## 7.7 Embedded-element patterns and prevention of double counting
-
-An embedded element pattern is obtained for an element while it is embedded in the array and the other ports are terminated according to a declared reference/termination condition. Such a pattern incorporates interaction with neighboring elements.
-
-Therefore the following are distinct:
-
-- isolated-element response;
-- embedded-element response;
-- full-wave/full-array complex manifold;
-- direct measured manifold;
-- separately parameterized coupling operator.
-
-If a CST/full-wave or measured response already contains mutual-coupling physics, GeoDOA shall not silently apply another coupling matrix to it.
-
-The governing rule is
-
-\[
-\boxed{
-\text{effect already embedded in response}
-\not\Rightarrow
-\text{apply the same effect again}
-}
-\]
-
-unless explicit de-embedding/re-embedding provenance proves that the decomposition is valid.
-
-This requires future calibration/manifold artifacts to preserve an explicit **included-effects / de-embedding provenance** record.
+If a CST/full-wave or measured response already contains mutual-coupling physics, GeoDOA shall not silently apply another coupling matrix unless explicit de-embedding/re-embedding provenance proves the decomposition valid.
 
 ## 7.8 Operator ordering
 
-A physically interpretable receive chain may conceptually contain
+A physically interpretable receive chain may contain geometry/propagation, element/open-circuit receive response, port/network loading and cross-channel interaction, receiver electronics, and measurement. A specialization may produce \(\mathbf a_{\rm phys}=\mathbf G\mathbf T_L\mathbf a_{\rm oc}\), but the final universal ordering is deferred to 3.8.
 
-```text
-incident field
-    ↓
-geometry / propagation
-    ↓
-element / open-circuit receive response
-    ↓
-port/network loading and cross-channel interaction
-    ↓
-receiver electronics
-    ↓
-measurement
-```
-
-For one declared specialization this may produce a form such as
-
-\[
-\mathbf a_{\rm phys}=\mathbf G\mathbf T_L\mathbf a_{\rm oc},
-\]
-
-but this is not yet the final universal ADR-003 operator ordering.
-
-If \(\mathbf P\) represents isolated-element response, an explicit coupling/loading operator may legitimately follow it. If \(\mathbf P\) represents embedded-element response, applying a separate coupling operator may double count array interaction.
-
-Moreover, in general,
-
-\[
-\boxed{
-\mathbf C\mathbf P\neq\mathbf P\mathbf C.
-}
-\]
-
-The unified ordering contract is intentionally deferred to Exploration 3.8 after channel timing/frequency and receiver effects have also been explored.
+In general \(\mathbf C\mathbf P\neq\mathbf P\mathbf C\).
 
 ## 7.9 Manifold and covariance distortion
 
-For the declared linear specialization
+For \(\mathbf x=\mathbf C\mathbf A\mathbf s+\mathbf n\), with shown noise injected after coupling,
 
 \[
-\mathbf x
-=\mathbf C\mathbf A\mathbf s+\mathbf n,
+\boxed{\mathbf R_{\rm sig,c}=\mathbf C\mathbf R_{\rm sig}\mathbf C^H}.
 \]
 
-where the shown noise is injected after the coupling block,
+Also,
 
 \[
-\boxed{
-\mathbf R_{\rm sig,c}
-=\mathbf C\mathbf A\mathbf R_s\mathbf A^H\mathbf C^H
-=\mathbf C\mathbf R_{\rm sig}\mathbf C^H.
-}
-\]
-
-The rank obeys
-
-\[
-\boxed{
 \operatorname{rank}(\mathbf C\mathbf R\mathbf C^H)
-\le
-\min\{\operatorname{rank}(\mathbf C),\operatorname{rank}(\mathbf R)\}.
-}
+\le\min\{\operatorname{rank}(\mathbf C),\operatorname{rank}(\mathbf R)\}.
 \]
 
-If \(\mathbf C\) is nonsingular,
-
-\[
-\boxed{
-\operatorname{rank}(\mathbf C\mathbf R\mathbf C^H)
-=\operatorname{rank}(\mathbf R).
-}
-\]
-
-Nonsingular coupling can therefore preserve signal-covariance rank while changing eigenvalues, eigenvectors, subspace orientation, and numerical conditioning. Rank-deficient coupling can reduce observable rank.
+Nonsingular \(\mathbf C\) preserves rank but can change eigenvalues, eigenvectors, subspace orientation, and conditioning; rank-deficient coupling can reduce observable rank.
 
 ## 7.10 MUSIC consequence
 
-For one source let
-
-\[
-\mathbf b=\mathbf C\mathbf a(\theta_0).
-\]
-
-With post-coupling spatially white noise,
-
-\[
-\mathbf R_x
-=\sigma_s^2\mathbf b\mathbf b^H+\sigma_n^2\mathbf I.
-\]
-
-The physical signal eigenvector is aligned with
-
-\[
-\frac{\mathbf b}{\|\mathbf b\|_2},
-\]
-
-not generally with the nominal manifold direction
-
-\[
-\frac{\mathbf a}{\|\mathbf a\|_2}.
-\]
-
-The physical noise subspace satisfies
-
-\[
-\boxed{
-\mathbf E_n^H\mathbf b=0.
-}
-\]
-
-If classical MUSIC is evaluated with the mismatched nominal manifold, then at the true DOA generally
-
-\[
-\boxed{
-\mathbf E_n^H\mathbf a(\theta_0)\neq0.
-}
-\]
-
-Thus the MUSIC algebra has not failed; the model supplied to MUSIC is mismatched to the physical coupled manifold.
+For one source \(\mathbf b=\mathbf C\mathbf a(\theta_0)\), the physical noise subspace satisfies \(\mathbf E_n^H\mathbf b=0\). Nominal MUSIC may instead have \(\mathbf E_n^H\mathbf a(\theta_0)\neq0\). The algebra has not failed; the supplied manifold is mismatched.
 
 ## 7.11 Noise ordering
-
-Coupling and noise injection do not commute semantically.
 
 If
 
 \[
-\mathbf x
-=\mathbf C(\mathbf A\mathbf s+\mathbf n_{\rm pre})
-+\mathbf n_{\rm post},
-\]
-
-then, under the corresponding independence assumptions,
-
-\[
-\boxed{
-\mathbf R_x
-=
-\mathbf C\mathbf A\mathbf R_s\mathbf A^H\mathbf C^H
-+
-\mathbf C\mathbf R_{n,\rm pre}\mathbf C^H
-+
-\mathbf R_{n,\rm post}.
-}
-\]
-
-Even if
-
-\[
-\mathbf R_{n,\rm pre}=\sigma^2\mathbf I,
+\mathbf x=\mathbf C(\mathbf A\mathbf s+\mathbf n_{\rm pre})+\mathbf n_{\rm post},
 \]
 
 then
 
 \[
-\mathbf C\mathbf R_{n,\rm pre}\mathbf C^H
-=\sigma^2\mathbf C\mathbf C^H,
+\mathbf R_x=\mathbf C\mathbf A\mathbf R_s\mathbf A^H\mathbf C^H
++\mathbf C\mathbf R_{n,\rm pre}\mathbf C^H+\mathbf R_{n,\rm post}.
 \]
 
-which is not spatially white unless the relevant scaled-unitary condition is satisfied.
-
-Detailed receiver-noise generation belongs later in ADR-003, but the ordering distinction is already mandatory.
+Pre-coupling white noise generally becomes colored after nonunitary coupling.
 
 ## 7.12 Inverse decoupling and conditioning
 
-Suppose a bounded effective model is
-
-\[
-\mathbf x=\mathbf C\mathbf a s+\mathbf n
-\]
-
-and calibration provides \(\hat{\mathbf C}\).
-
-Data correction may attempt
-
-\[
-\mathbf y=\hat{\mathbf C}^{-1}\mathbf x.
-\]
-
-Then
-
-\[
-\boxed{
-\mathbf y
-=\hat{\mathbf C}^{-1}\mathbf C\mathbf a s
-+\hat{\mathbf C}^{-1}\mathbf n.
-}
-\]
-
-Even for exact calibration \(\hat{\mathbf C}=\mathbf C\), noise transforms as
-
-\[
-\boxed{
-\mathbf R_{n,y}
-=\mathbf C^{-1}\mathbf R_n\mathbf C^{-H}.
-}
-\]
-
-The inverse norm satisfies
-
-\[
-\boxed{
-\|\mathbf C^{-1}\|_2
-=\frac{1}{\sigma_{\min}(\mathbf C)}.
-}
-\]
-
-and the spectral condition number is
-
-\[
-\boxed{
-\kappa_2(\mathbf C)
-=\frac{\sigma_{\max}(\mathbf C)}{\sigma_{\min}(\mathbf C)}.
-}
-\]
-
-A small minimum singular value can therefore produce strong noise and calibration-error amplification. Condition number measures relative sensitivity, while the absolute inverse gain also depends on \(\sigma_{\min}\); the two diagnostics must not be conflated.
-
-If \(\mathbf C\) is singular, exact inverse decoupling does not exist. Pseudoinverse or regularized correction is a different calibration/estimation strategy and is deferred to Exploration 3.9.
+For calibrated inverse correction, \(\mathbf y=\hat{\mathbf C}^{-1}\mathbf x\), noise and model error are transformed. \(\|\mathbf C^{-1}\|_2=1/\sigma_{\min}(\mathbf C)\) and \(\kappa_2=\sigma_{\max}/\sigma_{\min}\). Singular coupling has no exact inverse.
 
 ## 7.13 Residual coupling and attribution
 
-An additive operator residual may be defined without requiring invertibility:
-
 \[
-\boxed{
-\Delta\mathbf C
-=\mathbf C-\hat{\mathbf C}.
-}
+\Delta\mathbf C=\mathbf C-\hat{\mathbf C}
 \]
 
-If \(\hat{\mathbf C}\) is invertible and both operators have identical semantics/domain, a relative inverse residual may also be defined:
+and, when valid,
 
 \[
-\boxed{
-\mathbf E_C
-=\hat{\mathbf C}^{-1}\mathbf C-\mathbf I.
-}
+\mathbf E_C=\hat{\mathbf C}^{-1}\mathbf C-\mathbf I
 \]
 
-These quantities answer different questions.
+have different semantics. Residual manifold mismatch must not automatically be labeled residual mutual coupling.
 
-A residual manifold mismatch such as
+## 7.14 Channel dropout and termination changes
 
-\[
-\mathbf a_{\rm phys}-\mathbf a_{\rm cal}
-\]
-
-must not automatically be labeled residual mutual coupling. It may contain position, element pattern, phase center, electronics, loading, measurement, interpolation, or other errors. Physical-cause attribution requires identifiability evidence.
-
-## 7.14 Channel dropout, masking, and termination changes
-
-A digital channel mask applied after ADC/receiver acquisition does not necessarily change the physical antenna network if all physical ports remain in the same terminated state.
-
-By contrast, disabling an LNA, changing an input impedance, opening/shorting a port, disconnecting an element, changing a matching network, or otherwise changing a physical termination can alter the receive network itself.
-
-If
-
-\[
-\mathbf Z_L\rightarrow\mathbf Z_L',
-\]
-
-then generally
-
-\[
-\boxed{
-\mathbf T_L'
-=\mathbf Z_L'(\mathbf Z_A+\mathbf Z_L')^{-1}
-\neq
-\mathbf T_L.
-}
-\]
-
-The physical EM/network configuration may also change enough that the appropriate \(\mathbf Z_A\), embedded response, or calibrated manifold changes.
-
-Therefore GeoDOA shall distinguish
-
-\[
-\boxed{
-\text{digital channel masking}
-\neq
-\text{physical port-state / termination change}.
-}
-\]
-
-A coupling model for a changed termination/configuration shall not be obtained merely by deleting a row/column from an old operator unless that reduction has been explicitly derived and validated.
+Digital masking after acquisition is distinct from a physical port-state/termination change. If \(\mathbf Z_L\) changes, the loaded transform generally changes for all surviving channels; deleting an old matrix row/column is not automatically valid.
 
 ## 7.15 Scientific verification notes
 
-The exploration was cross-checked against established antenna/network practice:
-
-- mutual coupling is treated as electromagnetic interaction among array elements and may be characterized through mutual impedance, S-parameters, coupling matrices, or embedded-element patterns;
-- embedded element patterns are obtained with the element embedded in the finite array and other ports terminated according to a declared impedance, and they include neighboring-element coupling effects;
-- S-to-impedance conversion depends on declared port/reference impedances, reinforcing that S-parameters are not standalone DOA coupling coefficients.
-
-These verification sources support the modeling distinctions above; they do not replace the later ADR-003 Gate evidence or Golden Reference validation.
+The exploration was cross-checked against established antenna/network practice for mutual impedance, S-parameters, loaded multiport receiving arrays, embedded-element patterns, and finite-array edge effects.
 
 ## 7.16 Candidate decisions from Exploration 3.5
 
@@ -1436,79 +1021,19 @@ These verification sources support the modeling distinctions above; they do not 
 
 ## 8.1 Timing/frequency taxonomy
 
-GeoDOA shall not use one ambiguous `phase_error` parameter for all receiver timing and frequency imperfections. At least the following meanings are distinct:
+GeoDOA shall not use one ambiguous `phase_error` parameter for all receiver timing and frequency imperfections. Static phase offset, physical/electrical channel delay, fixed sampling-time offset, sampling-rate offset, sampling-time jitter, receiver-reference/LO phase and frequency error, and digital processing latency are distinct meanings.
 
-1. **Static narrowband channel phase offset** — a complex phase intercept at a declared operating point.
-2. **Physical/electrical channel delay** — a waveform delay through cable, filter, RF/IF/baseband path, or another declared channel stage.
-3. **Fixed sampling-time offset / sampling-clock phase skew** — different channels sample the waveform at different physical epochs even if their sample rates are equal.
-4. **Sampling-rate offset (SRO)** — channel sample periods/rates differ, causing accumulated timing drift.
-5. **Sampling-time jitter** — sample-to-sample timing uncertainty, distinct from deterministic skew/drift.
-6. **Receiver-reference/LO phase offset** — static oscillator/reference phase difference.
-7. **Receiver-reference/LO frequency offset** — time derivative of receiver-reference phase error.
-8. **Digital transport / processing latency** — post-acquisition arrival or pipeline delay, which is not automatically a physical sample-time error.
+## 8.2 Physical channel delay and sign convention
 
-The phrase `clock skew` is therefore too ambiguous to serve as a complete scientific parameter. APIs and reports should distinguish fixed sampling-time offset, sampling-rate offset, and jitter.
-
-## 8.2 Physical channel delay and the GeoDOA sign convention
-
-Let \(\delta\tau_n\) be a declared additional physical/electrical delay in channel \(n\) relative to a reference channel/stage. A pure delay acts as
+A pure additional channel delay obeys
 
 \[
-\boxed{
-y_n(t)=x_n(t-\delta\tau_n).
-}
+y_n(t)=x_n(t-\delta\tau_n),
+\qquad
+H_{\tau,n}(\omega)=e^{+j\omega\delta\tau_n}
 \]
 
-Under the accepted GeoDOA Fourier convention,
-
-\[
-x(t-\tau)\longleftrightarrow X(\omega)e^{+j\omega\tau},
-\]
-
-so the delay transfer factor is
-
-\[
-\boxed{
-H_{\tau,n}(\omega)=e^{+j\omega\delta\tau_n}.
-}
-\]
-
-For an RF signal represented by the complex envelope convention
-
-\[
-x_{\rm RF}(t)=\Re\{s(t)e^{-j\omega_c t}\},
-\]
-
-an additional channel delay produces
-
-\[
-\boxed{
-s(t-\delta\tau_n)e^{+j\omega_c\delta\tau_n}.
-}
-\]
-
-Therefore a physical delay contains two effects that must not be conflated:
-
-- envelope/time alignment through \(s(t-\delta\tau_n)\);
-- carrier-frequency phase \(e^{+j\omega_c\delta\tau_n}\).
-
-If the envelope delay is negligible under a declared narrowband approximation,
-
-\[
-s(t-\delta\tau_n)\approx s(t),
-\]
-
-then the delay may be approximated at carrier frequency by a diagonal phase operator
-
-\[
-\boxed{
-\mathbf D_{\tau,c}
-=\operatorname{diag}
-\left(e^{+j\omega_c\delta\tau_1},\ldots,e^{+j\omega_c\delta\tau_N}\right).
-}
-\]
-
-This phase-only form is an approximation to a physical delay, not its general definition.
+under the accepted GeoDOA \(e^{-j\omega t}\) convention. In complex-envelope form this includes envelope delay and carrier phase. A phase-only diagonal representation is a declared narrowband approximation, not the general definition.
 
 ## 8.3 Delay slope versus static phase offset
 
@@ -1516,563 +1041,101 @@ For a pure delay,
 
 \[
 \phi_{\tau,n}(\omega)=\omega\delta\tau_n,
+\qquad
+\frac{d\phi}{d\omega}=\delta\tau_n.
 \]
 
-so
+Static phase offset has no such slope. Single-frequency phase alone may not identify the cause.
 
-\[
-\boxed{
-\frac{d\phi_{\tau,n}}{d\omega}=\delta\tau_n.
-}
-\]
+## 8.4 Channel-delay compatibility
 
-This is consistent with ADR-002's accepted GeoDOA group-delay sign convention
-
-\[
-\tau_g=+\frac{d\phi}{d\omega}.
-\]
-
-By contrast, an ideal static phase offset
-
-\[
-H_{\phi,n}=e^{j\phi_{0,n}}
-\]
-
-has zero phase slope with frequency.
-
-Consequently,
-
-\[
-\boxed{
-\text{static phase offset}
-\neq
-\text{physical delay}
-}
-\]
-
-as physical models, even though a single-frequency measurement may be unable to distinguish them.
-
-A useful parametric local response can therefore contain both intercept and slope,
-
-\[
-\boxed{
-H_n(\omega)
-\approx
-\rho_n(\omega)
-\exp\{j[\phi_{0,n}+\omega\delta\tau_n]\},
-}
-\]
-
-over a declared validity band. Higher-order phase curvature represents dispersion/filter behavior beyond a pure delay.
-
-## 8.4 Channel-delay narrowband compatibility
-
-Let the relative additional channel-delay spread be
-
-\[
-\boxed{
-\Delta\tau_{\rm ch}
-=\max_n\delta\tau_n-
-\min_n\delta\tau_n.
-}
-\]
-
-For spectral offsets \(|\nu|\le\nu_{\max}\), define the diagnostic
-
-\[
-\boxed{
-\eta_{\rm ch-delay}
-=2\pi\nu_{\max}\Delta\tau_{\rm ch}.
-}
-\]
-
-This has the same scientific logic as ADR-002's aperture bandwidth-delay diagnostic, but it describes **receiver/channel differential delay**, not propagation-aperture delay.
-
-GeoDOA does not prescribe a universal PASS/FAIL threshold here. A threshold belongs to a later validation/compatibility policy. If the declared tolerance makes the residual envelope shift negligible, a carrier-phase-only approximation may be used. Otherwise the channel response must remain time/frequency dependent.
+Define differential channel-delay spread \(\Delta\tau_{\rm ch}\) and diagnostic \(\eta_{\rm ch-delay}=2\pi\nu_{\max}\Delta\tau_{\rm ch}\). This is separate from propagation aperture delay. No universal PASS/FAIL threshold is declared here.
 
 ## 8.5 Sampling-time model
 
-Let the nominal processing time grid be
+A channel-specific acquisition-time model is
 
 \[
-\boxed{
-t[k]=t_0+kT_s.
-}
+\boxed{t_n[k]=t_0+\beta_n+kT_s(1+\epsilon_{T,n})+\eta_n[k]},
 \]
 
-A useful channel-specific acquisition-time model is
+with fixed offset \(\beta_n\), fractional sample-period error \(\epsilon_{T,n}\), and jitter \(\eta_n[k]\). If \(f_{s,n}=f_s(1+\epsilon_{f,n})\), then \(1+\epsilon_T=1/(1+\epsilon_f)\) and for small error \(\epsilon_T\approx-\epsilon_f\).
+
+## 8.6 Sampling-time offset versus channel delay
+
+Later sampling of \(z(t)=Ae^{-j\omega t}\) gives
 
 \[
-\boxed{
-t_n[k]
-=t_0+\beta_n+kT_s(1+\epsilon_{T,n})+\eta_n[k],
-}
+z(t+\delta t)=z(t)e^{-j\omega\delta t},
 \]
 
-where:
-
-- \(\beta_n\) is a fixed sampling-time offset in seconds;
-- \(\epsilon_{T,n}\) is a dimensionless fractional sample-period error;
-- \(\eta_n[k]\) is sample-to-sample timing jitter/uncertainty.
-
-Thus the channel's timing error relative to the nominal grid is
-
-\[
-\boxed{
-\delta t_n[k]
-=\beta_n+kT_s\epsilon_{T,n}+\eta_n[k].
-}
-\]
-
-If the actual sample rate is written
-
-\[
-f_{s,n}=f_s(1+\epsilon_{f,n}),
-\]
-
-then exactly
-
-\[
-\boxed{
-1+\epsilon_{T,n}
-=\frac{1}{1+\epsilon_{f,n}}
-}
-\]
-
-and for small errors
-
-\[
-\boxed{
-\epsilon_{T,n}\approx-\epsilon_{f,n}.
-}
-\]
-
-GeoDOA shall preserve which fractional error is being reported; `ppm` without declaring sample-rate versus sample-period semantics is incomplete.
-
-## 8.6 Sampling-time offset is not the same operation as channel delay
-
-Let \(z_n(t)\) denote the continuous-time waveform at the physical point where channel \(n\) is sampled. A positive sampling-time offset means the waveform is observed later:
-
-\[
-\boxed{
-y_n[k]=z_n(t[k]+\delta t_n[k]).
-}
-\]
-
-For a monochromatic component under the GeoDOA temporal convention,
-
-\[
-z(t)=Ae^{-j\omega t},
-\]
-
-so
-
-\[
-\boxed{
-z(t+\delta t)
-=z(t)e^{-j\omega\delta t}.
-}
-\]
-
-This sign is opposite to the pure physical-delay transfer factor \(e^{+j\omega\delta\tau}\) because the two operations are physically different:
-
-```text
-channel delay:      shift the waveform later, x(t) -> x(t-delta_tau)
-sampling-time skew: observe the existing waveform at a later epoch, t -> t+delta_t
-```
-
-The frequency \(\omega\) in the sampling-time relation is the frequency of the waveform at the declared sampling point. Direct-RF, IF, and complex-baseband sampling therefore require explicit stage/frequency provenance.
+opposite in sign to positive waveform delay because these are different physical operations. The relevant frequency depends on the sampling stage.
 
 ## 8.7 Fixed skew, SRO, and jitter
 
-The timing model separates three effects:
+Fixed sampling offset is constant. SRO produces accumulated timing drift \(\delta t_n[k]=\beta_n+kT_s\epsilon_{T,n}\). Jitter is sample-varying uncertainty. Broadband SRO correction generally requires resampling/time-warp correction, not one fixed phase.
 
-### Fixed sampling-time offset
+## 8.8 Common versus differential clock errors
 
-If
+Common clock error can preserve inter-channel synchronization while distorting an external time axis. Differential offset/SRO breaks simultaneity/coherence unless explicitly corrected.
 
-\[
-\epsilon_{T,n}=0,
-\qquad
-\eta_n[k]=0,
-\]
+## 8.9 Aperture delay, jitter, and processing latency
 
-then
+ADC aperture delay, aperture jitter, and conversion/buffer/DMA/FPGA latency are distinct. Post-acquisition data arriving later does not imply it was sampled later if sample identity and epoch are preserved.
 
-\[
-\delta t_n[k]=\beta_n.
-\]
+## 8.10 Receiver-reference / LO error
 
-For a sufficiently narrowband signal this can sometimes be represented by a fixed phase at a declared frequency, but for a general waveform it remains a fractional-time alignment problem.
-
-### Sampling-rate offset
-
-If
+Represent processed-baseband receiver-reference phase as \(e^{j\psi_n(t)}\), with
 
 \[
-\epsilon_{T,n}\neq0,
+\delta f_{\rm ref,n}(t)=\frac{1}{2\pi}\frac{d\psi_n}{dt}.
 \]
 
-then the timing error accumulates with sample index:
+Static phase offset is an intercept; frequency offset is phase evolution. Mapping physical LO error into processed-baseband sign requires explicit mixer convention.
+
+## 8.11 Common versus differential reference error
+
+A truly common phase process is projectively common across simultaneous spatial channels and cancels from an instantaneous covariance outer product. Differential frequency error creates a time-varying relative manifold.
+
+## 8.12 Covariance-window coherence
+
+For differential frequency error,
 
 \[
-\boxed{
-\delta t_n[k]
-=\beta_n+kT_s\epsilon_{T,n}.
-}
+\Gamma_{nm}=\frac1L\sum_k e^{j2\pi(\delta f_n-\delta f_m)t_k}.
 \]
 
-For a tone, this produces a phase drift linear in \(k\). For a broadband/general waveform it is a time-warp/resampling problem and cannot generally be reduced to one fixed diagonal phase matrix.
-
-### Sampling-time jitter
-
-\(\eta_n[k]\) is stochastic or otherwise sample-varying timing uncertainty. It is not deterministic fixed skew or SRO. Detailed stochastic jitter/noise and ADC impairment modeling is deferred to Exploration 3.7, but the semantic distinction is locked for later reconciliation.
-
-## 8.8 Common versus differential sampling-clock errors
-
-Decompose fixed timing offset as
+Continuous uniform averaging gives
 
 \[
-\beta_n=\beta_c+\tilde\beta_n
+\Gamma_{nm}(T)=e^{j\pi\Delta f_{nm}T}\operatorname{sinc}(\Delta f_{nm}T),
 \]
 
-and period error as
+so cross-channel coherence can attenuate over long windows.
 
-\[
-\epsilon_{T,n}=\epsilon_{T,c}+\tilde\epsilon_{T,n}.
-\]
+## 8.13 Snapshot validity under SRO
 
-A **common** fixed timing shift can preserve relative spatial simultaneity among channels while shifting the absolute/external observation epoch. A **differential** fixed timing shift violates exact simultaneity unless an equivalent alignment/calibration operation is performed.
+Differential SRO challenges ADR-002 simultaneous-equivalent snapshot semantics. For broadband signals, coherent reconstruction generally requires interpolation/resampling with explicit provenance.
 
-Likewise, a shared common sample clock can have a common rate error relative to an external reference while keeping physical channels mutually synchronized. Such an error still changes the physical time scale and can bias Doppler/frequency/time-axis interpretations.
+## 8.14 Doppler/source/LO distinction
 
-Differential SRO is more severe for spatial coherence because relative sample epochs drift continuously across channels. Coherent processing may therefore require resampling to a common time grid, not merely multiplying by a fixed phase factor.
+Physical Doppler, source-frequency uncertainty, and receiver reference frequency error remain distinct causes even if one observed residual frequency contains all of them. Shared reference topology may correlate sampling and LO errors.
 
-## 8.9 Aperture delay, aperture jitter, and processing latency
+## 8.15 TDM-MIMO implication
 
-GeoDOA shall preserve three separate engineering meanings:
-
-- **ADC aperture delay** — deterministic delay between a declared sampling-clock edge/reference and the actual sampling instant;
-- **aperture/sampling jitter** — sample-to-sample uncertainty in that instant;
-- **conversion/buffer/DMA/FPGA processing latency** — delay after the sample has already been physically acquired.
-
-Channel-to-channel aperture-delay mismatch can contribute to effective fixed sampling-time offset. Jitter contributes uncertainty/noise-like timing error. Digital pipeline latency does **not** alter the physical acquisition epoch if sample identity, ordering, and timestamp/index correspondence remain correct.
-
-Therefore
-
-\[
-\boxed{
-\text{data arrives later at processing}
-\not\Rightarrow
-\text{signal was sampled later}.
-}
-\]
-
-This distinction is mandatory for future FPGA/SoC backends and deterministic-latency reporting.
-
-## 8.10 Receiver-reference / LO phase and frequency error
-
-To avoid hiding mixer-sign conventions, GeoDOA can define a processed-baseband receiver-reference phase process
-
-\[
-\boxed{
-\psi_n(t)
-}
-\]
-
-through the multiplicative factor
-
-\[
-\boxed{
-e^{j\psi_n(t)}.
-}
-\]
-
-Define the corresponding residual receiver-reference frequency error by
-
-\[
-\boxed{
-\delta f_{\rm ref,n}(t)
-=\frac{1}{2\pi}\frac{d\psi_n(t)}{dt}.
-}
-\]
-
-For constant residual frequency error,
-
-\[
-\boxed{
-\psi_n(t)
-=\psi_n(0)+2\pi\delta f_{\rm ref,n}t.
-}
-\]
-
-Thus a static oscillator/reference phase offset and a frequency offset are different models:
-
-```text
-static phase offset     -> constant phase intercept
-frequency offset        -> phase that evolves with time
-```
-
-When mapping a physical LO frequency error into \(\delta f_{\rm ref,n}\), the mixer/downconversion sign convention must be declared. GeoDOA shall not infer that sign from the words `LO error` alone.
-
-## 8.11 Common versus differential receiver-reference error
-
-Write
-
-\[
-\psi_n(t)=\psi_c(t)+\tilde\psi_n(t).
-\]
-
-If all simultaneously observed channels receive the same common phase factor,
-
-\[
-\mathbf D_c(t)=e^{j\psi_c(t)}\mathbf I,
-\]
-
-then that factor is projectively common across the spatial snapshot. For an instantaneous outer product,
-
-\[
-\boxed{
-\mathbf D_c(t)\mathbf R\mathbf D_c^H(t)=\mathbf R.
-}
-\]
-
-Thus a truly common oscillator phase/frequency error need not distort an instantaneous spatial covariance/manifold direction, even though it remains important for coherent temporal processing, absolute phase/frequency interpretation, waveform demodulation, and synchronization to external systems.
-
-Differential receiver-reference phase/frequency error is different. Define
-
-\[
-\mathbf D_f(t)
-=\operatorname{diag}
-\left(e^{j2\pi\delta f_1t},\ldots,e^{j2\pi\delta f_Nt}\right).
-\]
-
-Then for a static underlying spatial covariance \(\mathbf R_0\),
-
-\[
-\boxed{
-\mathbf R(t)
-=\mathbf D_f(t)\mathbf R_0\mathbf D_f^H(t).
-}
-\]
-
-The physical signal/noise-subspace orientation can therefore drift with time.
-
-## 8.12 Covariance-window coherence under differential frequency error
-
-For snapshots at times \(t_k\), the \((n,m)\) covariance term under constant differential residual frequency error acquires the averaging factor
-
-\[
-\boxed{
-\Gamma_{nm}
-=\frac{1}{L}
-\sum_{k=1}^{L}
-\exp\left[j2\pi(\delta f_n-\delta f_m)t_k\right].
-}
-\]
-
-Hence differential oscillator error can reduce or rotate cross-channel covariance terms when the covariance estimator averages over a window during which relative phase evolves.
-
-For continuous uniform averaging over \([0,T]\), let
-
-\[
-\Delta f_{nm}=\delta f_n-\delta f_m.
-\]
-
-Then
-
-\[
-\boxed{
-\Gamma_{nm}(T)
-=e^{j\pi\Delta f_{nm}T}
-\operatorname{sinc}(\Delta f_{nm}T),
-}
-\]
-
-where
-
-\[
-\operatorname{sinc}(x)=\frac{\sin(\pi x)}{\pi x}.
-\]
-
-This result makes the coherence consequence explicit: relative frequency error is not merely a fixed phase bias; over a sufficiently long window it can attenuate cross-channel coherence and alter covariance rank/eigenspace behavior.
-
-No universal acceptable \(|\Delta f|T\) threshold is declared at this exploration stage.
-
-## 8.13 Sampling-rate offset and spatial snapshot validity
-
-ADR-002 defines a spatial snapshot as a simultaneous-equivalent coherent observation of the declared channels. Differential SRO directly challenges that contract.
-
-For a tone \(z(t)=Ae^{-j\omega t}\) and the deterministic sampling model,
-
-\[
-\boxed{
-z(t_n[k])
-=z(t[k])
-\exp\{-j\omega[\beta_n+kT_s\epsilon_{T,n}]\}.
-}
-\]
-
-The relative phase therefore drifts with \(k\). For a broadband waveform, the stronger statement applies: different channels are evaluating the waveform at different physical times, so coherent reconstruction generally requires interpolation/resampling or another explicitly validated equivalent construction.
-
-An integer-sample correction and a fractional-delay/resampling correction are different operations. The latter can introduce interpolation bandwidth, filter, boundary, and noise-correlation effects that must retain provenance.
-
-## 8.14 Physical Doppler, source frequency error, and receiver oscillator error
-
-ADR-002's Doppler is a propagation/path phenomenon caused by motion. Receiver-reference/LO frequency error is an instrumentation phenomenon. Source carrier uncertainty is a source/waveform phenomenon.
-
-These may all contribute to an observed residual temporal frequency, but they remain scientifically distinct:
-
-\[
-\boxed{
-\text{physical Doppler}
-\neq
-\text{source-frequency uncertainty}
-\neq
-\text{receiver LO/reference error}.
-}
-\]
-
-A single narrowband observation may not make these causes identifiable without a known reference, calibration waveform, motion model, or additional measurements.
-
-If the sampling clock and LO are derived from the same physical oscillator/reference, their errors may be correlated or share one fractional-frequency cause. GeoDOA shall preserve shared-reference provenance rather than assuming independent random errors by default.
-
-## 8.15 Non-simultaneous / TDM MIMO implication
-
-A common temporal phase process can become a **relative virtual-channel phase** when channels used to construct one virtual-array snapshot are acquired at different physical times.
-
-If virtual channel \(q\) is observed at time \(t_q\), a common evolving phase \(e^{j\psi(t)}\) contributes
-
-\[
-\boxed{
-e^{j\psi(t_q)}
-}
-\]
-
-which is no longer common across the assembled virtual-channel vector unless \(\psi(t_q)\) is effectively constant or explicitly corrected.
-
-Therefore common CFO/Doppler/oscillator phase that is harmless to a truly simultaneous physical Rx snapshot may distort a TDM-MIMO virtual manifold. Snapshot construction must preserve acquisition-time provenance and any synchronization/phase compensation used to create a simultaneous-equivalent view.
+A common temporal phase process can become a relative virtual-channel phase when virtual channels are acquired at different times. TDM snapshot construction must preserve acquisition-time and phase-compensation provenance.
 
 ## 8.16 Calibration and identifiability
 
-Timing/frequency calibration must declare exactly what is being estimated:
-
-- fixed phase intercept;
-- physical/electrical channel delay;
-- fixed sampling-time offset;
-- sample-rate/period error;
-- oscillator/reference phase offset;
-- oscillator/reference frequency offset;
-- stochastic jitter/phase-noise parameters;
-- or an aggregate effective correction.
-
-Important identifiability limits include:
-
-1. At one frequency, a static phase offset and a delay-induced phase can be indistinguishable.
-2. A frequency sweep or sufficiently broadband known calibration waveform can expose phase slope and therefore delay, subject to phase unwrapping and model validity.
-3. Channel delay and sampling-time offset can produce similar effective alignment errors but represent different physical stages and opposite signed shifts under the definitions above.
-4. Common clock or LO errors may be invisible to relative spatial calibration without an external reference.
-5. Observed residual frequency may confound oscillator error, source-frequency error, and physical Doppler.
-6. Calibration validity may change after oscillator relock, device restart, clock-tree change, sample-rate change, center-frequency change, temperature change, or receiver reconfiguration.
-
-Calibration provenance should therefore include, as applicable, clock/LO topology, shared-reference identity, lock/restart state, center frequency, sample rate, acquisition stage, calibration waveform/bandwidth, timestamp/epoch, temperature/environment, and correction method.
-
-Residuals must preserve their scientific type, for example
-
-\[
-\delta\tau_n^{\rm res},
-\qquad
-\beta_n^{\rm res},
-\qquad
-\epsilon_{T,n}^{\rm res},
-\qquad
-\delta f_n^{\rm res}.
-\]
-
-A generic `phase_residual` is insufficient when the physical error evolves across frequency or time.
+Calibration shall type phase intercept, channel delay, sample-time offset, SRO, oscillator phase/frequency, and jitter separately. Multi-frequency calibration can reveal delay slope; common errors may require an external reference.
 
 ## 8.17 Small deterministic checks
 
-### Delay versus sampling-time sign
-
-For a \(100\,\text{MHz}\) monochromatic component and a positive \(100\,\text{ps}\) physical channel delay,
-
-\[
-\Delta\phi_{\rm delay}
-=2\pi(100\times10^6)(100\times10^{-12})
-\approx0.06283\,\text{rad}
-=+3.6^\circ.
-\]
-
-For a positive \(100\,\text{ps}\) sampling-time offset, meaning the same waveform is sampled \(100\,\text{ps}\) later,
-
-\[
-\Delta\phi_{\rm sample}
-=-2\pi(100\times10^6)(100\times10^{-12})
-=-3.6^\circ.
-\]
-
-At \(1\,\text{GHz}\), the magnitude becomes \(36^\circ\), demonstrating why a physical delay cannot generally be replaced by a frequency-independent phase constant.
-
-### Sampling-rate drift
-
-Let
-
-\[
-f_s=10\,\text{MHz}
-\]
-
-and suppose one channel's actual sample rate is high by \(+10\,\text{ppm}\):
-
-\[
-\epsilon_f=10^{-5}.
-\]
-
-Then
-
-\[
-\epsilon_T
-=\frac{1}{1+10^{-5}}-1
-\approx-9.9999\times10^{-6}.
-\]
-
-After approximately one nominal second of sample indexing, the channel's physical sample epoch leads the nominal grid by about \(10\,\mu\text{s}\). This is accumulated timing drift, not a fixed phase error.
-
-### Differential frequency coherence
-
-For two channels with
-
-\[
-\Delta f_{12}=1\,\text{Hz}
-\]
-
-and continuous covariance averaging over
-
-\[
-T=0.5\,\text{s},
-\]
-
-\[
-|\Gamma_{12}|
-=|\operatorname{sinc}(0.5)|
-=\frac{2}{\pi}
-\approx0.6366.
-\]
-
-Thus a seemingly small differential frequency error can substantially attenuate cross-channel covariance when the coherent averaging interval is long enough.
-
-These are exploration checks, not new formal GRP numbers. GRP-014 through GRP-017 remain reserved as already defined.
+A +100 ps physical delay at 100 MHz gives +3.6 degrees under the declared convention, while sampling the same waveform +100 ps later gives -3.6 degrees. A +10 ppm sample-rate error accumulates about 10 microseconds of epoch drift over one second. A 1 Hz differential frequency error averaged for 0.5 s yields coherence magnitude \(2/\pi\approx0.6366\).
 
 ## 8.18 Scientific verification notes
 
-The exploration was cross-checked against accepted ADR-002 and established synchronization/ADC practice:
-
-- ADR-002 defines a pure delay under the GeoDOA Fourier convention with the factor \(e^{+j\omega\tau}\), separates narrowband phase from envelope delay, and defines a spatial snapshot as simultaneous-equivalent coherent channel observation.
-- Analog Devices documentation distinguishes ADC aperture delay from aperture jitter and notes that channel timing mismatch/clock skew produces frequency-dependent error.
-- MathWorks synchronization documentation distinguishes carrier-frequency offset from sampling-clock offset; sampling-clock mismatch shifts sampling instants while carrier-frequency offset produces phase evolution over time.
-- Sampling-rate-offset literature for asynchronous sensor arrays treats SRO as a coherence problem requiring estimation/compensation or resampling to a common time base before coherent distributed processing.
-
-These references support the semantic distinctions above; they do not replace ADR-003's later Gates A–F or formal validation evidence.
+Exploration 3.6 was reconciled with ADR-002 delay/Fourier/snapshot semantics and established ADC synchronization, aperture-jitter, CFO, and SRO practice.
 
 ## 8.19 Candidate decisions from Exploration 3.6
 
@@ -2086,13 +1149,13 @@ These references support the semantic distinctions above; they do not replace AD
 - **3.6-D8** — Fixed sampling-time offset is defined by the physical sample epoch and is not the same operation as delaying the waveform.
 - **3.6-D9** — For \(e^{-j\omega t}\), later sampling by \(+\delta t\) produces \(e^{-j\omega\delta t}\), opposite in sign to a positive waveform delay under the declared definitions.
 - **3.6-D10** — The frequency relevant to sampling-time phase depends on the physical sampling stage; RF, IF, and baseband sampling require provenance.
-- **3.6-D11** — GeoDOA shall prefer explicit `fixed sampling-time offset`, `sampling-rate offset`, and `jitter` semantics over an ambiguous bare `clock skew` parameter.
+- **3.6-D11** — GeoDOA shall prefer explicit fixed sampling-time offset, sampling-rate offset, and jitter semantics over ambiguous bare clock-skew terminology.
 - **3.6-D12** — A useful sample-time model separates fixed offset, fractional sample-period error, and sample-to-sample jitter.
 - **3.6-D13** — Fractional sample-rate error and fractional sample-period error have opposite first-order signs and must not be conflated.
 - **3.6-D14** — Common fixed sampling-time offset may preserve relative spatial simultaneity while changing absolute observation epoch; differential fixed offset does not.
 - **3.6-D15** — A common sample-rate error on a genuinely shared clock can preserve inter-channel synchronization while distorting the external physical time scale.
 - **3.6-D16** — Differential SRO accumulates relative time drift and generally requires resampling/time-warp correction for broadband coherent processing.
-- **3.6-D17** — Sampling-time jitter is distinct from deterministic skew/SRO and will be developed further with receiver/ADC effects in Exploration 3.7.
+- **3.6-D17** — Sampling-time jitter is distinct from deterministic skew/SRO and is further developed with receiver/ADC effects in Exploration 3.7.
 - **3.6-D18** — ADC aperture delay, aperture jitter, and post-acquisition digital/FPGA latency are different quantities.
 - **3.6-D19** — Processing/DMA/pipeline latency does not change acquisition time if sample identity and epoch correspondence are preserved.
 - **3.6-D20** — Receiver-reference phase shall be representable as a time-varying phase process whose derivative defines residual reference-frequency error.
@@ -2115,7 +1178,546 @@ These references support the semantic distinctions above; they do not replace AD
 
 ---
 
-# 9. Reserved Golden Reference Problems for ADR-003
+# 9. Exploration 3.7 — Quantization / Receiver / Dynamic-Range Effects
+
+## 9.1 Receiver-chain scope and semantic boundaries
+
+Exploration 3.7 covers imperfections that arise in the analog receive chain, data conversion, and finite-resolution measurement representation. It does **not** collapse all hardware imperfections into one additive-noise term.
+
+A useful conceptual chain is
+
+```text
+physical sensor / coupled port response
+    ↓
+analog receiver gain, filtering, noise, offset, I/Q conversion, nonlinearity
+    ↓
+sampling instant / aperture uncertainty
+    ↓
+ADC input and full-scale constraint
+    ↓
+quantizer / code mapping / overrange behavior
+    ↓
+digital measurement samples
+    ↓
+subsequent DSP / FPGA arithmetic
+```
+
+ADC quantization and FPGA/processor fixed-point arithmetic are separate scientific stages. ADC quantization changes the measurement representation at acquisition; FPGA arithmetic quantization occurs later inside an implementation and has its own scaling, rounding, saturation, and word-length semantics.
+
+## 9.2 Ideal uniform ADC quantizer
+
+For an explicitly declared ideal uniform \(N_b\)-bit quantizer with analog full-scale input span
+
+\[
+\boxed{V_{\rm FSR}=V_{\max}-V_{\min}},
+\]
+
+and \(2^{N_b}\) quantization intervals, define the ideal step size
+
+\[
+\boxed{\Delta=\frac{V_{\rm FSR}}{2^{N_b}}}.
+\]
+
+This formula assumes the declared uniform idealization. The exact transition levels, reconstruction levels, endpoint behavior, signed/unsigned code mapping, two's-complement/offset-binary encoding, and mid-rise versus mid-tread convention must be explicit when code-exact behavior matters.
+
+For an in-range nearest-level idealization,
+
+\[
+y=Q(x),
+\qquad
+e_q=Q(x)-x,
+\]
+
+and away from endpoint ambiguities,
+
+\[
+\boxed{|e_q|\le\frac{\Delta}{2}}.
+\]
+
+This deterministic in-range error bound is different from a stochastic quantization-noise model.
+
+For a complex baseband sample, GeoDOA shall not assume that a physical ADC directly quantizes a complex number. A physical I/Q receiver usually has two real converter paths or another explicitly declared architecture. An abstract complex quantizer may be used only when its relationship to physical I/Q conversion is stated.
+
+## 9.3 Exact quantization error versus additive quantization-noise approximation
+
+The quantizer is nonlinear:
+
+\[
+\boxed{y=Q(x)}.
+\]
+
+Writing
+
+\[
+Q(x)=x+e_q
+\]
+
+is an identity if \(e_q\equiv Q(x)-x\), but treating \(e_q\) as independent, white, zero-mean noise is an **additional statistical approximation**.
+
+Under the classical high-resolution/no-overload conditions in which the quantization error is effectively distributed uniformly over one quantization cell,
+
+\[
+\boxed{e_q\sim\mathcal U\left(-\frac{\Delta}{2},\frac{\Delta}{2}\right)}
+\]
+
+is a useful model, giving
+
+\[
+\boxed{\operatorname{E}[e_q]=0,
+\qquad
+\sigma_q^2=\frac{\Delta^2}{12}}.
+\]
+
+GeoDOA shall not assume this model blindly. Quantization error can be signal-correlated, spectrally structured, periodic, or strongly non-Gaussian for low-level, deterministic, coherent, low-resolution, or overloaded inputs. Dither or naturally occurring receiver noise may make additive-noise assumptions more accurate, but dither itself is a declared physical/algorithmic condition.
+
+## 9.4 Ideal quantization SNR and ENOB
+
+For a full-scale sinusoid applied to an ideal \(N_b\)-bit uniform ADC, with only the classical uniform quantization-noise model and no overload, thermal noise, jitter, distortion, or nonlinearity, the familiar result is
+
+\[
+\boxed{\operatorname{SNR}_{q,\rm dB}
+\approx6.02N_b+1.76\ \text{dB}}.
+\]
+
+This result is not a universal SNR law for arbitrary waveforms, amplitudes, bandwidths, or converters. Its signal definition and full-scale convention must be stated.
+
+For practical converters, **nominal resolution** \(N_b\) and **effective number of bits** are different. Under the conventional sinusoidal dynamic-test definition,
+
+\[
+\boxed{\operatorname{ENOB}
+\approx\frac{\operatorname{SINAD}_{\rm dB}-1.76}{6.02}}.
+\]
+
+ENOB depends on test conditions such as input frequency, amplitude, sample rate, analog front-end, clock quality, and which distortion/noise components enter SINAD. ENOB shall not be used as a drop-in replacement for nominal code width or DC accuracy.
+
+Likewise, SNR, SINAD, THD, SFDR, ENOB, dynamic range, and noise-free resolution are distinct metrics and must not be reported under one generic `adc_quality` field.
+
+## 9.5 Full scale, dBFS, headroom, saturation, and clipping
+
+The ADC has a finite allowed input region. If the analog input exceeds the declared conversion range, the in-range quantization bound \(|e_q|\le\Delta/2\) no longer applies.
+
+A saturating quantizer can be represented abstractly as
+
+\[
+\boxed{y=Q_{\rm sat}(x;V_{\min},V_{\max})}.
+\]
+
+Clipping/overrange is a nonlinear information-loss event, not ordinary quantization noise. It can create harmonics, intermodulation, biased amplitudes, covariance distortion, and false spatial/statistical structure.
+
+GeoDOA shall preserve an overrange/clipping diagnostic where the modeled converter supplies one. Samples or frames containing overrange events shall not silently be treated as statistically equivalent to valid in-range samples.
+
+`dBFS` requires an explicit full-scale reference convention. Peak full-scale, RMS full-scale sine, full-scale span, and code-span references are not interchangeable without a declaration.
+
+## 9.6 Receiver thermal/electronic noise versus quantization error
+
+Receiver noise is generated physically before and/or within acquisition electronics. Quantization error is generated by the discrete amplitude mapping of the ADC. They are different phenomena.
+
+A simple declared chain may be
+
+\[
+\boxed{\mathbf z[k]=\mathbf G_{\rm rx}\mathbf x[k]+\mathbf n_{\rm rx}[k]}
+\]
+
+followed by
+
+\[
+\boxed{\mathbf y[k]=\mathcal Q(\mathbf z[k])}.
+\]
+
+The receiver-noise covariance
+
+\[
+\mathbf R_{n,\rm rx}
+=\operatorname E[\mathbf n_{\rm rx}\mathbf n_{\rm rx}^H]
+\]
+
+need not be spatially white, equal-variance, or independent across channels. Shared supplies, clock feedthrough, coupling, common references, and receiver architecture can create correlated noise.
+
+Under a bounded additive-quantization approximation, one may write
+
+\[
+\mathbf y\approx\mathbf z+\mathbf e_q
+\]
+
+and then, only with the required independence assumptions,
+
+\[
+\mathbf R_y
+\approx
+\mathbf R_z+\mathbf R_q.
+\]
+
+Analog receiver noise may also act as natural dither, changing quantizer statistics. This does not make receiver noise and quantization noise the same physical source.
+
+## 9.7 Gain staging, dynamic range, and AGC
+
+Analog gain before the ADC controls how the available converter range is used. Too little gain can make weak signals occupy only a small number of codes and increase the relative importance of downstream ADC noise/quantization. Too much gain can reduce headroom and drive analog compression or ADC clipping.
+
+Therefore receiver gain staging is a tradeoff among at least
+
+\[
+\boxed{\text{sensitivity / noise figure}
+\leftrightarrow
+\text{ADC utilization}
+\leftrightarrow
+\text{headroom / compression / clipping}
+\leftrightarrow
+\text{linearity / SFDR}}.
+\]
+
+Analog gain applied before quantization is not equivalent to digital scaling applied after quantization. Digital scaling cannot recover information already lost to clipping or coarse quantization.
+
+An AGC state shall be treated as part of measurement provenance. For an ideal common gain
+
+\[
+\mathbf G_{\rm AGC}[k]=g_c[k]\mathbf I,
+\]
+
+all channels receive the same instantaneous scale, which can preserve normalized spatial direction at each snapshot. However, time-varying common gain still weights snapshots differently and changes absolute signal/noise levels.
+
+Channel-dependent AGC or unequal gain control has
+
+\[
+\mathbf G_{\rm AGC}[k]
+=\operatorname{diag}(g_1[k],\ldots,g_N[k]),
+\]
+
+which can directly distort relative manifold amplitude and make the covariance process time varying.
+
+Gain-control state, settling/transient state, update timing, and whether gain is analog or digital must be explicit.
+
+## 9.8 Aperture jitter as a receiver/acquisition error
+
+Exploration 3.6 defined sample-time jitter semantically. Here its receiver-performance consequence is made explicit.
+
+For a small sampling-time error \(\delta t\),
+
+\[
+\boxed{x(t+\delta t)
+\approx x(t)+x'(t)\delta t}.
+\]
+
+Thus jitter-induced amplitude error scales with signal slew rate, not merely with signal amplitude.
+
+For a sinusoid of frequency \(f_{\rm in}\) and uncorrelated RMS aperture jitter \(\sigma_t\), the classical jitter-limited SNR approximation is
+
+\[
+\boxed{\operatorname{SNR}_{\rm jitter,dB}
+\approx-20\log_{10}(2\pi f_{\rm in}\sigma_t)}.
+\]
+
+This is a specialized sinusoidal/RMS result, not a universal stochastic model for arbitrary waveforms.
+
+Common and differential jitter must remain distinguishable. A common narrowband sample-time fluctuation may appear as a common instantaneous phase perturbation, while channel-specific or partially correlated jitter can create relative spatial error. Clock-tree topology and jitter correlation therefore belong to provenance.
+
+## 9.9 DC offset, mean removal, and spurious covariance modes
+
+Let a receiver add a deterministic or slowly varying offset vector \(\mathbf d\):
+
+\[
+\boxed{\mathbf y=\mathbf x+\mathbf d}.
+\]
+
+The uncentered second moment is
+
+\[
+\mathbf R_y^{(2)}
+=\operatorname E[\mathbf y\mathbf y^H].
+\]
+
+If \(\operatorname E[\mathbf x]=\mathbf0\), then
+
+\[
+\boxed{\mathbf R_y^{(2)}
+=\mathbf R_x+\mathbf d\mathbf d^H}.
+\]
+
+A constant channel-offset vector can therefore create an additional rank-one term in the uncentered second moment.
+
+An ideal centered covariance removes a truly constant offset when the mean is exactly known/estimated under compatible stationarity conditions. Finite-sample mean estimation, drifting offsets, DC leakage, LO feedthrough, and source components at/near DC can leave residual structure.
+
+GeoDOA shall preserve the ADR-002 distinction between uncentered second moment and centered sample covariance; `DC offset removed` is not an automatic property of every covariance computation.
+
+## 9.10 I/Q imbalance is a widely linear impairment
+
+In a quadrature/direct-conversion receiver, I/Q amplitude mismatch, phase mismatch, and DC offset can mix the desired complex signal with its conjugate image.
+
+A useful per-array widely linear model is
+
+\[
+\boxed{\mathbf y
+=\mathbf A_{\rm IQ}\mathbf x
++\mathbf B_{\rm IQ}\mathbf x^*
++\mathbf d_{\rm IQ}}.
+\]
+
+For independent per-channel I/Q imbalance, \(\mathbf A_{\rm IQ}\) and \(\mathbf B_{\rm IQ}\) may be diagonal. Ideal quadrature balance corresponds to the conjugate-image coefficient vanishing:
+
+\[
+\boxed{\mathbf B_{\rm IQ}=\mathbf0}.
+\]
+
+Thus I/Q imbalance is not generally equivalent to an ordinary complex gain matrix \(\mathbf G\mathbf x\).
+
+For centered data define covariance and pseudocovariance
+
+\[
+\mathbf R_x=\operatorname E[\mathbf x\mathbf x^H],
+\qquad
+\mathbf P_x=\operatorname E[\mathbf x\mathbf x^T].
+\]
+
+Ignoring offset for this expression,
+
+\[
+\boxed{
+\begin{aligned}
+\mathbf R_y
+={}&\mathbf A\mathbf R_x\mathbf A^H
++\mathbf A\mathbf P_x\mathbf B^H\\
+&+\mathbf B\mathbf P_x^*\mathbf A^H
++\mathbf B\mathbf R_x^*\mathbf B^H.
+\end{aligned}}
+\]
+
+Consequently, ordinary covariance alone may be insufficient to describe an improper/noncircular complex receiver process. Future I/Q-aware estimation may require augmented/widely linear statistics.
+
+## 9.11 Analog nonlinearity, compression, and intermodulation
+
+Receiver amplifiers, mixers, and ADC front ends can depart from linear superposition before hard clipping occurs.
+
+A memoryless complex-envelope specialization may be represented locally as
+
+\[
+\boxed{y_n
+=a_{1,n}x_n+a_{3,n}|x_n|^2x_n+a_{5,n}|x_n|^4x_n+\cdots}.
+\]
+
+This is a behavioral model, not a universal transistor-level law.
+
+Once the receiver is nonlinear,
+
+\[
+F(x_1+x_2)\neq F(x_1)+F(x_2),
+\]
+
+so multiple sources/interferers can create harmonics and intermodulation products not present in the linear array model. A strong blocker can therefore influence a weak-source DOA estimate even when the blocker itself lies outside the ideal signal model.
+
+P1dB, IIP2/IIP3, THD, and SFDR are receiver/converter characterization metrics; they are not interchangeable and are not themselves direct coefficients of the polynomial model without an explicit mapping.
+
+Analog compression and ADC clipping are distinct nonlinear stages, although both may occur in the same receiver under excessive level.
+
+## 9.12 Covariance and eigenspace consequences
+
+For exact quantization or nonlinear receiver response,
+
+\[
+\boxed{\mathbf R_y
+=\operatorname E[\mathcal F(\mathbf x)\mathcal F(\mathbf x)^H]}
+\]
+
+is the primary definition. In general it cannot be reduced to \(\mathbf R_x+\sigma^2\mathbf I\).
+
+Under the restricted additive, spatially white quantization approximation,
+
+\[
+\mathbf R_y\approx\mathbf R_x+\sigma_q^2\mathbf I,
+\]
+
+ideal quantization noise only shifts eigenvalues and preserves eigenvectors. This special result is frequently useful, but it must not be generalized to unequal channel steps, channel-dependent gain, correlated quantization error, clipping, I/Q imbalance, or nonlinear compression.
+
+If
+
+\[
+\mathbf R_q=\operatorname{diag}(\sigma_{q,1}^2,\ldots,\sigma_{q,N}^2)
+\]
+
+with unequal entries, even an additive approximation can rotate eigenspaces relative to the ideal equal-noise case.
+
+Clipping/nonlinearity can also make the effective response source-amplitude dependent, violating the fixed linear manifold assumption used by classical MUSIC. The correct question is therefore not merely `how many bits?` but whether the complete receiver/quantizer model remains compatible with the estimator's covariance/manifold assumptions.
+
+## 9.13 Coarse and one-bit quantization as a separate estimator regime
+
+Very coarse quantization shall not be justified through the high-resolution \(\Delta^2/12\) approximation by default.
+
+For example, for zero-mean jointly Gaussian **real** variables \(x_i,x_j\), one-bit sign quantization obeys the classical arcsine relationship
+
+\[
+\boxed{\operatorname E[\operatorname{sgn}(x_i)\operatorname{sgn}(x_j)]
+=\frac{2}{\pi}\arcsin(\rho_{ij})},
+\]
+
+where \(\rho_{ij}\) is the normalized unquantized correlation coefficient.
+
+Complex one-bit array models have corresponding real/imaginary correlation relations under their declared Gaussian/properness/normalization assumptions. This illustrates a crucial point: severe quantization transforms covariance **nonlinearly**, but under special statistical assumptions enough correlation structure can sometimes be recovered or exploited for DOA estimation.
+
+One-bit/coarse-ADC MUSIC and arcsine-law covariance recovery are therefore future specialized estimator profiles, not evidence that ordinary unquantized MUSIC is automatically compatible with one-bit data.
+
+## 9.14 Floating-point samples, ADC codes, dequantized values, and FPGA fixed point
+
+GeoDOA shall distinguish at least four numerical meanings:
+
+1. **Analog-equivalent / pre-ADC sample value** represented numerically in floating point for simulation.
+2. **ADC output code** with declared code width, coding, full-scale map, and saturation semantics.
+3. **Dequantized numerical value** obtained by mapping the code back to declared physical/normalized units.
+4. **DSP/FPGA fixed-point value** created later by digital arithmetic with its own word length, scaling, rounding, overflow, and saturation behavior.
+
+A Python `float64` array can represent an ideal analog-equivalent sampled model; its machine precision is not the ADC resolution. Conversely, converting ADC codes to `float64` does not undo acquisition quantization.
+
+FPGA arithmetic effects belong to implementation/numerical realization and must not be double counted as ADC quantization. The final hardware co-design flow may contain both effects, but their provenance and insertion stages remain separate.
+
+## 9.15 Calibration, characterization, and provenance
+
+Receiver/ADC calibration and characterization may include, as applicable:
+
+- ADC gain and offset error;
+- transition-level / DNL / INL characterization;
+- channel full-scale range and code mapping;
+- channel gain/phase response and gain-state tables;
+- I/Q amplitude/phase imbalance and DC/LO leakage;
+- clipping/overrange statistics;
+- ENOB/SINAD/SNR/THD/SFDR test condition;
+- P1dB/IIP2/IIP3 or another receiver-linearity characterization;
+- aperture jitter/clock source and correlation topology;
+- temperature, sample rate, center frequency, bandwidth, analog gain/AGC state, and supply/reference conditions.
+
+A calibration artifact shall state whether it corrects raw ADC codes, dequantized values, complex baseband samples, covariance, or a processing manifold. Corrections at different stages need not commute.
+
+A receiver characterized at one gain state, sample rate, center frequency, or temperature shall not silently be assumed valid in another state.
+
+## 9.16 Small deterministic checks
+
+### Ideal 12-bit quantizer
+
+For an ideal \(12\)-bit uniform converter with
+
+\[
+V_{\rm FSR}=2\ \text{V},
+\]
+
+\[
+\boxed{\Delta=\frac{2}{4096}
+=4.8828125\times10^{-4}\ \text{V}
+\approx488.28\ \mu\text{V}}.
+\]
+
+Under the classical uniform-error approximation,
+
+\[
+\boxed{\sigma_q=\frac{\Delta}{\sqrt{12}}
+\approx140.95\ \mu\text{V}}.
+\]
+
+For an ideal full-scale sinusoid,
+
+\[
+\boxed{\operatorname{SNR}_q
+\approx6.02(12)+1.76=74.0\ \text{dB}}.
+\]
+
+These values are ideal-reference calculations, not a prediction of a real 12-bit ADC's ENOB.
+
+### Jitter-limited SNR
+
+For \(\sigma_t=1\ \text{ps RMS}\),
+
+\[
+\operatorname{SNR}_{\rm jitter}(100\ \text{MHz})
+\approx64.04\ \text{dB},
+\]
+
+while
+
+\[
+\operatorname{SNR}_{\rm jitter}(1\ \text{GHz})
+\approx44.04\ \text{dB}.
+\]
+
+The same clock jitter therefore becomes much more restrictive as analog input frequency increases.
+
+### Constant DC offset and second moment
+
+Let
+
+\[
+\mathbf R_x=\mathbf I_2,
+\qquad
+\mathbf d=\begin{bmatrix}0.5\\0.5\end{bmatrix}.
+\]
+
+Then the uncentered second moment is
+
+\[
+\mathbf R_y^{(2)}
+=\mathbf I_2+
+\begin{bmatrix}0.25&0.25\\0.25&0.25\end{bmatrix}
+=
+\begin{bmatrix}1.25&0.25\\0.25&1.25\end{bmatrix},
+\]
+
+with eigenvalues \(1.5\) and \(1.0\). A common constant offset has therefore created a rank-one second-moment mode even though the underlying covariance was identity. Exact centering removes this deterministic offset in the ideal stationary case.
+
+These are exploration checks, not new formal GRP numbers.
+
+## 9.17 Scientific verification notes
+
+The 3.7 contract is grounded in several established technical lineages:
+
+- classical quantization theory, including Bennett's analysis of quantized-signal spectra and the later Widrow quantization-noise framework that explains when a nonlinear uniform quantizer may be approximated by additive noise;
+- IEEE ADC terminology/test practice, particularly the IEEE 1241 family for sampled/quantized converter characterization;
+- standard ADC engineering results for \(\Delta^2/12\), ideal full-scale sine \(6.02N+1.76\) dB, SINAD/ENOB, overrange behavior, and aperture-jitter limitations;
+- classical RF receiver theory for cascaded noise, gain staging, compression, intercept points, and dynamic-range tradeoffs;
+- quadrature-receiver impairment theory in which I/Q imbalance is naturally widely linear and can introduce conjugate-image terms and pseudocovariance dependence;
+- quantized array-processing literature, including arcsine-law covariance relations and one-bit MUSIC/DOA methods, demonstrating that severe quantization is an estimator-model issue rather than merely an additive-noise penalty.
+
+These sources justify the contract boundaries and candidate models. Formal ADR-003 evidence and acceptance still require Gates A–F after Explorations 3.8–3.14.
+
+## 9.18 Candidate decisions from Exploration 3.7
+
+- **3.7-D1** — Analog receiver impairments, ADC sampling/quantization, and downstream DSP/FPGA arithmetic are separate stages with explicit provenance.
+- **3.7-D2** — An ideal uniform ADC profile shall declare full-scale span, nominal bit resolution, code/coding semantics, quantizer convention, and overload behavior.
+- **3.7-D3** — For the declared ideal uniform specialization, \(\Delta=V_{\rm FSR}/2^{N_b}\).
+- **3.7-D4** — The in-range nearest-level error bound \(|e_q|\le\Delta/2\) is distinct from a stochastic quantization-noise model.
+- **3.7-D5** — Treating quantization error as independent white uniform noise is an approximation with validity assumptions, not a universal property of quantizers.
+- **3.7-D6** — The variance \(\Delta^2/12\) is used only under the declared classical uniform-error assumptions.
+- **3.7-D7** — The \(6.02N+1.76\) dB result is an ideal full-scale-sine quantization reference, not a generic SNR law.
+- **3.7-D8** — Nominal ADC bits and ENOB are distinct; ENOB is a test-condition-dependent dynamic metric tied to SINAD under its declared convention.
+- **3.7-D9** — SNR, SINAD, THD, SFDR, ENOB, and dynamic range remain distinct metrics.
+- **3.7-D10** — `dBFS` requires an explicit full-scale reference convention.
+- **3.7-D11** — Saturation/clipping is a nonlinear overrange condition and shall not be modeled as ordinary in-range quantization noise.
+- **3.7-D12** — Overrange/clipping diagnostics and affected-sample provenance should be retained when available.
+- **3.7-D13** — Receiver thermal/electronic noise and ADC quantization error are different physical/statistical sources.
+- **3.7-D14** — Receiver noise covariance need not be spatially white or channel independent.
+- **3.7-D15** — Analog gain before quantization and digital scaling after quantization are not equivalent operations.
+- **3.7-D16** — Gain staging explicitly trades sensitivity/noise figure, ADC utilization, headroom, compression/clipping, and linearity/SFDR.
+- **3.7-D17** — AGC state is measurement provenance; common, channel-dependent, static, and time-varying AGC modes have different spatial/statistical consequences.
+- **3.7-D18** — Common scalar AGC can preserve instantaneous normalized manifold direction but can still alter temporal weighting and absolute signal/noise levels.
+- **3.7-D19** — Channel-dependent/time-varying AGC can create relative manifold distortion and covariance nonstationarity.
+- **3.7-D20** — Small sampling jitter produces an error proportional to waveform derivative; jitter sensitivity therefore grows with signal frequency/slew rate.
+- **3.7-D21** — The classical sinusoidal jitter-limited SNR formula is a specialized RMS result, not a universal jitter model.
+- **3.7-D22** — Common, differential, and correlated jitter remain distinguishable through clock-tree provenance.
+- **3.7-D23** — Constant receiver DC offset contributes a rank-one term to an uncentered second moment when the underlying signal is zero mean.
+- **3.7-D24** — Centered covariance can remove a truly constant offset ideally, but finite-sample/drifting/DC-near-signal cases require explicit handling.
+- **3.7-D25** — I/Q imbalance is generally a widely linear impairment involving both \(\mathbf x\) and \(\mathbf x^*\), not merely an ordinary complex gain.
+- **3.7-D26** — I/Q-imbalanced covariance can depend on pseudocovariance; augmented/widely linear statistics remain a future compatible extension.
+- **3.7-D27** — Receiver compression/nonlinearity violates linear superposition and can create source-dependent intermodulation products.
+- **3.7-D28** — P1dB, IIP2/IIP3, THD, and SFDR are distinct characterization metrics and are not direct interchangeable model coefficients.
+- **3.7-D29** — Analog compression and ADC clipping are different nonlinear stages.
+- **3.7-D30** — Exact nonlinear/quantized covariance is defined by \(E[\mathcal F(\mathbf x)\mathcal F(\mathbf x)^H]\); an additive white-noise reduction requires explicit assumptions.
+- **3.7-D31** — Equal spatially white additive quantization noise may preserve eigenvectors in a restricted model; unequal/correlated/signal-dependent quantization need not.
+- **3.7-D32** — Very coarse and one-bit quantization shall not default to the high-resolution \(\Delta^2/12\) model.
+- **3.7-D33** — Arcsine-law/one-bit covariance methods are specialized statistical estimator regimes with explicit Gaussian/normalization assumptions.
+- **3.7-D34** — Floating-point analog-equivalent samples, raw ADC codes, dequantized values, and FPGA/DSP fixed-point values are distinct numerical meanings.
+- **3.7-D35** — Converting ADC codes to floating point does not recover information lost during acquisition quantization.
+- **3.7-D36** — FPGA fixed-point quantization shall not be double counted as ADC quantization; each insertion stage retains separate scaling/rounding/overflow semantics.
+- **3.7-D37** — Receiver/ADC calibration must state the data stage it corrects and the operating domain over which it is valid.
+- **3.7-D38** — Calibration/characterization provenance may include gain state, sample rate, center frequency, bandwidth, clock, full scale, coding, temperature, I/Q state, linearity, and overrange conditions as applicable.
+- **3.7-D39** — The initial Phase-1 validated profile may remain an ideal unquantized linear receiver represented in floating point while preserving explicit receiver/ADC extension contracts.
+- **3.7-D40** — Later receiver profiles must declare estimator compatibility rather than silently feeding clipped, nonlinear, or severely quantized data into algorithms derived for an ideal linear covariance model.
+
+---
+
+# 10. Reserved Golden Reference Problems for ADR-003
 
 The Phase 0C roadmap reserves:
 
@@ -2128,150 +1730,48 @@ Current conceptual seeds:
 
 ### GRP-014 seed
 
-Two-sensor half-wavelength array, known spacing perturbation, known source direction. Verify the complete chain
+Two-sensor half-wavelength array, known spacing perturbation, known source direction. Verify
 
 \[
-\delta d
-\rightarrow
-\delta\phi
-\rightarrow
-\hat u
-\rightarrow
-\Delta\theta,
+\delta d\rightarrow\delta\phi\rightarrow\hat u\rightarrow\Delta\theta,
 \]
 
 plus a rigid-translation invariant subcase.
 
 ### GRP-015 seed
 
-Use two subcases:
-
-1. common phase applied to all channels — verify covariance/spatial-manifold invariance up to common complex scale;
-2. relative phase mismatch on one channel — verify analytical DOA bias for a two-sensor half-wavelength array.
+Use common-phase and relative-phase subcases to verify covariance/spatial invariance versus analytical two-sensor DOA bias.
 
 ### GRP-016 seed
 
-Use a two-sensor half-wavelength array with
+For \(u_0=0.5\), \(\mathbf a=[1,-j]^T\), and \(\mathbf C=[[1,0.5],[0.5,1]]\),
 
 \[
-u_0=0.5,
-\qquad
-\mathbf a=
-\begin{bmatrix}
-1\\-j
-\end{bmatrix},
-\qquad
-\mathbf C=
-\begin{bmatrix}
-1&0.5\\
-0.5&1
-\end{bmatrix}.
+\mathbf b=\mathbf C\mathbf a=[1-0.5j,\ 0.5-j]^T,
 \]
-
-Then
 
 \[
-\boxed{
-\mathbf b=\mathbf C\mathbf a
-=
-\begin{bmatrix}
-1-0.5j\\
-0.5-j
-\end{bmatrix}
-}
+\frac{b_2}{b_1}=0.8-0.6j,
 \]
 
-and the relative response is
-
-\[
-\boxed{
-\frac{b_2}{b_1}=0.8-0.6j.
-}
-\]
-
-Its phase is approximately \(-36.87^\circ\), whereas the nominal relative phase is \(-90^\circ\). A nominal uncoupled phase-matching model would therefore infer
-
-\[
-\boxed{
-\hat u\approx0.20483
-}
-\]
-
-instead of \(u_0=0.5\).
-
-This seed exercises deterministic manifold distortion and nominal-model DOA bias. It remains a seed until formal Gate E evidence is created.
+whose phase is approximately \(-36.87^\circ\), yielding nominal uncoupled phase-match estimate \(\hat u\approx0.20483\) instead of \(0.5\).
 
 ### GRP-017 seed
 
-Continue the GRP-016 case. For unit source power,
+For the GRP-016 case with unit source power,
 
 \[
-\boxed{
-\mathbf R_{\rm sig}
-=\mathbf b\mathbf b^H
-=
-\begin{bmatrix}
-1.25&1+0.75j\\
-1-0.75j&1.25
-\end{bmatrix}
-}
+\mathbf R_{\rm sig}=\mathbf b\mathbf b^H
+=\begin{bmatrix}1.25&1+0.75j\\1-0.75j&1.25\end{bmatrix},
 \]
 
-with
+with eigenvalues \(\{2.5,0\}\). Adding unit white noise gives eigenvalues \(\{3.5,1\}\). Nominal/coupled squared alignment is \(0.8\), leaving complementary normalized nominal projection \(0.2\) into the physical noise subspace.
 
-\[
-\|\mathbf b\|_2^2=2.5
-\]
-
-and signal-covariance eigenvalues
-
-\[
-\boxed{\{2.5,0\}}.
-\]
-
-If post-coupling white noise has variance \(\sigma_n^2=1\), then
-
-\[
-\mathbf R_x=\mathbf R_{\rm sig}+\mathbf I
-\]
-
-has eigenvalues
-
-\[
-\boxed{\{3.5,1\}}.
-\]
-
-The squared alignment between nominal and coupled manifold directions is
-
-\[
-\boxed{
-\frac{|\mathbf a^H\mathbf b|^2}
-{\|\mathbf a\|_2^2\|\mathbf b\|_2^2}
-=0.8.
-}
-\]
-
-For this two-channel, one-source case, the complementary normalized nominal-manifold projection onto the physical noise subspace is therefore \(0.2\). This seed exercises the chain
-
-\[
-\boxed{
-\text{coupling}
-\rightarrow
-\text{manifold rotation}
-\rightarrow
-\text{covariance}
-\rightarrow
-\text{eigenspace rotation}
-\rightarrow
-\text{nominal-MUSIC orthogonality error}.
-}
-\]
-
-It remains a seed until formal Gate E evidence is created.
+These remain seeds until formal Gate E evidence is created.
 
 ---
 
-# 10. Non-Negotiable Cross-ADR Rules Already Inherited
+# 11. Non-Negotiable Cross-ADR Rules Already Inherited
 
 ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
@@ -2288,30 +1788,30 @@ ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
 ---
 
-# 11. Immediate Next Step — Exploration 3.7 Quantization / Receiver / Dynamic-Range Effects
+# 12. Immediate Next Step — Exploration 3.8 Unified Sensor-Imperfection Operator
 
-The next chat/work session must start at **3.7 — Quantization / Receiver / Dynamic-Range Effects**, not redo 3.1–3.6 unless a scientific contradiction is found.
+The next work session must start at **3.8 — Unified Sensor-Imperfection Operator**, not redo 3.1–3.7 unless a contradiction is found.
 
-Exploration 3.7 must distinguish at least:
+Exploration 3.8 must reconcile at least:
 
-1. ideal quantization versus additive quantization-noise approximations;
-2. ADC resolution, code range, full scale, LSB, ENOB, and quantization error;
-3. saturation and clipping versus ordinary quantization;
-4. receiver thermal/electronic noise versus quantization noise;
-5. ADC aperture jitter and clock-induced sampling uncertainty as receiver/acquisition effects;
-6. channel-dependent dynamic range and gain staging;
-7. AGC and whether gain is common, channel-specific, static, or time varying;
-8. offset/DC error, I/Q imbalance, nonlinearity, compression, and distortion extension points;
-9. how quantization/clipping/nonlinearity alter covariance, eigenspaces, and DOA compatibility;
-10. floating-point simulation versus finite-resolution measurement semantics;
-11. what belongs in the initial ideal profile versus later receiver/ADC profiles;
-12. calibration/provenance and hardware/fixed-point boundaries without conflating ADC quantization with FPGA arithmetic quantization.
+1. which imperfections alter geometry/propagation before any channel operator exists;
+2. which effects are diagonal linear, cross-channel linear, conjugate/widely linear, time-varying, stochastic additive, sampling-time, quantizing, or nonlinear;
+3. which operators can be composed as matrices and which require general functions/operators;
+4. the physically meaningful ordering among element response, coupling/loading, electronic gain/phase/delay, I/Q conversion, receiver noise, sampling, ADC quantization, and post-acquisition processing;
+5. source-dependent versus receiver-state-dependent operators;
+6. common versus relative/projective effects;
+7. noise injection points and how they transform under downstream operators;
+8. time/frequency dependence and snapshot compatibility;
+9. how embedded/full-wave/measured manifolds bypass or absorb portions of a parametric decomposition without double counting;
+10. how the unified model exposes estimator compatibility rather than hiding incompatible effects behind one `imperfection_matrix`;
+11. what the minimal Phase-1 ideal profile instantiates from the unified contract;
+12. what metadata/provenance is required so that later calibration, covariance propagation, and hardware implementation remain scientifically traceable.
 
 Do not start Gate A yet.
 
 ---
 
-# 12. Acceptance Status
+# 13. Acceptance Status
 
 As of this checkpoint:
 
@@ -2325,8 +1825,9 @@ ADR-003 — EXPLORATION IN PROGRESS
     3.4 COMPLETE
     3.5 COMPLETE
     3.6 COMPLETE
-    3.7 NEXT
-    3.8–3.14 PENDING
+    3.7 COMPLETE
+    3.8 NEXT
+    3.9–3.14 PENDING
     Gates A–F NOT STARTED
 ADR-004 — NOT STARTED
 ```
