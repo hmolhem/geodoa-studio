@@ -2,21 +2,23 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A–F PASS — FINAL CROSS-GATE RECONCILIATION PASS — FINAL ACCEPTANCE NEXT — NOT ACCEPTED
+- **Status:** ACCEPTED — PRE-GATE REVIEW PASS — GATES A–F PASS — FINAL CROSS-GATE RECONCILIATION PASS
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
 - **Started:** 2026-08-23
+- **Accepted:** 2026-08-23
+- **Final acceptance record:** `ADR-004_FINAL_ACCEPTANCE_RECORD.md`
 
 ## 1. Primary Question
 
 > Under what evidence may GeoDOA Studio call a model, algorithm, experiment, calibration result, numerical implementation, or hardware result verified, validated, reproducible, or better than another method?
 
-ADR-004 defines the scientific evidence contract used by later GeoDOA studies. It does not prescribe one universal benchmark or one universal pass/fail threshold.
+ADR-004 now answers this question as the accepted scientific evidence contract used by later GeoDOA studies. It does not prescribe one universal benchmark or one universal pass/fail threshold.
 
 ## 2. Exploration Status
 
-Explorations 4.1–4.20 are COMPLETE. The governing draft consolidates them into decision families `F1–F14`.
+Explorations 4.1–4.20 are COMPLETE and retained as derivation/rationale/provenance evidence.
 
 ```text
 4.1   Verification vs Validation                      COMPLETE
@@ -41,7 +43,7 @@ Explorations 4.1–4.20 are COMPLETE. The governing draft consolidates them into
 4.20  Cross-Section Reconciliation                   COMPLETE
 ```
 
-## 3. Governing Decision Families
+## 3. Accepted Governing Decision Families
 
 ```text
 F1   Evidence-role separation
@@ -60,9 +62,7 @@ F13  Publication evidence / reproducibility package
 F14  VP-001 initial validation profile
 ```
 
-Detailed exploration files remain supporting rationale and traceability evidence.
-
-## 4. Working Rules Carried Forward
+## 4. Accepted Working Rules
 
 1. Verification, physical validation, calibration, benchmarking, implementation cross-validation, and reproducibility remain distinct.
 2. Metric computation and acceptance policy remain distinct.
@@ -73,7 +73,7 @@ Detailed exploration files remain supporting rationale and traceability evidence
 7. ADR-004 remains downstream of ADR-001/002/003 scientific authority.
 8. Compatibility status, execution/failure status, and metric eligibility remain distinct.
 9. `XX^H/L` in VP-001 is the uncentered sample second moment, not centered sample covariance.
-10. Divisor-`N` empirical `v_N` used in exact finite-sample MSE decomposition is distinct from divisor-`N-1` sample variance `s^2`.
+10. Divisor-`N` empirical `v_N` used in exact finite-sample MSE decomposition remains distinct from divisor-`N-1` sample variance `s^2`.
 11. VP-001 confirmatory Monte Carlo studies prefer predeclared fixed-`N` execution with achieved adequacy/uncertainty evidence; no universal numeric `N` is accepted.
 12. Wilson score interval is the VP-001 default only for ordinary IID fixed-`N` Bernoulli probability evidence.
 13. Source count `K`, source-covariance rank, observed subspace rank, estimator model order, and output cardinality `K_hat` remain distinct.
@@ -81,7 +81,7 @@ Detailed exploration files remain supporting rationale and traceability evidence
 15. External-tool/CST agreement is reference/verification evidence unless a separate physical-validation contract is satisfied.
 16. Real-scalar `e^2` formulas are scoped to real localization metrics; future complex-valued errors require an explicit complex squared-error definition.
 17. Normalized manifold/projective metrics require valid nonzero vectors.
-18. Metric identity preserves coordinate and units; bias/RMSE use base units, variance/MSE squared units.
+18. Metric identity preserves coordinate and units; bias/RMSE use base units and variance/MSE squared units.
 19. Covariance/eigenvalue units derive from snapshot units; normalized projective/relative metrics are dimensionless on valid domains.
 20. dB is a logarithmic representation of a declared ratio/reference, not an unlabeled physical base unit.
 21. Fixed-point codes acquire physical/scientific meaning only through explicit scale/LSB semantics; ADC and FPGA quantization remain distinct stages.
@@ -90,12 +90,12 @@ Detailed exploration files remain supporting rationale and traceability evidence
 24. Metric denominators derive from retained typed trial evidence rather than survivor-only filtering.
 25. Cache/resume/retry/replacement preserve scientific identity and do not silently resample/reuse incompatible evidence.
 26. Algorithm identity, implementation identity, fixed-point arithmetic profile, host/FPGA packing semantics, and build/artifact identity remain separately auditable.
-27. GRP expected values are independent of production software and become formal oracles only at Gate E.
+27. GRP expected values are independent of production software and are formal oracles only after Gate E PASS.
 28. Failure is classified at the earliest scientifically correct layer and mapped into metrics through explicit eligibility/denominator policy.
 29. `N=0`, `N=1`, zero-vector normalized metrics, zero relative-error denominators, association ties, singular whitening, and similar boundaries have explicit typed responses.
 30. Invalid/out-of-profile conditions are not coerced into ordinary end-to-end event failures.
 31. Publication/reproducibility integrity failures do not silently become scientific results.
-32. Final acceptance must synchronize stale draft-era lifecycle metadata in the governing ADR before status becomes Accepted.
+32. Lifecycle metadata drift `XG-004-01` is RESOLVED by the accepted governing-ADR status synchronization.
 
 ## 5. Pre-Gate Review Record
 
@@ -116,10 +116,16 @@ Governing-draft correction commit:
 4675f312214ebc0eaaa64a2041bb582931cf2332
 ```
 
-Reviewed governing content SHA:
+Normative content reviewed through Gates A–F originated from blob:
 
 ```text
 8cca2e3ac514cd031bee1d8c9e4c0347694ecb53
+```
+
+The accepted governing ADR lifecycle/status synchronization produced final governing content blob:
+
+```text
+c4372d02fc793a617f364ff4cd02aed124807ab2
 ```
 
 ## 6. Acceptance Gate Records
@@ -217,34 +223,62 @@ PASS
 commit 09d55d8ced298b0b5e10aa428bc193c5d864a498
 ```
 
-The reconciliation found no blocking cross-gate scientific contradiction. It identified one administrative lifecycle-status drift (`XG-004-01`): the governing ADR header/status still contains draft-era pre-Gate/Gate-E language. That metadata must be synchronized as part of the final acceptance transaction before the ADR is marked Accepted.
+The reconciliation found no blocking cross-gate scientific contradiction. Administrative lifecycle drift `XG-004-01` was resolved during final acceptance by synchronizing the governing ADR metadata/status.
 
-## 7. Current Status
-
-```text
-Governing ADR-004 normative draft                     COMPLETE
-Pre-Gate consistency review                           PASS
-Gate A — Physical Consistency                         PASS
-Gate B — Mathematical Consistency                     PASS
-Gate C — Dimensional / Unit Consistency               PASS
-Gate D — Software Semantic Consistency                PASS
-Gate E — Hand Reference Evidence                      PASS
-Gate F — Boundary / Failure Analysis                  PASS
-Final Cross-Gate Reconciliation                       PASS
-Final Acceptance Record                               NEXT
-Governing ADR lifecycle metadata synchronization      REQUIRED WITH ACCEPTANCE
-ADR-004 acceptance                                    NOT YET ACCEPTED
-Authoritative Phase-1 implementation                  NOT YET AUTHORIZED
-```
-
-## 8. Immediate Work Item
-
-Begin:
+### Final Acceptance Record
 
 ```text
-ADR-004 Final Acceptance Record
-+
-Governing ADR lifecycle metadata/status synchronization
+ADR-004_FINAL_ACCEPTANCE_RECORD.md
+ACCEPTED
+commit cb61fd072ee1653ab90e24233d9b6a97a45d4d20
 ```
 
-The final acceptance transaction must update the governing ADR lifecycle metadata to reflect completed pre-Gate review, Gates A–F PASS, Gate-E GRP-018 evidence PASS, and Final Cross-Gate Reconciliation PASS. Only then may ADR-004 be marked Accepted and authoritative Phase-1 implementation be authorized.
+Governing ADR accepted-status synchronization:
+
+```text
+commit 73c7c158a2ab4bc9677a9ff9ceaace084f34d766
+```
+
+## 7. Final Status
+
+```text
+Explorations 4.1–4.20                              COMPLETE
+Governing ADR-004                                  ACCEPTED
+Pre-Gate consistency review                        PASS
+Gate A — Physical Consistency                      PASS
+Gate B — Mathematical Consistency                  PASS
+Gate C — Dimensional / Unit Consistency            PASS
+Gate D — Software Semantic Consistency             PASS
+Gate E — Hand Reference Evidence                   PASS
+Gate F — Boundary / Failure Analysis               PASS
+Final Cross-Gate Reconciliation                    PASS
+Final Acceptance Record                            COMPLETE
+Lifecycle metadata synchronization                 COMPLETE
+XG-004-01                                          RESOLVED
+ADR-004                                             ACCEPTED
+Authoritative Phase-1 implementation               AUTHORIZED TO BEGIN — NOT PRE-ACCEPTED
+```
+
+## 8. Next Phase Work Item
+
+ADR-004 exploration/acceptance work is CLOSED.
+
+The next work is no longer another ADR-004 gate. The repository may now begin the **authoritative Phase-1 / VP-001 implementation planning and implementation workflow**, governed jointly by accepted ADR-001, ADR-002, ADR-003, and ADR-004.
+
+The first implementation plan should translate the accepted contracts into:
+
+```text
+canonical domain/config objects
+VP-001 reference signal/data generation
+uncentered second-moment pipeline
+Bartlett / MVDR / MUSIC baseline interfaces
+evaluator association + event/metric pipeline
+semantic RNG/trial identity
+Golden Reference software tests
+Gate-D semantic tests
+Gate-F boundary/failure tests
+float64 reference first
+then float32/fixed/HLS/RTL/FPGA promotion
+```
+
+Implementation must be verified against the accepted contracts; ADR acceptance does not pre-accept future code.
