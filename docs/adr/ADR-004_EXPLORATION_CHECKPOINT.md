@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATE A PASS — GATE B NEXT — NOT ACCEPTED
+- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW PASS — GATES A-B PASS — GATE C NEXT — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -94,24 +94,27 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 1. Exploration is complete and the governing ADR-004 draft exists.
 2. The dedicated pre-Gate consistency review passed.
 3. Gate A — Physical Consistency passed.
-4. Gate B — Mathematical Consistency is now the next acceptance step; Gates C–F remain not started.
-5. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
-6. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
-7. Metric computation and acceptance policy shall remain distinct.
-8. Failed/missed/unresolved trials shall not be silently deleted from benchmark evidence.
-9. Randomness and seed provenance shall be explicit enough to reconstruct a trial.
-10. Comparative claims shall preserve fairness/provenance rather than rely on uncontrolled independent realizations.
-11. A numerical match to a software baseline does not by itself establish physical validation.
-12. Hardware acceleration shall be assessed against an accepted scientific reference, not only against another hardware implementation.
-13. ADR-004 shall remain downstream of ADR-001/002/003 authority for geometry/phase, signal/covariance, and sensor/calibration semantics.
-14. Compatibility status, execution/failure status, and metric eligibility shall remain distinct.
-15. `XX^H/L` in the VP-001 baseline shall be called the uncentered sample second moment, not centered sample covariance.
-16. Divisor-`N` empirical variance used in exact finite-sample MSE decomposition shall remain distinct from divisor-`N-1` sample variance used for statistical variance estimation.
-17. VP-001 confirmatory Monte Carlo studies should prefer predeclared fixed-`N` execution with achieved uncertainty/adequacy reporting; no universal numeric `N` is accepted.
-18. Wilson score interval is the VP-001 default for ordinary IID fixed-`N` Bernoulli probability reporting, not a universal ADR-004 interval method.
-19. Source count `K`, source-covariance rank, observed subspace rank, estimator model order, and estimated-output cardinality `K_hat` shall remain distinct.
-20. VP-001 baseline end-to-end `P_D` and `P_res` metric universes and numerical-failure mappings are explicit in the governing draft.
-21. External-tool/cross-tool numerical agreement is reference/verification evidence unless a separate physical-validation contract is satisfied.
+4. Gate B — Mathematical Consistency passed.
+5. Gate C — Dimensional / Unit Consistency is now the next acceptance step; Gates D–F remain not started.
+6. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
+7. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
+8. Metric computation and acceptance policy shall remain distinct.
+9. Failed/missed/unresolved trials shall not be silently deleted from benchmark evidence.
+10. Randomness and seed provenance shall be explicit enough to reconstruct a trial.
+11. Comparative claims shall preserve fairness/provenance rather than rely on uncontrolled independent realizations.
+12. A numerical match to a software baseline does not by itself establish physical validation.
+13. Hardware acceleration shall be assessed against an accepted scientific reference, not only against another hardware implementation.
+14. ADR-004 shall remain downstream of ADR-001/002/003 authority for geometry/phase, signal/covariance, and sensor/calibration semantics.
+15. Compatibility status, execution/failure status, and metric eligibility shall remain distinct.
+16. `XX^H/L` in the VP-001 baseline shall be called the uncentered sample second moment, not centered sample covariance.
+17. Divisor-`N` empirical variance used in exact finite-sample MSE decomposition shall remain distinct from divisor-`N-1` sample variance used for statistical variance estimation.
+18. VP-001 confirmatory Monte Carlo studies should prefer predeclared fixed-`N` execution with achieved uncertainty/adequacy reporting; no universal numeric `N` is accepted.
+19. Wilson score interval is the VP-001 default for ordinary IID fixed-`N` Bernoulli probability reporting, not a universal ADR-004 interval method.
+20. Source count `K`, source-covariance rank, observed subspace rank, estimator model order, and estimated-output cardinality `K_hat` shall remain distinct.
+21. VP-001 baseline end-to-end `P_D` and `P_res` metric universes and numerical-failure mappings are explicit in the governing draft.
+22. External-tool/cross-tool numerical agreement is reference/verification evidence unless a separate physical-validation contract is satisfied.
+23. Real-scalar `e^2` bias/MSE formulas are scoped to real localization metrics; future complex-valued error metrics require an explicit complex squared-error definition.
+24. Normalized manifold correlation/projective metrics require nonzero vectors; zero/invalid manifold cases require typed ineligibility or a different declared metric.
 
 ## 6. Current Status
 
@@ -140,8 +143,8 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 Governing ADR-004 draft                               COMPLETE — DRAFT ONLY
 Pre-Gate consistency review                           PASS
 Gate A — Physical Consistency                         PASS
-Gate B — Mathematical Consistency                     NEXT
-Gate C — Dimensional / Unit Consistency               NOT STARTED
+Gate B — Mathematical Consistency                     PASS
+Gate C — Dimensional / Unit Consistency               NEXT
 Gate D — Software Semantic Consistency                NOT STARTED
 Gate E — Hand Reference Evidence                      NOT STARTED
 Gate F — Boundary / Failure Analysis                  NOT STARTED
@@ -207,7 +210,44 @@ Gate A commit:
 9b3f261858b435ce493189c1ee9802b68c17d78f
 ```
 
-## 9. Reconciled Decision Families in the Governing ADR
+## 9. Gate B Record
+
+The Gate B mathematical-consistency audit is:
+
+```text
+ADR-004_GATE_B_AUDIT.md
+```
+
+Gate B passed without requiring a governing-draft correction.
+
+Gate B verified, among other items:
+
+```text
+bias / variance / MSE / RMSE identities
+exact finite-sample MSE decomposition
+v_N versus s^2 roles
+GRP-018 arithmetic consistency at audit level
+multi-source assignment / unequal-cardinality handling
+P_D / P_res numerator-denominator semantics
+uncentered XX^H/L Hermitian / PSD / rank properties
+source count versus rank/model order
+rho / alpha / d_proj bounds and projective invariance
+rank-one projector and subspace-basis invariance
+eigenvector nonuniqueness / eigengap interpretation
+CRN paired-effect mathematics
+finite-precision equivalence semantics
+metric versus threshold separation
+```
+
+Gate B also carried explicit mathematical domain conditions forward for Gate F, including nonzero-vector requirements for normalized manifold metrics and real-scalar scope for the current `e^2` localization formulas.
+
+Gate B commit:
+
+```text
+7b6fb7e68816ca51c336b526a72e656d61c16dac
+```
+
+## 10. Reconciled Decision Families in the Governing ADR
 
 The governing draft consolidates exploration decisions into:
 
@@ -230,14 +270,14 @@ F14  VP-001 initial validation profile
 
 Detailed exploration files remain supporting rationale and traceability evidence.
 
-## 10. Immediate Work Item
+## 11. Immediate Work Item
 
 Begin:
 
 ```text
-ADR-004 Gate B — Mathematical Consistency Audit
+ADR-004 Gate C — Dimensional and Unit Consistency Audit
 ```
 
-Gate B shall verify internal consistency of equations, probability universes, assignment/event definitions, bias/variance/MSE/RMSE identities, empirical denominators, projection/eigenspace metrics, stochastic-pairing semantics, numerical-equivalence claims, and all transformations/invariances inherited or used by ADR-004.
+Gate C shall verify that every physical or metric quantity used by ADR-004 has explicit units or is explicitly dimensionless; that squared-error units, covariance/spectrum/manifold metrics, angle versus direction-cosine coordinates, probability quantities, timing/performance units, fixed-point scaling, and canonical configuration unit normalization are unambiguous and compatible with ADR-001/002/003.
 
-Gate B PASS does not imply Gates C–F PASS and does not accept ADR-004.
+Gate C PASS does not imply Gates D–F PASS and does not accept ADR-004.
