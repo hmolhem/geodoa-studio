@@ -99,8 +99,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 ## 6. Current Status
 
 ```text
-4.1   Verification vs Validation                      IN PROGRESS
-4.2   Ground Truth and Provenance                    NOT STARTED
+4.1   Verification vs Validation                      COMPLETE
+4.2   Ground Truth and Provenance                    IN PROGRESS — NEXT
 4.3   Deterministic Reference Evidence               NOT STARTED
 4.4   Random Variables and Trial Semantics           NOT STARTED
 4.5   Seed / RNG / Common Random Numbers             NOT STARTED
@@ -128,4 +128,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.1 and establish a stable terminology/evidence hierarchy before defining truth objects, Monte Carlo trials, metrics, or benchmark policy.
+Complete Exploration 4.2 and define what may serve as simulation truth, analytical reference, measured reference, calibration-derived estimate, external-tool reference, or hardware reference without collapsing provenance or uncertainty.
