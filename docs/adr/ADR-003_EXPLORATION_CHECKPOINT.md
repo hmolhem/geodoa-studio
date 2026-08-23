@@ -2,15 +2,15 @@
 
 - **Working title:** Sensor Imperfections, Mutual Coupling, and Calibration
 - **Phase:** 0C — Scientific Foundations
-- **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
+- **Status:** EXPLORATION COMPLETE — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
-- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8
-- **Next exploration section:** 3.9 — Calibration Models
+- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14
+- **Next step:** Draft governing ADR-003 and perform pre-Gate consistency review
 - **Acceptance gates:** Not started for ADR-003
 - **Reserved Golden Reference Problems:** GRP-014 through GRP-017
 
-> This document is a continuation checkpoint, not the governing accepted ADR. Candidate decisions below remain subject to reconciliation, Gates A–F, Golden Reference evidence, boundary/failure analysis, cross-ADR audit, and final acceptance.
+> This document is a continuation checkpoint, not the governing accepted ADR. Candidate decisions below remain subject to the governing ADR draft, Gates A–F, Golden Reference evidence, boundary/failure analysis, cross-ADR audit, and final acceptance. Dedicated exploration records for Sections 3.7–3.14 are authoritative for those later exploration sections.
 
 ---
 
@@ -69,7 +69,7 @@ and, separately,
 ## 2. Planned ADR-003 Exploration Sequence
 
 ```text
-3.1  Ideal / Physical / Calibrated Manifold                 COMPLETE
+3.1  Ideal / Physical / Calibrated Manifold                  COMPLETE
 3.2  Position Error and Geometry Perturbation                COMPLETE
 3.3  Gain and Phase Mismatch                                 COMPLETE
 3.4  Element Pattern and Polarization                        COMPLETE
@@ -77,17 +77,21 @@ and, separately,
 3.6  Channel Delay, Clock Skew, and Frequency Error          COMPLETE
 3.7  Quantization / Receiver / Dynamic-Range Effects         COMPLETE
 3.8  Unified Sensor-Imperfection Operator                    COMPLETE
-3.9  Calibration Models                                      NEXT
-3.10 Direct Measured / CST-Derived Manifold Calibration      PENDING
-3.11 Error Metrics and Identifiability                       PENDING
-3.12 Covariance / Eigenspace / MUSIC Error Propagation       PENDING
-3.13 Compatibility and Initial ADR-003 Profile               PENDING
-3.14 Cross-Consistency Audit                                 PENDING
+3.9  Calibration Models                                      COMPLETE
+3.10 Direct Measured / CST-Derived Manifold Calibration      COMPLETE
+3.11 Error Metrics and Identifiability                       COMPLETE
+3.12 Covariance / Eigenspace / MUSIC Error Propagation       COMPLETE
+3.13 Compatibility and Initial ADR-003 Profile               COMPLETE
+3.14 Cross-Section Reconciliation                            COMPLETE
 ```
 
-After exploration 3.14, ADR-003 must enter the standard Phase 0C acceptance sequence:
+After exploration 3.14, ADR-003 enters the standard Phase 0C acceptance sequence only after a governing ADR draft exists and passes a pre-Gate consistency review:
 
 ```text
+Governing ADR-003 draft
+        ↓
+Pre-Gate consistency review
+        ↓
 Gate A — Physical Consistency
 Gate B — Mathematical Consistency
 Gate C — Dimensional and Unit Consistency
@@ -479,7 +483,7 @@ This diagonal channel model is fundamentally different from cross-channel mutual
 
 ## 5.2 Common versus relative mismatch
 
-If \(\mathbf G=c\mathbf I\), the physical manifold differs by a common complex scale. Common phase does not constitute spatial distortion; common gain can change absolute amplitude/power and received SNR even when a normalized subspace direction is unchanged.
+If \(\mathbf G=c\mathbf I\), the physical manifold differs by a common complex scale. Common phase does not constitute spatial distortion; common gain can change absolute amplitude/power and, depending on physical stage/noise ordering, can change effective SNR/dynamic range even when a normalized subspace direction is unchanged.
 
 For a declared reference channel,
 
@@ -594,7 +598,7 @@ Relative gain/phase calibration may be identifiable even if an absolute common g
 - **3.3-D2** — Pure gain/phase mismatch is represented by a diagonal transformation.
 - **3.3-D3** — Common gain, common phase, and relative gain/phase mismatch are separate concepts.
 - **3.3-D4** — Common phase is not spatial-manifold distortion.
-- **3.3-D5** — Common gain may be projectively irrelevant for some DOA tasks while remaining relevant to calibrated amplitude/power.
+- **3.3-D5** — Common gain may be projectively irrelevant for some DOA tasks while remaining relevant to calibrated amplitude/power and, depending on physical stage ordering, dynamic range/SNR.
 - **3.3-D6** — Relative response requires explicit reference or pairwise semantics.
 - **3.3-D7** — Near-zero reference response invalidates or ill-conditions relative normalization.
 - **3.3-D8** — Gain dB semantics must distinguish amplitude and power ratios.
@@ -789,7 +793,7 @@ A single calibration polarization generally cannot identify a full two-component
 - **3.4-D8** — Polarization requires explicit propagation-direction and transverse-basis semantics.
 - **3.4-D9** — Look direction and propagation direction must remain distinct in polarization conventions.
 - **3.4-D10** — Polarization handedness/basis convention must be explicit.
-- **3.4-D11** — A common identical element response may preserve normalized single-source manifold direction while changing signal level/SNR.
+- **3.4-D11** — A common identical element response may preserve normalized single-source manifold direction while changing signal level/SNR according to the physical signal/noise stage ordering.
 - **3.4-D12** — Unequal element responses may distort the signal manifold/subspace.
 - **3.4-D13** — Element orientation, element position error, and global array pose are distinct.
 - **3.4-D14** — Propagation narrowband compatibility does not imply element-response frequency flatness.
@@ -1783,8 +1787,7 @@ To avoid hiding mixer-sign conventions, GeoDOA can define a processed-baseband r
 through the multiplicative factor
 
 \[
-\boxed{
-e^{j\psi_n(t)}.
+\boxed{e^{j\psi_n(t)}.
 }
 \]
 
@@ -1944,8 +1947,7 @@ A common temporal phase process can become a **relative virtual-channel phase** 
 If virtual channel \(q\) is observed at time \(t_q\), a common evolving phase \(e^{j\psi(t)}\) contributes
 
 \[
-\boxed{
-e^{j\psi(t_q)}
+\boxed{e^{j\psi(t_q)}
 }
 \]
 
@@ -2288,47 +2290,52 @@ ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
 ---
 
-# 11. Immediate Next Step — Exploration 3.7 Quantization / Receiver / Dynamic-Range Effects
+# 11. Immediate Next Step — Governing ADR-003 Draft
 
-The next chat/work session must start at **3.7 — Quantization / Receiver / Dynamic-Range Effects**, not redo 3.1–3.6 unless a scientific contradiction is found.
+Exploration is complete through 3.14. The next repository step is to draft the governing ADR-003 from the reconciled contract in `ADR-003_EXPLORATION_3.14_CROSS_SECTION_RECONCILIATION.md`, then perform a pre-Gate consistency review.
 
-Exploration 3.7 must distinguish at least:
+The draft shall consolidate—not merely concatenate—the exploration results. It shall preserve the reconciled distinctions among:
 
-1. ideal quantization versus additive quantization-noise approximations;
-2. ADC resolution, code range, full scale, LSB, ENOB, and quantization error;
-3. saturation and clipping versus ordinary quantization;
-4. receiver thermal/electronic noise versus quantization noise;
-5. ADC aperture jitter and clock-induced sampling uncertainty as receiver/acquisition effects;
-6. channel-dependent dynamic range and gain staging;
-7. AGC and whether gain is common, channel-specific, static, or time varying;
-8. offset/DC error, I/Q imbalance, nonlinearity, compression, and distortion extension points;
-9. how quantization/clipping/nonlinearity alter covariance, eigenspaces, and DOA compatibility;
-10. floating-point simulation versus finite-resolution measurement semantics;
-11. what belongs in the initial ideal profile versus later receiver/ADC profiles;
-12. calibration/provenance and hardware/fixed-point boundaries without conflating ADC quantization with FPGA arithmetic quantization.
+1. nominal / physical / measured / EM / calibrated response objects;
+2. geometry, element, coupling, electronics, timing, noise, nonlinear, sampling, and ADC stages;
+3. physical delay versus sample-time offset/SRO/jitter;
+4. calibration inference versus data correction;
+5. direct measured/CST manifold calibration and included-effects/de-embedding provenance;
+6. error/uncertainty/identifiability/conditioning semantics;
+7. covariance/eigenspace/MUSIC propagation;
+8. multi-axis estimator compatibility;
+9. the bounded initial Phase-1 ideal sensor profile;
+10. GRP-014 through GRP-017 reservations.
 
-Do not start Gate A yet.
+Do not start Gate A until the governing ADR draft exists and the pre-Gate review is complete.
 
 ---
 
 # 12. Acceptance Status
 
-As of this checkpoint:
+As of this reconciled checkpoint:
 
 ```text
 ADR-001 — ACCEPTED — Gates A–F PASS
 ADR-002 — ACCEPTED — Gates A–F PASS
-ADR-003 — EXPLORATION IN PROGRESS
+ADR-003 — EXPLORATION COMPLETE — NOT ACCEPTED
     3.1 COMPLETE
     3.2 COMPLETE
     3.3 COMPLETE
     3.4 COMPLETE
     3.5 COMPLETE
     3.6 COMPLETE
-    3.7 NEXT
-    3.8–3.14 PENDING
-    Gates A–F NOT STARTED
+    3.7 COMPLETE
+    3.8 COMPLETE
+    3.9 COMPLETE
+    3.10 COMPLETE
+    3.11 COMPLETE
+    3.12 COMPLETE
+    3.13 COMPLETE
+    3.14 COMPLETE
+    Governing ADR draft: NEXT
+    Gates A–F: NOT STARTED
 ADR-004 — NOT STARTED
 ```
 
-No statement in this checkpoint may be treated as an accepted ADR-003 contract until the remaining exploration, Gates A–F, cross-gate reconciliation, and final acceptance are completed.
+No statement in this checkpoint may be treated as an accepted ADR-003 contract until the governing ADR, Gates A–F, cross-gate reconciliation, and final acceptance are completed.
