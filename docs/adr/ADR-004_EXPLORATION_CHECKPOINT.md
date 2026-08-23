@@ -113,8 +113,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.10  Monte Carlo Adequacy and Convergence           COMPLETE
 4.11  Confidence Intervals / Metric Uncertainty      COMPLETE
 4.12  Fair Algorithm / Geometry Comparison           COMPLETE
-4.13  Failure-State Recording                        IN PROGRESS — NEXT
-4.14  Multi-Level Scientific Error Metrics           NOT STARTED
+4.13  Failure-State Recording                        COMPLETE
+4.14  Multi-Level Scientific Error Metrics           IN PROGRESS — NEXT
 4.15  Float / Fixed / FPGA Cross-Validation          NOT STARTED
 4.16  Run Identity / Configuration / Provenance      NOT STARTED
 4.17  Publication / Reproducibility Package          NOT STARTED
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.13 and define typed failure-state recording for invalid input, incompatible model/profile, numerical/algorithmic failure, no-detection, unresolved source, ambiguous association, hardware/transport failure, and publication-grade failure provenance without silently coercing failures into ordinary numeric errors or deleting them from benchmark evidence.
+Complete Exploration 4.14 and define multi-level scientific error metrics for spectrum, manifold, covariance, eigenvalues/eigengaps, eigenspaces/projectors, and final DOA outputs while preserving gauge invariance, normalization semantics, units, conditioning, and the distinction between intermediate-model disagreement and end-task performance.
