@@ -5,8 +5,8 @@
 - **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
-- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4
-- **Next exploration section:** 3.5 — Mutual Coupling
+- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5
+- **Next exploration section:** 3.6 — Channel Delay, Clock Skew, and Frequency Error
 - **Acceptance gates:** Not started for ADR-003
 - **Reserved Golden Reference Problems:** GRP-014 through GRP-017
 
@@ -73,8 +73,8 @@ and, separately,
 3.2  Position Error and Geometry Perturbation                COMPLETE
 3.3  Gain and Phase Mismatch                                 COMPLETE
 3.4  Element Pattern and Polarization                        COMPLETE
-3.5  Mutual Coupling                                         NEXT
-3.6  Channel Delay, Clock Skew, and Frequency Error          PENDING
+3.5  Mutual Coupling                                         COMPLETE
+3.6  Channel Delay, Clock Skew, and Frequency Error          NEXT
 3.7  Quantization / Receiver / Dynamic-Range Effects         PENDING
 3.8  Unified Sensor-Imperfection Operator                    PENDING
 3.9  Calibration Models                                      PENDING
@@ -812,7 +812,627 @@ A single calibration polarization generally cannot identify a full two-component
 
 ---
 
-# 7. Reserved Golden Reference Problems for ADR-003
+# 7. Exploration 3.5 — Mutual Coupling
+
+## 7.1 Physical meaning
+
+In the GeoDOA receive-array context, mutual coupling is the electromagnetic interaction among array elements and ports that makes element and channel responses non-independent. The field/current state associated with one element can alter currents, terminal quantities, input/active impedances, and embedded responses associated with other elements.
+
+Mutual coupling is therefore a first-class **cross-element / cross-port** physical effect. It is not merely an arbitrary per-channel complex gain.
+
+A diagonal gain/phase model has the form
+
+\[
+y_n=g_nx_n,
+\]
+
+whereas an effective cross-channel coupling specialization can have
+
+\[
+\boxed{
+y_n=\sum_{m=1}^{N}C_{nm}x_m
+}
+\]
+
+with nonzero off-diagonal terms.
+
+At a single operating point, one coupled response vector may sometimes be fitted numerically by a diagonal operator. Such a fit does not establish that the underlying physical interaction is diagonal and generally need not transfer to another direction, polarization, frequency, loading state, or array configuration.
+
+## 7.2 Receive multiport semantics before an effective coupling matrix
+
+GeoDOA shall not begin the physical definition of coupling by assuming universally that
+
+\[
+\mathbf a_c=\mathbf C\mathbf a.
+\]
+
+A more defensible receive-array starting point is a declared linear multiport representation.
+
+Let
+
+\[
+\boxed{\mathbf v_{\rm oc}}
+\]
+
+be the **array-defined open-circuit receive-response vector** under a specified incident field and EM/modeling convention. It is not automatically an uncoupled geometry-only steering vector. Depending on how it was obtained, it may already reflect array interaction physics.
+
+Let the antenna-array impedance matrix be
+
+\[
+\boxed{
+\mathbf Z_A=
+\begin{bmatrix}
+Z_{11}&Z_{12}&\cdots\\
+Z_{21}&Z_{22}&\cdots\\
+\vdots&\vdots&\ddots
+\end{bmatrix}
+}
+\]
+
+and let \(\mathbf Z_L\) denote the declared receiver/load termination matrix.
+
+Under a declared Thevenin-style multiport current/voltage convention for which the corresponding inverses exist,
+
+\[
+\boxed{
+\mathbf i
+=(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}
+}
+\]
+
+and loaded terminal voltage is
+
+\[
+\boxed{
+\mathbf v_L
+=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}\mathbf v_{\rm oc}.
+}
+\]
+
+Define, within that declared convention,
+
+\[
+\boxed{
+\mathbf T_L
+=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}
+}
+\]
+
+so that
+
+\[
+\mathbf v_L=\mathbf T_L\mathbf v_{\rm oc}.
+\]
+
+This is a **loaded-port transform**, not a universal definition of a DOA coupling matrix. It is scientifically meaningful only together with the definitions of \(\mathbf v_{\rm oc}\), port current/voltage sign convention, reference planes, \(\mathbf Z_A\), \(\mathbf Z_L\), frequency, and physical configuration.
+
+If the available starting response is an isolated-element or geometry-only manifold rather than the array-defined open-circuit response, another explicit EM/effective mapping may be required before the loaded-port relation is scientifically valid. GeoDOA must not assume that \(\mathbf Z_A\) loading alone transforms an isolated geometry steering vector into a complete full-wave receive manifold.
+
+## 7.3 Effective cross-channel coupling specialization
+
+For a bounded model, GeoDOA may use
+
+\[
+\boxed{
+\mathbf a_c(\xi)=\mathbf C(\chi)\mathbf a_{\rm ref}(\xi)
+}
+\]
+
+where \(\xi\) denotes source-condition variables and \(\chi\) denotes sensor/system configuration variables.
+
+However, the semantic type of \(\mathbf C\) must be declared. At least the following meanings are distinct:
+
+1. **Physical/network-derived operator** — obtained from a declared multiport/loading model and defined between explicit port quantities.
+2. **Effective manifold operator** — maps one declared response model to another over a declared calibration/model domain.
+3. **Aggregate empirical operator** — fitted from data and potentially absorbing multiple physical effects, in which case it must not be labeled pure mutual coupling without evidence.
+
+Therefore
+
+\[
+\boxed{
+\mathbf a_c=\mathbf C\mathbf a
+\text{ is a declared specialization, not a universal electromagnetic law.}
+}
+\]
+
+## 7.4 Impedance, scattering, and effective-coupling semantics
+
+Impedance parameters use port voltage/current semantics,
+
+\[
+\mathbf v=\mathbf Z\mathbf i,
+\]
+
+whereas scattering parameters use incident/reflected port-wave semantics,
+
+\[
+\boxed{
+\mathbf b_{\rm wave}=\mathbf S\mathbf a_{\rm wave}.
+}
+\]
+
+The port-wave symbol \(\mathbf a_{\rm wave}\) must never be confused with a steering/manifold vector.
+
+For a common real scalar reference impedance \(Z_0\) and the corresponding conventional wave normalization, one familiar conversion is
+
+\[
+\boxed{
+\mathbf S
+=(\mathbf Z-Z_0\mathbf I)(\mathbf Z+Z_0\mathbf I)^{-1}
+}
+\]
+
+with the inverse relation
+
+\[
+\boxed{
+\mathbf Z
+=Z_0(\mathbf I+\mathbf S)(\mathbf I-\mathbf S)^{-1}
+}
+\]
+
+when the required inverses exist.
+
+Unequal or complex reference impedances require their own explicit normalization/conversion convention. Consequently, \(\mathbf Z\), \(\mathbf S\), an effective receive coupling matrix \(\mathbf C\), a loaded-port transform \(\mathbf T_L\), and a measured/full-wave manifold are not directly interchangeable scientific objects.
+
+In particular,
+
+\[
+\boxed{S_{21}\neq C_{21}}
+\]
+
+as a general scientific statement. A measured or simulated S-parameter cannot be copied directly into a DOA coupling matrix without a declared derivation and port/reference/load semantics.
+
+## 7.5 What depends on direction, polarization, frequency, and configuration
+
+For a passive linear time-invariant array in a fixed configuration, network matrices such as \(\mathbf Z_A(f)\) and \(\mathbf S(f)\) characterize the multiport system and are not generated anew merely because the incident source direction changes.
+
+The receive excitation is source-condition dependent:
+
+\[
+\boxed{
+\mathbf v_{\rm oc}
+=\mathbf v_{\rm oc}(\hat{\mathbf u},f,\mathbf p,\ldots).
+}
+\]
+
+Thus
+
+\[
+\mathbf v_L
+=\mathbf T_L(f,\text{configuration})
+\mathbf v_{\rm oc}(\hat{\mathbf u},f,\mathbf p,\ldots).
+\]
+
+An effective \(\mathbf C\) fitted directly between a geometry-only manifold and a full physical manifold may itself appear direction- or polarization-dependent because it may be absorbing embedded-element response and other effects in addition to network coupling.
+
+The following dependence classes shall therefore remain distinguishable:
+
+\[
+\boxed{
+\text{network-parameter dependence}
+\neq
+\text{source-excitation dependence}
+\neq
+\text{effective-manifold-operator dependence}.
+}
+\]
+
+Coupling-related physical response can also depend on element geometry, spacing, frequency, material/platform/radome environment, matching networks, receiver loading, active/terminated port state, and physical configuration.
+
+## 7.6 Symmetry, Toeplitz, circulant, and banded approximations
+
+Reciprocity under compatible conventions can justify symmetric network quantities such as
+
+\[
+Z_{nm}=Z_{mn},
+\]
+
+but **symmetric does not mean Hermitian**.
+
+A symmetric Toeplitz coupling matrix is a useful specialization for some idealized translationally uniform arrays:
+
+\[
+\mathbf C=
+\begin{bmatrix}
+c_0&c_1&c_2&\cdots\\
+c_1&c_0&c_1&\cdots\\
+c_2&c_1&c_0&\cdots\\
+\vdots&\vdots&\vdots&\ddots
+\end{bmatrix}.
+\]
+
+However, a finite ULA has edge elements with different electromagnetic neighborhoods from interior elements. Exact Toeplitz structure is therefore not a universal physical law for finite arrays.
+
+Likewise, a circulant matrix is not the default physical model for an ordinary finite ULA; it requires periodic/circular symmetry or another explicit justification.
+
+A nearest-neighbor or banded approximation,
+
+\[
+C_{nm}=0,
+\qquad |n-m|>P,
+\]
+
+is a truncation model that requires evidence or a declared approximation policy. It must not be inferred merely from the fact that coupling often weakens with separation.
+
+Further, even if a chosen impedance interaction model is sparse or banded,
+
+\[
+(\mathbf Z_A+\mathbf Z_L)^{-1}
+\]
+
+can be dense. Therefore sparse/banded mutual impedance does not imply a sparse/banded effective loaded transform.
+
+## 7.7 Embedded-element patterns and prevention of double counting
+
+An embedded element pattern is obtained for an element while it is embedded in the array and the other ports are terminated according to a declared reference/termination condition. Such a pattern incorporates interaction with neighboring elements.
+
+Therefore the following are distinct:
+
+- isolated-element response;
+- embedded-element response;
+- full-wave/full-array complex manifold;
+- direct measured manifold;
+- separately parameterized coupling operator.
+
+If a CST/full-wave or measured response already contains mutual-coupling physics, GeoDOA shall not silently apply another coupling matrix to it.
+
+The governing rule is
+
+\[
+\boxed{
+\text{effect already embedded in response}
+\not\Rightarrow
+\text{apply the same effect again}
+}
+\]
+
+unless explicit de-embedding/re-embedding provenance proves that the decomposition is valid.
+
+This requires future calibration/manifold artifacts to preserve an explicit **included-effects / de-embedding provenance** record.
+
+## 7.8 Operator ordering
+
+A physically interpretable receive chain may conceptually contain
+
+```text
+incident field
+    ↓
+geometry / propagation
+    ↓
+element / open-circuit receive response
+    ↓
+port/network loading and cross-channel interaction
+    ↓
+receiver electronics
+    ↓
+measurement
+```
+
+For one declared specialization this may produce a form such as
+
+\[
+\mathbf a_{\rm phys}=\mathbf G\mathbf T_L\mathbf a_{\rm oc},
+\]
+
+but this is not yet the final universal ADR-003 operator ordering.
+
+If \(\mathbf P\) represents isolated-element response, an explicit coupling/loading operator may legitimately follow it. If \(\mathbf P\) represents embedded-element response, applying a separate coupling operator may double count array interaction.
+
+Moreover, in general,
+
+\[
+\boxed{
+\mathbf C\mathbf P\neq\mathbf P\mathbf C.
+}
+\]
+
+The unified ordering contract is intentionally deferred to Exploration 3.8 after channel timing/frequency and receiver effects have also been explored.
+
+## 7.9 Manifold and covariance distortion
+
+For the declared linear specialization
+
+\[
+\mathbf x
+=\mathbf C\mathbf A\mathbf s+\mathbf n,
+\]
+
+where the shown noise is injected after the coupling block,
+
+\[
+\boxed{
+\mathbf R_{\rm sig,c}
+=\mathbf C\mathbf A\mathbf R_s\mathbf A^H\mathbf C^H
+=\mathbf C\mathbf R_{\rm sig}\mathbf C^H.
+}
+\]
+
+The rank obeys
+
+\[
+\boxed{
+\operatorname{rank}(\mathbf C\mathbf R\mathbf C^H)
+\le
+\min\{\operatorname{rank}(\mathbf C),\operatorname{rank}(\mathbf R)\}.
+}
+\]
+
+If \(\mathbf C\) is nonsingular,
+
+\[
+\boxed{
+\operatorname{rank}(\mathbf C\mathbf R\mathbf C^H)
+=\operatorname{rank}(\mathbf R).
+}
+\]
+
+Nonsingular coupling can therefore preserve signal-covariance rank while changing eigenvalues, eigenvectors, subspace orientation, and numerical conditioning. Rank-deficient coupling can reduce observable rank.
+
+## 7.10 MUSIC consequence
+
+For one source let
+
+\[
+\mathbf b=\mathbf C\mathbf a(\theta_0).
+\]
+
+With post-coupling spatially white noise,
+
+\[
+\mathbf R_x
+=\sigma_s^2\mathbf b\mathbf b^H+\sigma_n^2\mathbf I.
+\]
+
+The physical signal eigenvector is aligned with
+
+\[
+\frac{\mathbf b}{\|\mathbf b\|_2},
+\]
+
+not generally with the nominal manifold direction
+
+\[
+\frac{\mathbf a}{\|\mathbf a\|_2}.
+\]
+
+The physical noise subspace satisfies
+
+\[
+\boxed{
+\mathbf E_n^H\mathbf b=0.
+}
+\]
+
+If classical MUSIC is evaluated with the mismatched nominal manifold, then at the true DOA generally
+
+\[
+\boxed{
+\mathbf E_n^H\mathbf a(\theta_0)\neq0.
+}
+\]
+
+Thus the MUSIC algebra has not failed; the model supplied to MUSIC is mismatched to the physical coupled manifold.
+
+## 7.11 Noise ordering
+
+Coupling and noise injection do not commute semantically.
+
+If
+
+\[
+\mathbf x
+=\mathbf C(\mathbf A\mathbf s+\mathbf n_{\rm pre})
++\mathbf n_{\rm post},
+\]
+
+then, under the corresponding independence assumptions,
+
+\[
+\boxed{
+\mathbf R_x
+=
+\mathbf C\mathbf A\mathbf R_s\mathbf A^H\mathbf C^H
++
+\mathbf C\mathbf R_{n,\rm pre}\mathbf C^H
++
+\mathbf R_{n,\rm post}.
+}
+\]
+
+Even if
+
+\[
+\mathbf R_{n,\rm pre}=\sigma^2\mathbf I,
+\]
+
+then
+
+\[
+\mathbf C\mathbf R_{n,\rm pre}\mathbf C^H
+=\sigma^2\mathbf C\mathbf C^H,
+\]
+
+which is not spatially white unless the relevant scaled-unitary condition is satisfied.
+
+Detailed receiver-noise generation belongs later in ADR-003, but the ordering distinction is already mandatory.
+
+## 7.12 Inverse decoupling and conditioning
+
+Suppose a bounded effective model is
+
+\[
+\mathbf x=\mathbf C\mathbf a s+\mathbf n
+\]
+
+and calibration provides \(\hat{\mathbf C}\).
+
+Data correction may attempt
+
+\[
+\mathbf y=\hat{\mathbf C}^{-1}\mathbf x.
+\]
+
+Then
+
+\[
+\boxed{
+\mathbf y
+=\hat{\mathbf C}^{-1}\mathbf C\mathbf a s
++\hat{\mathbf C}^{-1}\mathbf n.
+}
+\]
+
+Even for exact calibration \(\hat{\mathbf C}=\mathbf C\), noise transforms as
+
+\[
+\boxed{
+\mathbf R_{n,y}
+=\mathbf C^{-1}\mathbf R_n\mathbf C^{-H}.
+}
+\]
+
+The inverse norm satisfies
+
+\[
+\boxed{
+\|\mathbf C^{-1}\|_2
+=\frac{1}{\sigma_{\min}(\mathbf C)}.
+}
+\]
+
+and the spectral condition number is
+
+\[
+\boxed{
+\kappa_2(\mathbf C)
+=\frac{\sigma_{\max}(\mathbf C)}{\sigma_{\min}(\mathbf C)}.
+}
+\]
+
+A small minimum singular value can therefore produce strong noise and calibration-error amplification. Condition number measures relative sensitivity, while the absolute inverse gain also depends on \(\sigma_{\min}\); the two diagnostics must not be conflated.
+
+If \(\mathbf C\) is singular, exact inverse decoupling does not exist. Pseudoinverse or regularized correction is a different calibration/estimation strategy and is deferred to Exploration 3.9.
+
+## 7.13 Residual coupling and attribution
+
+An additive operator residual may be defined without requiring invertibility:
+
+\[
+\boxed{
+\Delta\mathbf C
+=\mathbf C-\hat{\mathbf C}.
+}
+\]
+
+If \(\hat{\mathbf C}\) is invertible and both operators have identical semantics/domain, a relative inverse residual may also be defined:
+
+\[
+\boxed{
+\mathbf E_C
+=\hat{\mathbf C}^{-1}\mathbf C-\mathbf I.
+}
+\]
+
+These quantities answer different questions.
+
+A residual manifold mismatch such as
+
+\[
+\mathbf a_{\rm phys}-\mathbf a_{\rm cal}
+\]
+
+must not automatically be labeled residual mutual coupling. It may contain position, element pattern, phase center, electronics, loading, measurement, interpolation, or other errors. Physical-cause attribution requires identifiability evidence.
+
+## 7.14 Channel dropout, masking, and termination changes
+
+A digital channel mask applied after ADC/receiver acquisition does not necessarily change the physical antenna network if all physical ports remain in the same terminated state.
+
+By contrast, disabling an LNA, changing an input impedance, opening/shorting a port, disconnecting an element, changing a matching network, or otherwise changing a physical termination can alter the receive network itself.
+
+If
+
+\[
+\mathbf Z_L\rightarrow\mathbf Z_L',
+\]
+
+then generally
+
+\[
+\boxed{
+\mathbf T_L'
+=\mathbf Z_L'(\mathbf Z_A+\mathbf Z_L')^{-1}
+\neq
+\mathbf T_L.
+}
+\]
+
+The physical EM/network configuration may also change enough that the appropriate \(\mathbf Z_A\), embedded response, or calibrated manifold changes.
+
+Therefore GeoDOA shall distinguish
+
+\[
+\boxed{
+\text{digital channel masking}
+\neq
+\text{physical port-state / termination change}.
+}
+\]
+
+A coupling model for a changed termination/configuration shall not be obtained merely by deleting a row/column from an old operator unless that reduction has been explicitly derived and validated.
+
+## 7.15 Scientific verification notes
+
+The exploration was cross-checked against established antenna/network practice:
+
+- mutual coupling is treated as electromagnetic interaction among array elements and may be characterized through mutual impedance, S-parameters, coupling matrices, or embedded-element patterns;
+- embedded element patterns are obtained with the element embedded in the finite array and other ports terminated according to a declared impedance, and they include neighboring-element coupling effects;
+- S-to-impedance conversion depends on declared port/reference impedances, reinforcing that S-parameters are not standalone DOA coupling coefficients.
+
+These verification sources support the modeling distinctions above; they do not replace the later ADR-003 Gate evidence or Golden Reference validation.
+
+## 7.16 Candidate decisions from Exploration 3.5
+
+- **3.5-D1** — Mutual coupling is an electromagnetic cross-element/cross-port phenomenon and is not equivalent to diagonal gain/phase mismatch.
+- **3.5-D2** — Physical multiport receive semantics precede any generic DOA coupling-matrix specialization.
+- **3.5-D3** — Array-defined open-circuit receive response, antenna impedance network, loading/termination, and loaded terminal response are distinct scientific objects.
+- **3.5-D4** — Within a declared Thevenin-style multiport convention, loaded response may use \(\mathbf T_L=\mathbf Z_L(\mathbf Z_A+\mathbf Z_L)^{-1}\); this is a loaded-port transform, not a universal coupling law.
+- **3.5-D5** — An open-circuit receive-response vector is not automatically an uncoupled geometry-only steering vector and may already include array interaction physics depending on its provenance.
+- **3.5-D6** — \(\mathbf a_c=\mathbf C\mathbf a\) is a declared specialization, not a universal electromagnetic law.
+- **3.5-D7** — A coupling operator must declare whether it is network-derived, effective-manifold, or aggregate empirical.
+- **3.5-D8** — \(\mathbf Z\), \(\mathbf S\), \(\mathbf T_L\), an effective \(\mathbf C\), embedded patterns, and full measured/EM manifolds are not directly interchangeable.
+- **3.5-D9** — Z/S conversion requires explicit reference-impedance and wave-normalization semantics; unequal/complex reference impedances require the corresponding declared convention.
+- **3.5-D10** — A quantity such as \(S_{21}\) is not, in general, the coupling coefficient to insert directly into a DOA steering-manifold matrix.
+- **3.5-D11** — Network-parameter dependence, source-excitation dependence, and effective-manifold-operator dependence remain distinct.
+- **3.5-D12** — Reciprocity may justify symmetric network quantities under compatible conventions, but symmetric does not mean Hermitian.
+- **3.5-D13** — Toeplitz coupling for a finite ULA is an approximation/specialization, not a universal physical law; edge effects may violate it.
+- **3.5-D14** — Circulant structure is not the default model for an ordinary finite ULA.
+- **3.5-D15** — Banded/nearest-neighbor coupling is a truncation approximation requiring evidence or an explicit approximation policy.
+- **3.5-D16** — Sparse/banded impedance interaction does not imply a sparse/banded loaded or inverse operator.
+- **3.5-D17** — Coupling and diagonal element/electronic operators are generally noncommutative; physical ordering matters.
+- **3.5-D18** — Final unified operator ordering is deferred to Exploration 3.8.
+- **3.5-D19** — In a declared linear specialization, coupled signal covariance propagates as \(\mathbf C\mathbf R\mathbf C^H\).
+- **3.5-D20** — Nonsingular coupling preserves covariance rank but can change eigenvalues, eigenvectors, signal/noise-subspace orientation, and conditioning.
+- **3.5-D21** — Rank-deficient coupling can reduce observable signal rank.
+- **3.5-D22** — MUSIC noise-subspace orthogonality is with respect to the physical coupled manifold, not necessarily the nominal manifold.
+- **3.5-D23** — Coupling/noise ordering must be explicit.
+- **3.5-D24** — Pre-coupling spatially white noise may become colored/correlated after a nonunitary coupling transform.
+- **3.5-D25** — Model calibration and inverse data decoupling are distinct operations.
+- **3.5-D26** — Inverse decoupling can amplify noise and calibration/model error.
+- **3.5-D27** — Minimum singular value and condition number provide different but complementary inverse-conditioning information.
+- **3.5-D28** — Singular coupling has no exact inverse decoupling; pseudoinverse/regularization is a separate calibration strategy.
+- **3.5-D29** — Additive residual \(\Delta\mathbf C\) and relative inverse residual \(\hat{\mathbf C}^{-1}\mathbf C-\mathbf I\) have different semantics and validity conditions.
+- **3.5-D30** — Residual manifold mismatch must not be called residual coupling without physical-cause/identifiability evidence.
+- **3.5-D31** — Digital channel masking and physical port-state/termination changes are different phenomena.
+- **3.5-D32** — A changed termination/configuration may alter all surviving responses; row/column deletion from an old coupling matrix is not automatically valid.
+- **3.5-D33** — Embedded-element, full-wave, and measured manifolds may already contain coupling physics.
+- **3.5-D34** — GeoDOA requires included-effects/de-embedding provenance to prevent coupling double counting.
+- **3.5-D35** — GRP-016 shall exercise deterministic mutual-coupling manifold distortion; GRP-017 shall continue that case through covariance/eigenspace/MUSIC consequences.
+- **3.5-D36** — The initial Phase-1 validated profile may remain uncoupled while preserving the coupling contract as a later bounded extension.
+
+---
+
+# 8. Reserved Golden Reference Problems for ADR-003
 
 The Phase 0C roadmap reserves:
 
@@ -846,11 +1466,129 @@ Use two subcases:
 1. common phase applied to all channels — verify covariance/spatial-manifold invariance up to common complex scale;
 2. relative phase mismatch on one channel — verify analytical DOA bias for a two-sensor half-wavelength array.
 
-GRP-016 and GRP-017 are intentionally deferred until Exploration 3.5 establishes the accepted candidate mutual-coupling semantics.
+### GRP-016 seed
+
+Use a two-sensor half-wavelength array with
+
+\[
+u_0=0.5,
+\qquad
+\mathbf a=
+\begin{bmatrix}
+1\\-j
+\end{bmatrix},
+\qquad
+\mathbf C=
+\begin{bmatrix}
+1&0.5\\
+0.5&1
+\end{bmatrix}.
+\]
+
+Then
+
+\[
+\boxed{
+\mathbf b=\mathbf C\mathbf a
+=
+\begin{bmatrix}
+1-0.5j\\
+0.5-j
+\end{bmatrix}
+}
+\]
+
+and the relative response is
+
+\[
+\boxed{
+\frac{b_2}{b_1}=0.8-0.6j.
+}
+\]
+
+Its phase is approximately \(-36.87^\circ\), whereas the nominal relative phase is \(-90^\circ\). A nominal uncoupled phase-matching model would therefore infer
+
+\[
+\boxed{
+\hat u\approx0.20483
+}
+\]
+
+instead of \(u_0=0.5\).
+
+This seed exercises deterministic manifold distortion and nominal-model DOA bias. It remains a seed until formal Gate E evidence is created.
+
+### GRP-017 seed
+
+Continue the GRP-016 case. For unit source power,
+
+\[
+\boxed{
+\mathbf R_{\rm sig}
+=\mathbf b\mathbf b^H
+=
+\begin{bmatrix}
+1.25&1+0.75j\\
+1-0.75j&1.25
+\end{bmatrix}
+}
+\]
+
+with
+
+\[
+\|\mathbf b\|_2^2=2.5
+\]
+
+and signal-covariance eigenvalues
+
+\[
+\boxed{\{2.5,0\}}.
+\]
+
+If post-coupling white noise has variance \(\sigma_n^2=1\), then
+
+\[
+\mathbf R_x=\mathbf R_{\rm sig}+\mathbf I
+\]
+
+has eigenvalues
+
+\[
+\boxed{\{3.5,1\}}.
+\]
+
+The squared alignment between nominal and coupled manifold directions is
+
+\[
+\boxed{
+\frac{|\mathbf a^H\mathbf b|^2}
+{\|\mathbf a\|_2^2\|\mathbf b\|_2^2}
+=0.8.
+}
+\]
+
+For this two-channel, one-source case, the complementary normalized nominal-manifold projection onto the physical noise subspace is therefore \(0.2\). This seed exercises the chain
+
+\[
+\boxed{
+\text{coupling}
+\rightarrow
+\text{manifold rotation}
+\rightarrow
+\text{covariance}
+\rightarrow
+\text{eigenspace rotation}
+\rightarrow
+\text{nominal-MUSIC orthogonality error}.
+}
+\]
+
+It remains a seed until formal Gate E evidence is created.
 
 ---
 
-# 8. Non-Negotiable Cross-ADR Rules Already Inherited
+# 9. Non-Negotiable Cross-ADR Rules Already Inherited
 
 ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
@@ -867,33 +1605,30 @@ ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
 ---
 
-# 9. Immediate Next Step — Exploration 3.5 Mutual Coupling
+# 10. Immediate Next Step — Exploration 3.6 Channel Delay, Clock Skew, and Frequency Error
 
-The next chat/work session must start at **3.5 — Mutual Coupling**, not redo 3.1–3.4 unless a scientific contradiction is found.
+The next chat/work session must start at **3.6 — Channel Delay, Clock Skew, and Frequency Error**, not redo 3.1–3.5 unless a scientific contradiction is found.
 
-The required 3.5 questions include at least:
+Exploration 3.6 must distinguish at least:
 
-1. What physical phenomenon does `mutual coupling` mean in the GeoDOA sensor-modeling context?
-2. Under what assumptions can it be represented by a linear cross-channel matrix \(\mathbf C\)?
-3. Which side of element/electronic operators does \(\mathbf C\) act on, and why does ordering matter?
-4. What makes coupling frequency-, geometry-, termination-, loading-, polarization-, and possibly direction-dependent?
-5. What is the relationship among impedance/Z matrices, scattering/S matrices, port/network coupling, embedded element patterns, and an effective receive-manifold coupling operator?
-6. Which of those quantities are directly interchangeable and which require a derivation/model of source/load/reference impedance?
-7. When is a Toeplitz/banded/symmetric coupling matrix a useful approximation, and when is it unjustified?
-8. How does coupling modify \(\mathbf a\), \(\mathbf R_x\), eigenvalues, eigenspaces, and MUSIC orthogonality?
-9. How should coupling calibration and inverse/de-coupling conditioning be represented?
-10. How are coupling-model residuals distinguished from measured/full-wave manifold calibration residuals?
-11. How do active-channel masking, channel dropout, and changed terminations alter coupling semantics?
-12. How must GeoDOA prevent double counting when using CST embedded/full-array responses?
-13. What deterministic examples should become GRP-016 and GRP-017?
+1. static narrowband channel phase offset;
+2. physical channel delay and its phase slope versus frequency;
+3. inter-channel timing delay/skew;
+4. sampling-clock skew and sampling-rate mismatch;
+5. common versus differential clock error;
+6. LO/carrier frequency offset and common versus channel-dependent frequency error;
+7. spatial phase versus temporal phase evolution;
+8. delay/frequency effects on snapshot simultaneity and covariance coherence;
+9. when a fixed diagonal phase model is a valid narrowband approximation and when it fails;
+10. calibration domain, observability, residual error, and interaction with source motion/wideband processing.
 
-A central inherited rule from the roadmap is:
+Exploration 3.6 must remain consistent with ADR-002 delay, Fourier-sign, narrowband, snapshot, and measurement-axis semantics.
 
-> Mutual coupling is a first-class sensor-modeling effect and must not be reduced to a generic per-channel phase/gain perturbation.
+Do not start Gate A yet.
 
 ---
 
-# 10. Acceptance Status
+# 11. Acceptance Status
 
 As of this checkpoint:
 
@@ -905,8 +1640,9 @@ ADR-003 — EXPLORATION IN PROGRESS
     3.2 COMPLETE
     3.3 COMPLETE
     3.4 COMPLETE
-    3.5 NEXT
-    3.6–3.14 PENDING
+    3.5 COMPLETE
+    3.6 NEXT
+    3.7–3.14 PENDING
     Gates A–F NOT STARTED
 ADR-004 — NOT STARTED
 ```
