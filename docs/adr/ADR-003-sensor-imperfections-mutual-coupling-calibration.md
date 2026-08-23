@@ -1,16 +1,25 @@
 # ADR-003 — Sensor Imperfections, Mutual Coupling, and Calibration
 
-- **Status:** Draft — exploration complete; acceptance Gates A–F not started
+- **Status:** Accepted — all Phase 0C acceptance Gates A–F and final cross-gate reconciliation passed
 - **Phase:** 0C — Scientific Foundations
 - **Scope:** Sensor/receiver imperfections, calibration, measured/EM manifolds, mismatch propagation, and estimator compatibility
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
 - **Exploration record:** `ADR-003_EXPLORATION_CHECKPOINT.md` and dedicated Explorations 3.7–3.14
 - **Cross-section reconciliation:** `ADR-003_EXPLORATION_3.14_CROSS_SECTION_RECONCILIATION.md`
-- **Reserved Golden Reference Problems:** GRP-014 through GRP-017
+- **Pre-Gate review:** `ADR-003_PRE_GATE_CONSISTENCY_REVIEW.md`
+- **Acceptance audit:** `ADR-003_ACCEPTANCE_AUDIT.md`
+- **Gate C evidence:** `ADR-003_GATE_C_DIMENSIONAL_UNIT_CONSISTENCY_AUDIT.md`
+- **Gate D evidence:** `ADR-003_GATE_D_SOFTWARE_SEMANTIC_CONSISTENCY_AUDIT.md`
+- **Golden reference evidence:** `../science/golden_reference/ADR-003_GOLDEN_REFERENCE_PROBLEMS.md`
+- **Boundary/failure evidence:** `ADR-003_BOUNDARY_FAILURE_ANALYSIS.md`
+- **Gate F reconciliation:** `ADR-003_GATE_F_AUDIT.md`
+- **Final cross-gate reconciliation:** `ADR-003_FINAL_CROSS_GATE_RECONCILIATION.md`
+- **Final acceptance record:** `ADR-003_FINAL_ACCEPTANCE_RECORD.md`
+- **Golden Reference Problems:** GRP-014 through GRP-017
 - **Supersedes:** None
 - **Superseded by:** None
 
-> This is the governing ADR-003 draft. It is **not accepted** until Gates A–F, final cross-gate reconciliation, and the final acceptance record are complete.
+> ADR-003 is **Accepted** as the authoritative GeoDOA scientific contract for its declared scope. Acceptance does not activate all nonideal mechanisms in Phase 1; deferred families still require named/versioned bounded implementation profiles and their own verification evidence.
 
 ---
 
@@ -898,6 +907,14 @@ A Tikhonov-type correction may be
 }
 \]
 
+Dimensional homogeneity requires
+
+\[
+\boxed{[\lambda\mathbf I]=[\mathbf H^H\mathbf H].}
+\]
+
+Therefore \(\lambda\) is not universally dimensionless. It is dimensionless only when the corresponding operator/inverse problem has been expressed in compatible dimensionless or explicitly scaled coordinates.
+
 Small singular values can strongly amplify noise/model uncertainty.
 
 Minimum singular value and condition number are distinct diagnostics.
@@ -1367,7 +1384,7 @@ The initial receive-array Phase-1 profile does not automatically claim TDM-MIMO 
 
 ## 37. Initial Phase-1 ADR-003 Profile
 
-The candidate initial authoritative profile after acceptance is:
+The accepted initial authoritative profile is:
 
 ### 37.1 Geometry/propagation
 
@@ -1513,13 +1530,13 @@ GeoDOA shall not silently:
 
 ---
 
-## 41. Reserved Golden Reference Problems
+## 41. Accepted Golden Reference Problems
 
-ADR-003 reserves GRP-014 through GRP-017 for Gate E.
+Gate E formally accepts GRP-014 through GRP-017 as deterministic reference evidence.
 
 ### GRP-014 — Position-error phase distortion
 
-Candidate analytical chain:
+Canonical chain:
 
 \[
 \delta d
@@ -1532,6 +1549,16 @@ Candidate analytical chain:
 \]
 
 with rigid-translation invariance.
+
+For the accepted numerical reference, `d=lambda/2`, `u0=0.5`, and `delta_d/d=0.02` give
+
+```text
+u_hat                     0.51
+theta_hat                 30.6638297424 deg
+exact angular bias        0.6638297424 deg
+exact angular bias        0.01158601468 rad
+first-order angular bias  0.6615946745 deg
+```
 
 ### GRP-015 — Gain/phase mismatch
 
@@ -1606,7 +1633,7 @@ and normalized nominal leakage into the physical rank-one noise subspace is
 \boxed{1-\rho^2=0.2}.
 \]
 
-These remain reserved seeds until formal Gate-E verification.
+Supplemental deterministic references `ADR-003-SRC-01` through `ADR-003-SRC-08` cover timing, SRO/CFO, ADC arithmetic, DC offset, inverse-calibration noise amplification, calibration-grid gauge, and operator noncommutativity.
 
 ---
 
@@ -1650,9 +1677,9 @@ One evidence type shall not be relabeled another.
 
 ---
 
-## 44. Acceptance Requirements
+## 44. Acceptance Evidence
 
-This draft shall not become `Accepted` until:
+ADR-003 acceptance is supported by:
 
 ```text
 Gate A — Physical Consistency                  PASS
@@ -1662,25 +1689,29 @@ Gate D — Software Semantic Consistency         PASS
 Gate E — Hand-Calculated Reference Evidence    PASS
 Gate F — Boundary and Failure Analysis         PASS
 Final cross-gate reconciliation                PASS
+Cross-ADR-001 consistency                      PASS
+Cross-ADR-002 consistency                      PASS
 ```
 
-Gate E shall formally promote and verify GRP-014 through GRP-017 and decide which additional exploration checks become formal reference evidence.
-
-Gate F shall explicitly test the boundary/failure states identified during Explorations 3.1–3.14.
+Gate E formally promotes GRP-014 through GRP-017. Gate F defines the detailed boundary/failure taxonomy and 140 explicit cases.
 
 ---
 
-## 45. Current Disposition
+## 45. Final Disposition
 
 ```text
 Explorations 3.1–3.14: COMPLETE
 Cross-section reconciliation: COMPLETE
-Blocking scientific contradictions identified: NONE
-Governing ADR-003 draft: CREATED
 Pre-Gate consistency review: PASS
-Gate A — Physical Consistency: IN PROGRESS — A-001 correction applied; re-audit pending
-Gates B–F: NOT STARTED
-ADR-003 acceptance: NOT ACCEPTED
+Gate A — Physical Consistency: PASS
+Gate B — Mathematical Consistency: PASS
+Gate C — Dimensional and Unit Consistency: PASS
+Gate D — Software Semantic Consistency: PASS
+Gate E — Hand-Calculated Reference Evidence: PASS
+Gate F — Boundary and Failure Analysis: PASS
+Final Cross-Gate Reconciliation: PASS
+Golden Reference GRP-014–GRP-017: ACCEPTED
+ADR-003 acceptance: ACCEPTED
 ```
 
-The immediate next step is to re-audit the Gate A A-001 phase-reference correction against accepted ADR-001 stable-reference semantics and rigid-translation invariance. Gate B shall begin only after Gate A passes.
+The accepted initial Phase-1 deterministic sensor profile remains ideal/identity. Nonideal sensor families are governed by this ADR but remain implementation-deferred until their bounded profiles and verification evidence are established.
