@@ -102,8 +102,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.1   Verification vs Validation                      COMPLETE
 4.2   Ground Truth and Provenance                    COMPLETE
 4.3   Deterministic Reference Evidence               COMPLETE
-4.4   Random Variables and Trial Semantics           IN PROGRESS — NEXT
-4.5   Seed / RNG / Common Random Numbers             NOT STARTED
+4.4   Random Variables and Trial Semantics           COMPLETE
+4.5   Seed / RNG / Common Random Numbers             IN PROGRESS — NEXT
 4.6   Multi-Source Truth-to-Estimate Association     NOT STARTED
 4.7   Bias / Variance / MSE / RMSE                   NOT STARTED
 4.8   Detection / Miss / False Alarm / Resolution    NOT STARTED
@@ -128,4 +128,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.4 and define random-variable identity, deterministic versus random trial state, trial boundaries, ensemble semantics, repeated-condition semantics, and what constitutes one scientifically reproducible Monte Carlo trial before seed-stream policy is defined in Exploration 4.5.
+Complete Exploration 4.5 and define root-seed identity, deterministic child-stream derivation, random-stream separation by scientific role, execution-order independence, replay guarantees, and Common Random Numbers policy for fair paired comparisons.
