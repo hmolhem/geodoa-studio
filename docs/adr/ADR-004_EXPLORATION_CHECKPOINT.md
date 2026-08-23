@@ -59,7 +59,9 @@ ADR-004 must cover at least:
 - root seed and deterministic child-stream policy;
 - common random numbers for fair comparisons;
 - trial-count adequacy and convergence diagnostics;
-- bias, variance, MSE, and RMSE;
+- bias;
+- variance;
+- MSE and RMSE;
 - multi-source truth-to-estimate association;
 - missed and false detections;
 - resolution versus accuracy;
@@ -104,8 +106,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.3   Deterministic Reference Evidence               COMPLETE
 4.4   Random Variables and Trial Semantics           COMPLETE
 4.5   Seed / RNG / Common Random Numbers             COMPLETE
-4.6   Multi-Source Truth-to-Estimate Association     IN PROGRESS — NEXT
-4.7   Bias / Variance / MSE / RMSE                   NOT STARTED
+4.6   Multi-Source Truth-to-Estimate Association     COMPLETE
+4.7   Bias / Variance / MSE / RMSE                   IN PROGRESS — NEXT
 4.8   Detection / Miss / False Alarm / Resolution    NOT STARTED
 4.9   Probability of Resolution                      NOT STARTED
 4.10  Monte Carlo Adequacy and Convergence           NOT STARTED
@@ -128,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.6 and define association between unordered multi-source truth sets and estimator outputs, including cardinality mismatch, gating, deterministic tie handling, identity preservation, and the boundary between association logic and miss/false-detection semantics.
+Complete Exploration 4.7 and define bias, variance, MSE, RMSE, conditional-versus-unconditional aggregation, treatment of association outputs and failed/unmatched trials, units, weighting, and the deterministic hand-computable structure required for future GRP-018.
