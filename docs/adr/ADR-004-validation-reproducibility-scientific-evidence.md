@@ -204,6 +204,7 @@ The preferred verification hierarchy is:
 scientific definition / derivation
     -> hand-solvable Golden Reference Problem
     -> exact/symbolic or high-confidence independent arithmetic
+    -> independent numerical / cross-tool reference where appropriate
     -> software implementation comparison
     -> frozen regression artifact
     -> fixed/hardware promotion
@@ -224,6 +225,8 @@ provenance/version
 ```
 
 A regression test against saved production output detects change; it is not by itself an independent scientific oracle.
+
+An external numerical tool, CST model, independent implementation, or high-precision computation may provide cross-reference/model evidence when its assumptions, reference planes, grids, and provenance are compatible. Agreement with such an artifact is verification/model-reference evidence unless a separate physical validation contract supplies traceable physical evidence; cross-tool agreement alone is not physical validation.
 
 ADR-004 reserves:
 
@@ -249,6 +252,20 @@ study
 with separate method, implementation, run/execution, and artifact identities.
 
 A Monte Carlo trial is a scientifically identified realization of a declared stochastic experiment, not a loop index or worker task.
+
+The following counts/structural quantities remain distinct and shall not be used interchangeably:
+
+```text
+snapshot count L
+Monte Carlo trial count N
+physical/source count K
+source-covariance rank
+observed signal-subspace rank
+estimator model order
+estimated-output cardinality K_hat
+matched-pair/source-opportunity count
+condition count
+```
 
 Every random quantity shall have declared:
 
@@ -340,15 +357,30 @@ For scalar estimate `\hat q` and reference/truth `q`, define
 e=\hat q-q.
 \]
 
-For a fixed truth population:
+For a fixed truth value `q_0`,
 
 \[
 \operatorname{Bias}=E[e],
-\qquad
-\operatorname{MSE}=E[e^2],
+\]
+
+and
+
+\[
+\operatorname{Var}(\hat q)
+=E\!\left[(\hat q-E[\hat q])^2\right]
+=E\!\left[(e-E[e])^2\right].
+\]
+
+Then
+
+\[
+\operatorname{MSE}=E[e^2]
+=\operatorname{Var}(\hat q)+\operatorname{Bias}^2,
 \qquad
 \operatorname{RMSE}=\sqrt{\operatorname{MSE}}.
 \]
+
+When truth itself is random across the target population, bias/variance/MSE shall identify the averaging distribution/conditioning and shall not silently reuse fixed-truth interpretations.
 
 For `N` finite Monte Carlo errors:
 
@@ -386,7 +418,7 @@ Metrics shall declare:
 reference role
 coordinate + units
 association policy
-included trial/pair universe
+included trial/pair/source-opportunity universe
 failure mapping
 weighting / macro-vs-micro aggregation
 conditioning
@@ -403,6 +435,34 @@ For VP-001's zero-mean synthetic baseline,
 \]
 
 is canonically the **uncentered sample second moment**. Centered sample covariance is a distinct matrix object.
+
+### 9.2 Event-probability universes
+
+For a declared fixed condition `C` and trial law `P_trial`, a resolution event indicator `R_t` defines
+
+\[
+P_{res}=P(R=1\mid C,P_{trial}).
+\]
+
+For VP-001's baseline end-to-end pair/group resolution metric,
+
+\[
+\widehat P_{res}
+=\frac{N_{resolved}}{N_{eligible,compatible}},
+\]
+
+where the denominator is the set of scientifically eligible, method-compatible trials for the declared resolution event. A valid unresolved/missed trial contributes `R=0`; a numerical/algorithm failure on an otherwise eligible compatible trial also contributes `R=0` while retaining its typed failure record. Invalid-input, outside-profile, and method-incompatible conditions are not silently coerced into this ordinary denominator and are reported separately.
+
+For VP-001 source-level end-to-end detection probability,
+
+\[
+\widehat P_D
+=\frac{N_{detected\ truth\ opportunities}}{N_{eligible\ truth\ opportunities\ in\ compatible\ trials}}.
+\]
+
+An admissibly matched truth source is detected; a valid unmatched truth source is missed. If the method suffers a numerical/algorithm failure on an otherwise eligible compatible trial, the affected eligible truth-source opportunities are non-detections for this end-to-end `P_D`, while the failure status remains preserved.
+
+Conditional valid-output probabilities are permitted only under distinct metric identities and must report their conditioning plus failure/coverage evidence. Metric mapping never erases the original outcome status.
 
 ---
 
@@ -738,8 +798,7 @@ The canonical 1-D receive manifold remains inherited from ADR-001:
 
 \[
 a_n(\theta,f)
-=
-\exp[-jk(x_n-x_{ref})\sin\theta].
+=\exp[-jk(x_n-x_{ref})\sin\theta].
 \]
 
 ### 17.2 Baseline stochastic profile
