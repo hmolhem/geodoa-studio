@@ -5,8 +5,8 @@
 - **Status:** EXPLORATION IN PROGRESS — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
-- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5
-- **Next exploration section:** 3.6 — Channel Delay, Clock Skew, and Frequency Error
+- **Completed exploration sections:** 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
+- **Next exploration section:** 3.7 — Quantization / Receiver / Dynamic-Range Effects
 - **Acceptance gates:** Not started for ADR-003
 - **Reserved Golden Reference Problems:** GRP-014 through GRP-017
 
@@ -74,8 +74,8 @@ and, separately,
 3.3  Gain and Phase Mismatch                                 COMPLETE
 3.4  Element Pattern and Polarization                        COMPLETE
 3.5  Mutual Coupling                                         COMPLETE
-3.6  Channel Delay, Clock Skew, and Frequency Error          NEXT
-3.7  Quantization / Receiver / Dynamic-Range Effects         PENDING
+3.6  Channel Delay, Clock Skew, and Frequency Error          COMPLETE
+3.7  Quantization / Receiver / Dynamic-Range Effects         NEXT
 3.8  Unified Sensor-Imperfection Operator                    PENDING
 3.9  Calibration Models                                      PENDING
 3.10 Direct Measured / CST-Derived Manifold Calibration      PENDING
@@ -1432,7 +1432,690 @@ These verification sources support the modeling distinctions above; they do not 
 
 ---
 
-# 8. Reserved Golden Reference Problems for ADR-003
+# 8. Exploration 3.6 — Channel Delay, Clock Skew, and Frequency Error
+
+## 8.1 Timing/frequency taxonomy
+
+GeoDOA shall not use one ambiguous `phase_error` parameter for all receiver timing and frequency imperfections. At least the following meanings are distinct:
+
+1. **Static narrowband channel phase offset** — a complex phase intercept at a declared operating point.
+2. **Physical/electrical channel delay** — a waveform delay through cable, filter, RF/IF/baseband path, or another declared channel stage.
+3. **Fixed sampling-time offset / sampling-clock phase skew** — different channels sample the waveform at different physical epochs even if their sample rates are equal.
+4. **Sampling-rate offset (SRO)** — channel sample periods/rates differ, causing accumulated timing drift.
+5. **Sampling-time jitter** — sample-to-sample timing uncertainty, distinct from deterministic skew/drift.
+6. **Receiver-reference/LO phase offset** — static oscillator/reference phase difference.
+7. **Receiver-reference/LO frequency offset** — time derivative of receiver-reference phase error.
+8. **Digital transport / processing latency** — post-acquisition arrival or pipeline delay, which is not automatically a physical sample-time error.
+
+The phrase `clock skew` is therefore too ambiguous to serve as a complete scientific parameter. APIs and reports should distinguish fixed sampling-time offset, sampling-rate offset, and jitter.
+
+## 8.2 Physical channel delay and the GeoDOA sign convention
+
+Let \(\delta\tau_n\) be a declared additional physical/electrical delay in channel \(n\) relative to a reference channel/stage. A pure delay acts as
+
+\[
+\boxed{
+y_n(t)=x_n(t-\delta\tau_n).
+}
+\]
+
+Under the accepted GeoDOA Fourier convention,
+
+\[
+x(t-\tau)\longleftrightarrow X(\omega)e^{+j\omega\tau},
+\]
+
+so the delay transfer factor is
+
+\[
+\boxed{
+H_{\tau,n}(\omega)=e^{+j\omega\delta\tau_n}.
+}
+\]
+
+For an RF signal represented by the complex envelope convention
+
+\[
+x_{\rm RF}(t)=\Re\{s(t)e^{-j\omega_c t}\},
+\]
+
+an additional channel delay produces
+
+\[
+\boxed{
+s(t-\delta\tau_n)e^{+j\omega_c\delta\tau_n}.
+}
+\]
+
+Therefore a physical delay contains two effects that must not be conflated:
+
+- envelope/time alignment through \(s(t-\delta\tau_n)\);
+- carrier-frequency phase \(e^{+j\omega_c\delta\tau_n}\).
+
+If the envelope delay is negligible under a declared narrowband approximation,
+
+\[
+s(t-\delta\tau_n)\approx s(t),
+\]
+
+then the delay may be approximated at carrier frequency by a diagonal phase operator
+
+\[
+\boxed{
+\mathbf D_{\tau,c}
+=\operatorname{diag}
+\left(e^{+j\omega_c\delta\tau_1},\ldots,e^{+j\omega_c\delta\tau_N}\right).
+}
+\]
+
+This phase-only form is an approximation to a physical delay, not its general definition.
+
+## 8.3 Delay slope versus static phase offset
+
+For a pure delay,
+
+\[
+\phi_{\tau,n}(\omega)=\omega\delta\tau_n,
+\]
+
+so
+
+\[
+\boxed{
+\frac{d\phi_{\tau,n}}{d\omega}=\delta\tau_n.
+}
+\]
+
+This is consistent with ADR-002's accepted GeoDOA group-delay sign convention
+
+\[
+\tau_g=+\frac{d\phi}{d\omega}.
+\]
+
+By contrast, an ideal static phase offset
+
+\[
+H_{\phi,n}=e^{j\phi_{0,n}}
+\]
+
+has zero phase slope with frequency.
+
+Consequently,
+
+\[
+\boxed{
+\text{static phase offset}
+\neq
+\text{physical delay}
+}
+\]
+
+as physical models, even though a single-frequency measurement may be unable to distinguish them.
+
+A useful parametric local response can therefore contain both intercept and slope,
+
+\[
+\boxed{
+H_n(\omega)
+\approx
+\rho_n(\omega)
+\exp\{j[\phi_{0,n}+\omega\delta\tau_n]\},
+}
+\]
+
+over a declared validity band. Higher-order phase curvature represents dispersion/filter behavior beyond a pure delay.
+
+## 8.4 Channel-delay narrowband compatibility
+
+Let the relative additional channel-delay spread be
+
+\[
+\boxed{
+\Delta\tau_{\rm ch}
+=\max_n\delta\tau_n-
+\min_n\delta\tau_n.
+}
+\]
+
+For spectral offsets \(|\nu|\le\nu_{\max}\), define the diagnostic
+
+\[
+\boxed{
+\eta_{\rm ch-delay}
+=2\pi\nu_{\max}\Delta\tau_{\rm ch}.
+}
+\]
+
+This has the same scientific logic as ADR-002's aperture bandwidth-delay diagnostic, but it describes **receiver/channel differential delay**, not propagation-aperture delay.
+
+GeoDOA does not prescribe a universal PASS/FAIL threshold here. A threshold belongs to a later validation/compatibility policy. If the declared tolerance makes the residual envelope shift negligible, a carrier-phase-only approximation may be used. Otherwise the channel response must remain time/frequency dependent.
+
+## 8.5 Sampling-time model
+
+Let the nominal processing time grid be
+
+\[
+\boxed{
+t[k]=t_0+kT_s.
+}
+\]
+
+A useful channel-specific acquisition-time model is
+
+\[
+\boxed{
+t_n[k]
+=t_0+\beta_n+kT_s(1+\epsilon_{T,n})+\eta_n[k],
+}
+\]
+
+where:
+
+- \(\beta_n\) is a fixed sampling-time offset in seconds;
+- \(\epsilon_{T,n}\) is a dimensionless fractional sample-period error;
+- \(\eta_n[k]\) is sample-to-sample timing jitter/uncertainty.
+
+Thus the channel's timing error relative to the nominal grid is
+
+\[
+\boxed{
+\delta t_n[k]
+=\beta_n+kT_s\epsilon_{T,n}+\eta_n[k].
+}
+\]
+
+If the actual sample rate is written
+
+\[
+f_{s,n}=f_s(1+\epsilon_{f,n}),
+\]
+
+then exactly
+
+\[
+\boxed{
+1+\epsilon_{T,n}
+=\frac{1}{1+\epsilon_{f,n}}
+}
+\]
+
+and for small errors
+
+\[
+\boxed{
+\epsilon_{T,n}\approx-\epsilon_{f,n}.
+}
+\]
+
+GeoDOA shall preserve which fractional error is being reported; `ppm` without declaring sample-rate versus sample-period semantics is incomplete.
+
+## 8.6 Sampling-time offset is not the same operation as channel delay
+
+Let \(z_n(t)\) denote the continuous-time waveform at the physical point where channel \(n\) is sampled. A positive sampling-time offset means the waveform is observed later:
+
+\[
+\boxed{
+y_n[k]=z_n(t[k]+\delta t_n[k]).
+}
+\]
+
+For a monochromatic component under the GeoDOA temporal convention,
+
+\[
+z(t)=Ae^{-j\omega t},
+\]
+
+so
+
+\[
+\boxed{
+z(t+\delta t)
+=z(t)e^{-j\omega\delta t}.
+}
+\]
+
+This sign is opposite to the pure physical-delay transfer factor \(e^{+j\omega\delta\tau}\) because the two operations are physically different:
+
+```text
+channel delay:      shift the waveform later, x(t) -> x(t-delta_tau)
+sampling-time skew: observe the existing waveform at a later epoch, t -> t+delta_t
+```
+
+The frequency \(\omega\) in the sampling-time relation is the frequency of the waveform at the declared sampling point. Direct-RF, IF, and complex-baseband sampling therefore require explicit stage/frequency provenance.
+
+## 8.7 Fixed skew, SRO, and jitter
+
+The timing model separates three effects:
+
+### Fixed sampling-time offset
+
+If
+
+\[
+\epsilon_{T,n}=0,
+\qquad
+\eta_n[k]=0,
+\]
+
+then
+
+\[
+\delta t_n[k]=\beta_n.
+\]
+
+For a sufficiently narrowband signal this can sometimes be represented by a fixed phase at a declared frequency, but for a general waveform it remains a fractional-time alignment problem.
+
+### Sampling-rate offset
+
+If
+
+\[
+\epsilon_{T,n}\neq0,
+\]
+
+then the timing error accumulates with sample index:
+
+\[
+\boxed{
+\delta t_n[k]
+=\beta_n+kT_s\epsilon_{T,n}.
+}
+\]
+
+For a tone, this produces a phase drift linear in \(k\). For a broadband/general waveform it is a time-warp/resampling problem and cannot generally be reduced to one fixed diagonal phase matrix.
+
+### Sampling-time jitter
+
+\(\eta_n[k]\) is stochastic or otherwise sample-varying timing uncertainty. It is not deterministic fixed skew or SRO. Detailed stochastic jitter/noise and ADC impairment modeling is deferred to Exploration 3.7, but the semantic distinction is locked for later reconciliation.
+
+## 8.8 Common versus differential sampling-clock errors
+
+Decompose fixed timing offset as
+
+\[
+\beta_n=\beta_c+\tilde\beta_n
+\]
+
+and period error as
+
+\[
+\epsilon_{T,n}=\epsilon_{T,c}+\tilde\epsilon_{T,n}.
+\]
+
+A **common** fixed timing shift can preserve relative spatial simultaneity among channels while shifting the absolute/external observation epoch. A **differential** fixed timing shift violates exact simultaneity unless an equivalent alignment/calibration operation is performed.
+
+Likewise, a shared common sample clock can have a common rate error relative to an external reference while keeping physical channels mutually synchronized. Such an error still changes the physical time scale and can bias Doppler/frequency/time-axis interpretations.
+
+Differential SRO is more severe for spatial coherence because relative sample epochs drift continuously across channels. Coherent processing may therefore require resampling to a common time grid, not merely multiplying by a fixed phase factor.
+
+## 8.9 Aperture delay, aperture jitter, and processing latency
+
+GeoDOA shall preserve three separate engineering meanings:
+
+- **ADC aperture delay** — deterministic delay between a declared sampling-clock edge/reference and the actual sampling instant;
+- **aperture/sampling jitter** — sample-to-sample uncertainty in that instant;
+- **conversion/buffer/DMA/FPGA processing latency** — delay after the sample has already been physically acquired.
+
+Channel-to-channel aperture-delay mismatch can contribute to effective fixed sampling-time offset. Jitter contributes uncertainty/noise-like timing error. Digital pipeline latency does **not** alter the physical acquisition epoch if sample identity, ordering, and timestamp/index correspondence remain correct.
+
+Therefore
+
+\[
+\boxed{
+\text{data arrives later at processing}
+\not\Rightarrow
+\text{signal was sampled later}.
+}
+\]
+
+This distinction is mandatory for future FPGA/SoC backends and deterministic-latency reporting.
+
+## 8.10 Receiver-reference / LO phase and frequency error
+
+To avoid hiding mixer-sign conventions, GeoDOA can define a processed-baseband receiver-reference phase process
+
+\[
+\boxed{
+\psi_n(t)
+}
+\]
+
+through the multiplicative factor
+
+\[
+\boxed{
+e^{j\psi_n(t)}.
+}
+\]
+
+Define the corresponding residual receiver-reference frequency error by
+
+\[
+\boxed{
+\delta f_{\rm ref,n}(t)
+=\frac{1}{2\pi}\frac{d\psi_n(t)}{dt}.
+}
+\]
+
+For constant residual frequency error,
+
+\[
+\boxed{
+\psi_n(t)
+=\psi_n(0)+2\pi\delta f_{\rm ref,n}t.
+}
+\]
+
+Thus a static oscillator/reference phase offset and a frequency offset are different models:
+
+```text
+static phase offset     -> constant phase intercept
+frequency offset        -> phase that evolves with time
+```
+
+When mapping a physical LO frequency error into \(\delta f_{\rm ref,n}\), the mixer/downconversion sign convention must be declared. GeoDOA shall not infer that sign from the words `LO error` alone.
+
+## 8.11 Common versus differential receiver-reference error
+
+Write
+
+\[
+\psi_n(t)=\psi_c(t)+\tilde\psi_n(t).
+\]
+
+If all simultaneously observed channels receive the same common phase factor,
+
+\[
+\mathbf D_c(t)=e^{j\psi_c(t)}\mathbf I,
+\]
+
+then that factor is projectively common across the spatial snapshot. For an instantaneous outer product,
+
+\[
+\boxed{
+\mathbf D_c(t)\mathbf R\mathbf D_c^H(t)=\mathbf R.
+}
+\]
+
+Thus a truly common oscillator phase/frequency error need not distort an instantaneous spatial covariance/manifold direction, even though it remains important for coherent temporal processing, absolute phase/frequency interpretation, waveform demodulation, and synchronization to external systems.
+
+Differential receiver-reference phase/frequency error is different. Define
+
+\[
+\mathbf D_f(t)
+=\operatorname{diag}
+\left(e^{j2\pi\delta f_1t},\ldots,e^{j2\pi\delta f_Nt}\right).
+\]
+
+Then for a static underlying spatial covariance \(\mathbf R_0\),
+
+\[
+\boxed{
+\mathbf R(t)
+=\mathbf D_f(t)\mathbf R_0\mathbf D_f^H(t).
+}
+\]
+
+The physical signal/noise-subspace orientation can therefore drift with time.
+
+## 8.12 Covariance-window coherence under differential frequency error
+
+For snapshots at times \(t_k\), the \((n,m)\) covariance term under constant differential residual frequency error acquires the averaging factor
+
+\[
+\boxed{
+\Gamma_{nm}
+=\frac{1}{L}
+\sum_{k=1}^{L}
+\exp\left[j2\pi(\delta f_n-\delta f_m)t_k\right].
+}
+\]
+
+Hence differential oscillator error can reduce or rotate cross-channel covariance terms when the covariance estimator averages over a window during which relative phase evolves.
+
+For continuous uniform averaging over \([0,T]\), let
+
+\[
+\Delta f_{nm}=\delta f_n-\delta f_m.
+\]
+
+Then
+
+\[
+\boxed{
+\Gamma_{nm}(T)
+=e^{j\pi\Delta f_{nm}T}
+\operatorname{sinc}(\Delta f_{nm}T),
+}
+\]
+
+where
+
+\[
+\operatorname{sinc}(x)=\frac{\sin(\pi x)}{\pi x}.
+\]
+
+This result makes the coherence consequence explicit: relative frequency error is not merely a fixed phase bias; over a sufficiently long window it can attenuate cross-channel coherence and alter covariance rank/eigenspace behavior.
+
+No universal acceptable \(|\Delta f|T\) threshold is declared at this exploration stage.
+
+## 8.13 Sampling-rate offset and spatial snapshot validity
+
+ADR-002 defines a spatial snapshot as a simultaneous-equivalent coherent observation of the declared channels. Differential SRO directly challenges that contract.
+
+For a tone \(z(t)=Ae^{-j\omega t}\) and the deterministic sampling model,
+
+\[
+\boxed{
+z(t_n[k])
+=z(t[k])
+\exp\{-j\omega[\beta_n+kT_s\epsilon_{T,n}]\}.
+}
+\]
+
+The relative phase therefore drifts with \(k\). For a broadband waveform, the stronger statement applies: different channels are evaluating the waveform at different physical times, so coherent reconstruction generally requires interpolation/resampling or another explicitly validated equivalent construction.
+
+An integer-sample correction and a fractional-delay/resampling correction are different operations. The latter can introduce interpolation bandwidth, filter, boundary, and noise-correlation effects that must retain provenance.
+
+## 8.14 Physical Doppler, source frequency error, and receiver oscillator error
+
+ADR-002's Doppler is a propagation/path phenomenon caused by motion. Receiver-reference/LO frequency error is an instrumentation phenomenon. Source carrier uncertainty is a source/waveform phenomenon.
+
+These may all contribute to an observed residual temporal frequency, but they remain scientifically distinct:
+
+\[
+\boxed{
+\text{physical Doppler}
+\neq
+\text{source-frequency uncertainty}
+\neq
+\text{receiver LO/reference error}.
+}
+\]
+
+A single narrowband observation may not make these causes identifiable without a known reference, calibration waveform, motion model, or additional measurements.
+
+If the sampling clock and LO are derived from the same physical oscillator/reference, their errors may be correlated or share one fractional-frequency cause. GeoDOA shall preserve shared-reference provenance rather than assuming independent random errors by default.
+
+## 8.15 Non-simultaneous / TDM MIMO implication
+
+A common temporal phase process can become a **relative virtual-channel phase** when channels used to construct one virtual-array snapshot are acquired at different physical times.
+
+If virtual channel \(q\) is observed at time \(t_q\), a common evolving phase \(e^{j\psi(t)}\) contributes
+
+\[
+\boxed{
+e^{j\psi(t_q)}
+}
+\]
+
+which is no longer common across the assembled virtual-channel vector unless \(\psi(t_q)\) is effectively constant or explicitly corrected.
+
+Therefore common CFO/Doppler/oscillator phase that is harmless to a truly simultaneous physical Rx snapshot may distort a TDM-MIMO virtual manifold. Snapshot construction must preserve acquisition-time provenance and any synchronization/phase compensation used to create a simultaneous-equivalent view.
+
+## 8.16 Calibration and identifiability
+
+Timing/frequency calibration must declare exactly what is being estimated:
+
+- fixed phase intercept;
+- physical/electrical channel delay;
+- fixed sampling-time offset;
+- sample-rate/period error;
+- oscillator/reference phase offset;
+- oscillator/reference frequency offset;
+- stochastic jitter/phase-noise parameters;
+- or an aggregate effective correction.
+
+Important identifiability limits include:
+
+1. At one frequency, a static phase offset and a delay-induced phase can be indistinguishable.
+2. A frequency sweep or sufficiently broadband known calibration waveform can expose phase slope and therefore delay, subject to phase unwrapping and model validity.
+3. Channel delay and sampling-time offset can produce similar effective alignment errors but represent different physical stages and opposite signed shifts under the definitions above.
+4. Common clock or LO errors may be invisible to relative spatial calibration without an external reference.
+5. Observed residual frequency may confound oscillator error, source-frequency error, and physical Doppler.
+6. Calibration validity may change after oscillator relock, device restart, clock-tree change, sample-rate change, center-frequency change, temperature change, or receiver reconfiguration.
+
+Calibration provenance should therefore include, as applicable, clock/LO topology, shared-reference identity, lock/restart state, center frequency, sample rate, acquisition stage, calibration waveform/bandwidth, timestamp/epoch, temperature/environment, and correction method.
+
+Residuals must preserve their scientific type, for example
+
+\[
+\delta\tau_n^{\rm res},
+\qquad
+\beta_n^{\rm res},
+\qquad
+\epsilon_{T,n}^{\rm res},
+\qquad
+\delta f_n^{\rm res}.
+\]
+
+A generic `phase_residual` is insufficient when the physical error evolves across frequency or time.
+
+## 8.17 Small deterministic checks
+
+### Delay versus sampling-time sign
+
+For a \(100\,\text{MHz}\) monochromatic component and a positive \(100\,\text{ps}\) physical channel delay,
+
+\[
+\Delta\phi_{\rm delay}
+=2\pi(100\times10^6)(100\times10^{-12})
+\approx0.06283\,\text{rad}
+=+3.6^\circ.
+\]
+
+For a positive \(100\,\text{ps}\) sampling-time offset, meaning the same waveform is sampled \(100\,\text{ps}\) later,
+
+\[
+\Delta\phi_{\rm sample}
+=-2\pi(100\times10^6)(100\times10^{-12})
+=-3.6^\circ.
+\]
+
+At \(1\,\text{GHz}\), the magnitude becomes \(36^\circ\), demonstrating why a physical delay cannot generally be replaced by a frequency-independent phase constant.
+
+### Sampling-rate drift
+
+Let
+
+\[
+f_s=10\,\text{MHz}
+\]
+
+and suppose one channel's actual sample rate is high by \(+10\,\text{ppm}\):
+
+\[
+\epsilon_f=10^{-5}.
+\]
+
+Then
+
+\[
+\epsilon_T
+=\frac{1}{1+10^{-5}}-1
+\approx-9.9999\times10^{-6}.
+\]
+
+After approximately one nominal second of sample indexing, the channel's physical sample epoch leads the nominal grid by about \(10\,\mu\text{s}\). This is accumulated timing drift, not a fixed phase error.
+
+### Differential frequency coherence
+
+For two channels with
+
+\[
+\Delta f_{12}=1\,\text{Hz}
+\]
+
+and continuous covariance averaging over
+
+\[
+T=0.5\,\text{s},
+\]
+
+\[
+|\Gamma_{12}|
+=|\operatorname{sinc}(0.5)|
+=\frac{2}{\pi}
+\approx0.6366.
+\]
+
+Thus a seemingly small differential frequency error can substantially attenuate cross-channel covariance when the coherent averaging interval is long enough.
+
+These are exploration checks, not new formal GRP numbers. GRP-014 through GRP-017 remain reserved as already defined.
+
+## 8.18 Scientific verification notes
+
+The exploration was cross-checked against accepted ADR-002 and established synchronization/ADC practice:
+
+- ADR-002 defines a pure delay under the GeoDOA Fourier convention with the factor \(e^{+j\omega\tau}\), separates narrowband phase from envelope delay, and defines a spatial snapshot as simultaneous-equivalent coherent channel observation.
+- Analog Devices documentation distinguishes ADC aperture delay from aperture jitter and notes that channel timing mismatch/clock skew produces frequency-dependent error.
+- MathWorks synchronization documentation distinguishes carrier-frequency offset from sampling-clock offset; sampling-clock mismatch shifts sampling instants while carrier-frequency offset produces phase evolution over time.
+- Sampling-rate-offset literature for asynchronous sensor arrays treats SRO as a coherence problem requiring estimation/compensation or resampling to a common time base before coherent distributed processing.
+
+These references support the semantic distinctions above; they do not replace ADR-003's later Gates A–F or formal validation evidence.
+
+## 8.19 Candidate decisions from Exploration 3.6
+
+- **3.6-D1** — Static narrowband phase offset, physical channel delay, sampling-time offset, sampling-rate offset, jitter, oscillator phase/frequency error, and digital processing latency are distinct scientific meanings.
+- **3.6-D2** — A pure physical delay obeys the accepted GeoDOA transfer factor \(e^{+j\omega\delta\tau}\).
+- **3.6-D3** — RF/IF channel delay can alter both envelope alignment and carrier phase; phase-only representation is a declared narrowband approximation.
+- **3.6-D4** — Pure delay has phase slope \(d\phi/d\omega=\delta\tau\); static phase offset does not.
+- **3.6-D5** — A single-frequency phase measurement generally cannot identify static phase offset versus delay-induced phase without additional information.
+- **3.6-D6** — Receiver/channel delay requires its own bandwidth-delay compatibility diagnostic separate from propagation-aperture delay.
+- **3.6-D7** — No universal timing/delay compatibility threshold is declared during exploration.
+- **3.6-D8** — Fixed sampling-time offset is defined by the physical sample epoch and is not the same operation as delaying the waveform.
+- **3.6-D9** — For \(e^{-j\omega t}\), later sampling by \(+\delta t\) produces \(e^{-j\omega\delta t}\), opposite in sign to a positive waveform delay under the declared definitions.
+- **3.6-D10** — The frequency relevant to sampling-time phase depends on the physical sampling stage; RF, IF, and baseband sampling require provenance.
+- **3.6-D11** — GeoDOA shall prefer explicit `fixed sampling-time offset`, `sampling-rate offset`, and `jitter` semantics over an ambiguous bare `clock skew` parameter.
+- **3.6-D12** — A useful sample-time model separates fixed offset, fractional sample-period error, and sample-to-sample jitter.
+- **3.6-D13** — Fractional sample-rate error and fractional sample-period error have opposite first-order signs and must not be conflated.
+- **3.6-D14** — Common fixed sampling-time offset may preserve relative spatial simultaneity while changing absolute observation epoch; differential fixed offset does not.
+- **3.6-D15** — A common sample-rate error on a genuinely shared clock can preserve inter-channel synchronization while distorting the external physical time scale.
+- **3.6-D16** — Differential SRO accumulates relative time drift and generally requires resampling/time-warp correction for broadband coherent processing.
+- **3.6-D17** — Sampling-time jitter is distinct from deterministic skew/SRO and will be developed further with receiver/ADC effects in Exploration 3.7.
+- **3.6-D18** — ADC aperture delay, aperture jitter, and post-acquisition digital/FPGA latency are different quantities.
+- **3.6-D19** — Processing/DMA/pipeline latency does not change acquisition time if sample identity and epoch correspondence are preserved.
+- **3.6-D20** — Receiver-reference phase shall be representable as a time-varying phase process whose derivative defines residual reference-frequency error.
+- **3.6-D21** — Static receiver-reference phase offset and nonzero frequency offset are different models.
+- **3.6-D22** — Mapping physical LO error into processed-baseband residual frequency requires an explicit mixer/downconversion sign convention.
+- **3.6-D23** — A truly common oscillator phase process is a common complex factor across simultaneous spatial channels and cancels from an instantaneous covariance outer product.
+- **3.6-D24** — Differential oscillator/reference frequency error creates a time-varying relative manifold and can rotate/attenuate cross-channel covariance over a finite window.
+- **3.6-D25** — Finite-window covariance coherence under constant differential frequency error is governed by the explicit snapshot-time average \(\Gamma_{nm}\), not by one static phase value.
+- **3.6-D26** — Common temporal phase/frequency error can become relative virtual-channel phase when TDM/non-simultaneous channels are assembled into one virtual snapshot.
+- **3.6-D27** — Snapshot construction must preserve acquisition-time and synchronization/correction provenance.
+- **3.6-D28** — Physical Doppler, source-frequency uncertainty, and receiver LO/reference frequency error are distinct causes even when they contribute to one observed residual frequency.
+- **3.6-D29** — Shared oscillator/reference topology may correlate sampling-rate and LO-frequency errors; independence shall not be assumed by default.
+- **3.6-D30** — Integer-sample alignment and fractional-delay/resampling correction are distinct operations with different numerical/noise consequences.
+- **3.6-D31** — Calibration shall declare whether it estimates phase intercept, channel delay, sample-time offset, SRO, oscillator phase/frequency, jitter, or an aggregate effective correction.
+- **3.6-D32** — Multi-frequency/broadband calibration may identify delay through phase slope, subject to phase unwrapping and model-validity conditions.
+- **3.6-D33** — Common timing/frequency errors may be unidentifiable from relative spatial data without an external reference.
+- **3.6-D34** — Calibration validity/provenance must preserve clock/LO topology, reference identity, lock/restart state, center frequency, sample rate, acquisition stage, calibration bandwidth/waveform, time/temperature, and correction method as applicable.
+- **3.6-D35** — Residual delay, timing offset, SRO, and frequency error require typed residuals; a generic residual phase is insufficient when error evolves across frequency or time.
+- **3.6-D36** — The initial Phase-1 validated profile may assume synchronized channels, common coherent clock/reference, zero differential channel delay/SRO/CFO, and no timing jitter while preserving these contracts for later bounded extensions.
+
+---
+
+# 9. Reserved Golden Reference Problems for ADR-003
 
 The Phase 0C roadmap reserves:
 
@@ -1588,7 +2271,7 @@ It remains a seed until formal Gate E evidence is created.
 
 ---
 
-# 9. Non-Negotiable Cross-ADR Rules Already Inherited
+# 10. Non-Negotiable Cross-ADR Rules Already Inherited
 
 ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
@@ -1605,30 +2288,30 @@ ADR-003 must remain consistent with accepted ADR-001 and ADR-002. In particular:
 
 ---
 
-# 10. Immediate Next Step — Exploration 3.6 Channel Delay, Clock Skew, and Frequency Error
+# 11. Immediate Next Step — Exploration 3.7 Quantization / Receiver / Dynamic-Range Effects
 
-The next chat/work session must start at **3.6 — Channel Delay, Clock Skew, and Frequency Error**, not redo 3.1–3.5 unless a scientific contradiction is found.
+The next chat/work session must start at **3.7 — Quantization / Receiver / Dynamic-Range Effects**, not redo 3.1–3.6 unless a scientific contradiction is found.
 
-Exploration 3.6 must distinguish at least:
+Exploration 3.7 must distinguish at least:
 
-1. static narrowband channel phase offset;
-2. physical channel delay and its phase slope versus frequency;
-3. inter-channel timing delay/skew;
-4. sampling-clock skew and sampling-rate mismatch;
-5. common versus differential clock error;
-6. LO/carrier frequency offset and common versus channel-dependent frequency error;
-7. spatial phase versus temporal phase evolution;
-8. delay/frequency effects on snapshot simultaneity and covariance coherence;
-9. when a fixed diagonal phase model is a valid narrowband approximation and when it fails;
-10. calibration domain, observability, residual error, and interaction with source motion/wideband processing.
-
-Exploration 3.6 must remain consistent with ADR-002 delay, Fourier-sign, narrowband, snapshot, and measurement-axis semantics.
+1. ideal quantization versus additive quantization-noise approximations;
+2. ADC resolution, code range, full scale, LSB, ENOB, and quantization error;
+3. saturation and clipping versus ordinary quantization;
+4. receiver thermal/electronic noise versus quantization noise;
+5. ADC aperture jitter and clock-induced sampling uncertainty as receiver/acquisition effects;
+6. channel-dependent dynamic range and gain staging;
+7. AGC and whether gain is common, channel-specific, static, or time varying;
+8. offset/DC error, I/Q imbalance, nonlinearity, compression, and distortion extension points;
+9. how quantization/clipping/nonlinearity alter covariance, eigenspaces, and DOA compatibility;
+10. floating-point simulation versus finite-resolution measurement semantics;
+11. what belongs in the initial ideal profile versus later receiver/ADC profiles;
+12. calibration/provenance and hardware/fixed-point boundaries without conflating ADC quantization with FPGA arithmetic quantization.
 
 Do not start Gate A yet.
 
 ---
 
-# 11. Acceptance Status
+# 12. Acceptance Status
 
 As of this checkpoint:
 
@@ -1641,8 +2324,9 @@ ADR-003 — EXPLORATION IN PROGRESS
     3.3 COMPLETE
     3.4 COMPLETE
     3.5 COMPLETE
-    3.6 NEXT
-    3.7–3.14 PENDING
+    3.6 COMPLETE
+    3.7 NEXT
+    3.8–3.14 PENDING
     Gates A–F NOT STARTED
 ADR-004 — NOT STARTED
 ```
