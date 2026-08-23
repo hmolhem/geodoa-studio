@@ -110,8 +110,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.7   Bias / Variance / MSE / RMSE                   COMPLETE
 4.8   Detection / Miss / False Alarm / Resolution    COMPLETE
 4.9   Probability of Resolution                      COMPLETE
-4.10  Monte Carlo Adequacy and Convergence           IN PROGRESS — NEXT
-4.11  Confidence Intervals / Metric Uncertainty      NOT STARTED
+4.10  Monte Carlo Adequacy and Convergence           COMPLETE
+4.11  Confidence Intervals / Metric Uncertainty      IN PROGRESS — NEXT
 4.12  Fair Algorithm / Geometry Comparison           NOT STARTED
 4.13  Failure-State Recording                        NOT STARTED
 4.14  Multi-Level Scientific Error Metrics           NOT STARTED
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.10 and define when Monte Carlo trial count is adequate, how convergence/stability shall be diagnosed for means, RMSE, and event probabilities, how sequential/adaptive stopping may be used without biasing evidence, and what diagnostics must accompany claims based on finite stochastic samples.
+Complete Exploration 4.11 and define uncertainty/confidence reporting for means, RMSE/MSE, Bernoulli event probabilities, paired comparisons, hierarchical/dependent trial structures, and reference uncertainty without conflating finite-Monte-Carlo uncertainty with physical/model uncertainty.
