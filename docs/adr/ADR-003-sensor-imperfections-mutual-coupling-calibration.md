@@ -395,18 +395,36 @@ For exact source position \(\mathbf r_s\), path perturbation is
 }
 \]
 
-Under the far-field first-order approximation,
+Under the far-field first-order approximation, when nominal and physical manifolds use the same fixed ADR-001 spatial phase reference,
 
 \[
 \boxed{
-\delta\phi_n
+\delta\phi_n^{(\mathrm{fixed\ ref})}
+\approx
+-k\hat{\mathbf u}^T\boldsymbol\varepsilon_n.
+}
+\]
+
+If a comparison deliberately uses a separately displaced phase reference
+
+\[
+\mathbf r_{\rm ref}^{\rm phys}
+=\mathbf r_{\rm ref}^{\rm nom}
++\boldsymbol\varepsilon_{\rm ref},
+\]
+
+then the corresponding referenced perturbation is
+
+\[
+\boxed{
+\delta\phi_n^{(\mathrm{moved\ ref})}
 \approx
 -k\hat{\mathbf u}^T
 (\boldsymbol\varepsilon_n-\boldsymbol\varepsilon_{\rm ref}).
 }
 \]
 
-The pairwise form is
+The reference-invariant pairwise form is
 
 \[
 \boxed{
@@ -415,7 +433,7 @@ The pairwise form is
 }
 \]
 
-A rigid translation does not produce far-field relative-manifold distortion.
+A rigid translation may introduce only a common far-field phase relative to the fixed nominal reference; it does not produce far-field relative-manifold distortion.
 
 Mechanical position, global pose, element orientation, and EM phase-center behavior are distinct.
 
@@ -1659,9 +1677,10 @@ Explorations 3.1–3.14: COMPLETE
 Cross-section reconciliation: COMPLETE
 Blocking scientific contradictions identified: NONE
 Governing ADR-003 draft: CREATED
-Pre-Gate consistency review: NEXT
-Gates A–F: NOT STARTED
+Pre-Gate consistency review: PASS
+Gate A — Physical Consistency: IN PROGRESS — A-001 correction applied; re-audit pending
+Gates B–F: NOT STARTED
 ADR-003 acceptance: NOT ACCEPTED
 ```
 
-The immediate next step is a pre-Gate consistency review of this governing draft against accepted ADR-001/ADR-002 and the reconciled 3.14 contract. Gate A shall begin only after that review finds no blocking draft inconsistency.
+The immediate next step is to re-audit the Gate A A-001 phase-reference correction against accepted ADR-001 stable-reference semantics and rigid-translation invariance. Gate B shall begin only after Gate A passes.
