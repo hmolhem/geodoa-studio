@@ -145,7 +145,7 @@ The exact angular bias is
 \boxed{
 \Delta\theta
 =0.6638297424^\circ
-=0.011585033\ \mathrm{rad}\ \text{(approximately)}.
+=0.01158601468\ \mathrm{rad}\ \text{(approximately)}.
 }
 \]
 
