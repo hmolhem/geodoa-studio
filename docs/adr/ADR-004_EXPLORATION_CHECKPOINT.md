@@ -2,7 +2,7 @@
 
 - **ADR:** ADR-004 — Validation, Reproducibility, and Scientific Evidence
 - **Phase:** 0C — Scientific Foundations
-- **Status:** EXPLORATION COMPLETE — GOVERNING DRAFT AUTHORIZED — NOT ACCEPTED
+- **Status:** GOVERNING DRAFT COMPLETE — PRE-GATE REVIEW NEXT — NOT ACCEPTED
 - **Branch:** `docs/phase0c-scientific-conventions`
 - **Depends on:** Accepted ADR-001, ADR-002, ADR-003
 - **Roadmap:** `../PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
@@ -41,7 +41,7 @@ The working exploration sequence is:
 4.20  Cross-Section Reconciliation
 ```
 
-The exploration organization is now complete. Governing ADR-004 drafting should consolidate the detailed exploration decisions rather than preserve this numbering as the final ADR structure.
+The exploration organization is complete. The governing ADR-004 draft now consolidates these candidate decisions into the reconciled `F1–F14` decision families.
 
 ## 3. Roadmap Coverage Requirements
 
@@ -75,7 +75,7 @@ ADR-004 must cover at least:
 - scientific metrics versus computational/hardware metrics;
 - floating-point, fixed-point, and FPGA cross-validation.
 
-Explorations 4.1–4.20 collectively cover these roadmap requirements at candidate-contract level.
+Explorations 4.1–4.20 collectively cover these roadmap requirements at candidate-contract level, and the governing draft has now been written from the reconciled decision families.
 
 ## 4. Initial Golden Reference Reservation
 
@@ -91,8 +91,8 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 
 ## 5. Working Rules
 
-1. Exploration is complete; the governing ADR-004 draft is now authorized.
-2. No acceptance Gate A before the governing ADR-004 draft exists and a pre-Gate consistency review passes.
+1. Exploration is complete and the governing ADR-004 draft now exists.
+2. No acceptance Gate A before the dedicated pre-Gate consistency review passes.
 3. Exploration calculations are not formal Golden Reference PASS evidence until Gate E.
 4. Verification, validation, calibration, benchmarking, and reproducibility shall remain distinct concepts.
 5. Metric computation and acceptance policy shall remain distinct.
@@ -132,15 +132,15 @@ GRP-018 remains exploration/reference content until formal Gate E evidence is cr
 4.19  Initial Phase-1 Validation Profile             COMPLETE
 4.20  Cross-Section Reconciliation                   COMPLETE
 
-Governing ADR-004 draft                               AUTHORIZED — NEXT
-Pre-Gate consistency review                           NOT STARTED
+Governing ADR-004 draft                               COMPLETE — DRAFT ONLY
+Pre-Gate consistency review                           NEXT
 Gates A-F                                             NOT STARTED
 ADR-004 acceptance                                    NOT ACCEPTED
 ```
 
-## 7. Reconciled Decision Families for Governing ADR
+## 7. Reconciled Decision Families in the Governing ADR
 
-The governing draft should consolidate exploration decisions into:
+The governing draft consolidates exploration decisions into:
 
 ```text
 F1   Evidence-role separation
@@ -163,6 +163,14 @@ Detailed exploration files remain supporting rationale and traceability evidence
 
 ## 8. Immediate Work Item
 
-Draft the governing ADR-004 from reconciled decision families `F1–F14` without copying all exploration sections verbatim. Preserve upstream ADR authority and the reconciled terminology/denominator/failure/profile semantics from Exploration 4.20.
+Perform a dedicated pre-Gate consistency review of `ADR-004-validation-reproducibility-scientific-evidence.md` against:
 
-After the governing draft is complete, perform a separate pre-Gate consistency review. Gate A may begin only if that review passes.
+- the reconciled decision families `F1–F14`;
+- `ADR-004_EXPLORATION_4.20_CROSS_SECTION_RECONCILIATION.md`;
+- the Phase 0C roadmap coverage requirements;
+- accepted ADR-001, ADR-002, and ADR-003 authority boundaries;
+- the exact terminology and denominator/failure/profile semantics established during reconciliation.
+
+The review shall explicitly check covariance-object naming, `v_N` versus `s^2`, truth/reference/calibration roles, snapshot/trial/source-count distinctions, `P_D`/`P_res` universes, compatibility/failure/metric-eligibility separation, VP-001 fixed-`N`/Wilson scoping, hardware implementation versus physical validation, and publication/provenance immutability.
+
+Gate A may begin only if this pre-Gate review passes.
