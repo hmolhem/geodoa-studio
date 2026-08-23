@@ -107,8 +107,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.4   Random Variables and Trial Semantics           COMPLETE
 4.5   Seed / RNG / Common Random Numbers             COMPLETE
 4.6   Multi-Source Truth-to-Estimate Association     COMPLETE
-4.7   Bias / Variance / MSE / RMSE                   IN PROGRESS — NEXT
-4.8   Detection / Miss / False Alarm / Resolution    NOT STARTED
+4.7   Bias / Variance / MSE / RMSE                   COMPLETE
+4.8   Detection / Miss / False Alarm / Resolution    IN PROGRESS — NEXT
 4.9   Probability of Resolution                      NOT STARTED
 4.10  Monte Carlo Adequacy and Convergence           NOT STARTED
 4.11  Confidence Intervals / Metric Uncertainty      NOT STARTED
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.7 and define bias, variance, MSE, RMSE, conditional-versus-unconditional aggregation, treatment of association outputs and failed/unmatched trials, units, weighting, and the deterministic hand-computable structure required for future GRP-018.
+Complete Exploration 4.8 and define detection, missed-source, false/spurious-estimate, correct-cardinality, and source-resolution semantics without collapsing them into localization RMSE or association alone.
