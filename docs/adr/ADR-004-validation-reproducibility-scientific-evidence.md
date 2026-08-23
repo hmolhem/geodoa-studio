@@ -1,17 +1,21 @@
 # ADR-004 — Validation, Reproducibility, and Scientific Evidence
 
-- **Status:** Draft — exploration reconciled; pre-Gate consistency review pending; not accepted
+- **Status:** Accepted — all Phase 0C acceptance Gates A–F and final cross-gate reconciliation passed
 - **Phase:** 0C — Scientific Foundations
 - **Scope:** Verification, physical validation, truth/reference provenance, stochastic experiments, metrics, uncertainty, fair comparison, failure-state evidence, float/fixed/FPGA cross-validation, run provenance, publication reproducibility, and the initial VP-001 validation profile
 - **Depends on:** `ADR-001-coordinate-direction-spatial-conventions.md`, `ADR-002-wave-propagation-signal-measurement-model.md`, `ADR-003-sensor-imperfections-mutual-coupling-calibration.md`, `PHASE0C_SCIENTIFIC_CONTRACTS_ROADMAP.md`
 - **Exploration record:** `ADR-004_EXPLORATION_CHECKPOINT.md` and dedicated Explorations 4.1–4.20
 - **Cross-section reconciliation:** `ADR-004_EXPLORATION_4.20_CROSS_SECTION_RECONCILIATION.md`
-- **Pre-Gate review:** Pending
-- **Golden Reference Problems:** GRP-018 reserved for ADR-004; formal Gate-E evidence pending
+- **Pre-Gate review:** `ADR-004_PRE_GATE_CONSISTENCY_REVIEW.md` — PASS
+- **Gate audits:** `ADR-004_GATE_A_AUDIT.md` through `ADR-004_GATE_F_AUDIT.md` — PASS
+- **Golden Reference evidence:** `../science/golden_reference/ADR-004_GOLDEN_REFERENCE_PROBLEMS.md` — GRP-018 PASS
+- **Boundary/failure evidence:** `ADR-004_BOUNDARY_FAILURE_ANALYSIS.md`
+- **Final cross-gate reconciliation:** `ADR-004_FINAL_CROSS_GATE_RECONCILIATION.md` — PASS
+- **Final acceptance record:** `ADR-004_FINAL_ACCEPTANCE_RECORD.md`
 - **Supersedes:** None
 - **Superseded by:** None
 
-> ADR-004 is **not accepted**. This document is the governing draft produced from the reconciled exploration record. Gate A may begin only after a separate pre-Gate consistency review passes.
+> ADR-004 is **Accepted**. Its normative F1–F14 scientific evidence contract passed the dedicated pre-Gate review, Gates A–F, formal Golden Reference evidence, boundary/failure analysis, and final cross-gate reconciliation. Authoritative Phase-1 implementation may now consume this contract; implementation itself remains subject to independent verification and acceptance.
 
 ---
 
@@ -228,13 +232,13 @@ A regression test against saved production output detects change; it is not by i
 
 An external numerical tool, CST model, independent implementation, or high-precision computation may provide cross-reference/model evidence when its assumptions, reference planes, grids, and provenance are compatible. Agreement with such an artifact is verification/model-reference evidence unless a separate physical validation contract supplies traceable physical evidence; cross-tool agreement alone is not physical validation.
 
-ADR-004 reserves:
+ADR-004's accepted canonical Golden Reference is:
 
 ```text
 GRP-018 — Bias, Variance, MSE, and RMSE by hand
 ```
 
-Formal GRP acceptance remains Gate-E work.
+Formal expected values and supplemental deterministic references are recorded in `../science/golden_reference/ADR-004_GOLDEN_REFERENCE_PROBLEMS.md` and passed Gate E.
 
 ---
 
@@ -781,7 +785,7 @@ A reproducibility package supports audit/reconstruction. It does not itself prov
 
 ## 17. F14 — VP-001 Initial Validation Profile
 
-VP-001 is the first candidate executable GeoDOA scientific validation profile.
+VP-001 is the first accepted executable GeoDOA scientific validation profile.
 
 ### 17.1 Inherited scientific semantics
 
@@ -972,13 +976,13 @@ Cross-ADR authority and terminology <- 4.18
 Final reconciliation <- 4.20
 ```
 
-The exploration documents remain supporting rationale and shall not be deleted when ADR-004 is eventually accepted.
+The exploration documents remain supporting rationale and shall not be deleted after acceptance.
 
 ---
 
-## 22. Pre-Gate Requirements
+## 22. Acceptance Evidence and Historical Gate Entry Requirements
 
-Before Gate A begins, the dedicated pre-Gate consistency review shall verify at minimum:
+The dedicated pre-Gate review verified the former Gate-A entry requirements and passed. The original draft-stage requirement list remains historically informative:
 
 ```text
 F1–F14 represented without omission
@@ -997,22 +1001,26 @@ provenance/publication immutability represented
 no exploration-only candidate implementation detail promoted unnecessarily
 ```
 
-**Gate A is blocked until this review passes.**
+These requirements are no longer pending. `ADR-004_PRE_GATE_CONSISTENCY_REVIEW.md` passed, followed by Gates A–F and final cross-gate reconciliation.
 
 ---
 
-## 23. Draft Status
-
-At this draft stage:
+## 23. Final Accepted Status
 
 ```text
 Explorations 4.1–4.20                  COMPLETE
-Governing ADR-004 draft                COMPLETE — DRAFT ONLY
-Pre-Gate consistency review            NEXT
-Gates A–F                              NOT STARTED
-Formal GRP-018 Gate-E evidence         NOT STARTED
-ADR-004 acceptance                     NOT ACCEPTED
-Authoritative Phase-1 implementation   NOT YET AUTHORIZED
+Governing ADR-004                      ACCEPTED
+Pre-Gate consistency review            PASS
+Gate A — Physical Consistency          PASS
+Gate B — Mathematical Consistency      PASS
+Gate C — Dimensional / Unit            PASS
+Gate D — Software Semantic             PASS
+Gate E — Golden Reference              PASS
+Gate F — Boundary / Failure            PASS
+Final Cross-Gate Reconciliation        PASS
+Formal GRP-018 Gate-E evidence         PASS
+Final Acceptance Record                COMPLETE
+Authoritative Phase-1 implementation   AUTHORIZED TO BEGIN — NOT PRE-ACCEPTED
 ```
 
-The next work item is a dedicated pre-Gate consistency review of this governing draft against the exploration reconciliation, roadmap requirements, and accepted ADR-001/002/003 contracts.
+The authoritative acceptance record is `ADR-004_FINAL_ACCEPTANCE_RECORD.md`. The lifecycle metadata drift identified as `XG-004-01` in the final cross-gate reconciliation is resolved by this accepted-status synchronization.
