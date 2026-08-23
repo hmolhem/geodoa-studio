@@ -25,3 +25,4 @@ independent branches or pull requests.
 |---:|---|---|---|---|---|
 | 001 | Phase 0A — Repository Bootstrap | `chore/phase0-foundation` | #1 | Closed | `PHASE0A_REPOSITORY_BOOTSTRAP_HANDOFF.md` |
 | 002 | Phase 0B — Python Engineering Toolchain | `chore/phase0-python-toolchain` | #2 | Closed | `PHASE0B_PYTHON_ENGINEERING_TOOLCHAIN_HANDOFF.md` |
+| 003 | Phase 0C — Scientific Foundations and Contracts | `docs/phase0c-scientific-conventions` | #4 | Closed | `PHASE0C_SCIENTIFIC_FOUNDATIONS_HANDOFF.md` |
