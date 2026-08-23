@@ -117,8 +117,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 4.14  Multi-Level Scientific Error Metrics           COMPLETE
 4.15  Float / Fixed / FPGA Cross-Validation          COMPLETE
 4.16  Run Identity / Configuration / Provenance      COMPLETE
-4.17  Publication / Reproducibility Package          IN PROGRESS — NEXT
-4.18  Cross-ADR Compatibility                        NOT STARTED
+4.17  Publication / Reproducibility Package          COMPLETE
+4.18  Cross-ADR Compatibility                        IN PROGRESS — NEXT
 4.19  Initial Phase-1 Validation Profile             NOT STARTED
 4.20  Cross-Section Reconciliation                   NOT STARTED
 
@@ -130,4 +130,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.17 and define the minimum publication-grade reproducibility package: immutable evidence artifacts, resolved configuration, software/Git/environment provenance, stochastic/trial identities, raw/derived data lineage, calibration/hardware-build identity where applicable, metric/failure/uncertainty policies, machine-readable manifests, figure/table regeneration paths, and explicit boundaries between what is reproducible, externally unavailable, proprietary, or physically irreproducible.
+Complete Exploration 4.18 and reconcile ADR-004 candidate evidence, metric, stochastic, provenance, comparison, failure, and hardware-validation contracts against the accepted conventions in ADR-001, ADR-002, and ADR-003. Identify any conflicts, duplicated semantics, hidden assumptions, or required terminology alignment before defining the initial Phase-1 validation profile.
