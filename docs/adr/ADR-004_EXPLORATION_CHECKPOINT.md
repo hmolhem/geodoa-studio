@@ -100,8 +100,8 @@ Additional ADR-004 deterministic evidence may use `ADR-004-SRC-*` identifiers so
 
 ```text
 4.1   Verification vs Validation                      COMPLETE
-4.2   Ground Truth and Provenance                    IN PROGRESS — NEXT
-4.3   Deterministic Reference Evidence               NOT STARTED
+4.2   Ground Truth and Provenance                    COMPLETE
+4.3   Deterministic Reference Evidence               IN PROGRESS — NEXT
 4.4   Random Variables and Trial Semantics           NOT STARTED
 4.5   Seed / RNG / Common Random Numbers             NOT STARTED
 4.6   Multi-Source Truth-to-Estimate Association     NOT STARTED
@@ -128,4 +128,4 @@ ADR-004 acceptance                                    NOT ACCEPTED
 
 ## 7. Immediate Work Item
 
-Complete Exploration 4.2 and define what may serve as simulation truth, analytical reference, measured reference, calibration-derived estimate, external-tool reference, or hardware reference without collapsing provenance or uncertainty.
+Complete Exploration 4.3 and define the admissible hierarchy of analytical, exact, high-precision, independent-implementation, external-tool, and deterministic Golden Reference evidence before stochastic trial semantics are introduced.
