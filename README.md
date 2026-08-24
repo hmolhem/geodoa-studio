@@ -160,14 +160,16 @@ Monte Carlo agreement does not replace deterministic semantic verification.
 
 GeoDOA follows a domain-centered architecture:
 
-```text
-Python API / CLI / Notebook / Future GUI
-                    ↓
-           Application use cases
-                    ↓
-       Domain models + scientific kernels
-                    ↑
- Serialization / plotting / hardware adapters
+```mermaid
+flowchart TD
+    A["Python API / CLI / Notebook / Future GUI"]
+    B["Application use cases"]
+    C["Domain models + scientific kernels"]
+    D["Serialization / plotting / hardware adapters"]
+
+    A --> B
+    B --> C
+    D --> C
 ```
 
 Object-oriented design is used where identity, invariants, policies, or lifecycle
@@ -233,14 +235,16 @@ embedding paper-specific assumptions into the general-purpose core.
 
 The target traceability chain is:
 
-```text
-Figure / Table / Result
-        ↓
-Run manifest and resolved configuration
-        ↓
-Software release or Git commit
-        ↓
-Trial-level or recomputable evidence
+```mermaid
+flowchart TD
+    A["Figure / Table / Result"]
+    B["Run manifest and resolved configuration"]
+    C["Software release or Git commit"]
+    D["Trial-level or recomputable evidence"]
+
+    A --> B
+    B --> C
+    C --> D
 ```
 
 A study should identify the exact GeoDOA release or commit it used and retain
@@ -256,22 +260,34 @@ the repository and the full commit SHA used.
 
 The intended numerical implementation path is:
 
-```text
-Scientific contract
-    → verified float64 reference
-    → float32 sensitivity
-    → fixed-point and bit-accurate model
-    → HLS/RTL implementation
-    → FPGA/SoC replay and measurement
+```mermaid
+flowchart TD
+    A["Scientific contract"]
+    B["Verified float64 reference"]
+    C["Float32 sensitivity"]
+    D["Fixed-point and bit-accurate model"]
+    E["HLS / RTL implementation"]
+    F["FPGA / SoC replay and measurement"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
 ```
 
 Backend validation should propagate numerical effects beyond raw matrix error:
 
-```text
-Covariance error
-    → eigenspace/projector error
-    → spectrum error
-    → detection/DOA difference
+```mermaid
+flowchart TD
+    A["Covariance error"]
+    B["Eigenspace / projector error"]
+    C["Spectrum error"]
+    D["Detection / DOA difference"]
+
+    A --> B
+    B --> C
+    C --> D
 ```
 
 Latency, initiation interval, throughput, resources, timing closure, and host
