@@ -10,7 +10,7 @@
 - Base commit: `17d0ea942126bd59dcd6e0d58a86b93ed3e2bf40`
 - Pull Request: #7
 - Merge Commit: Pending
-- Status: Implementation complete — PR #7 open (draft)
+- Status: Implementation complete — PR #7 open and ready for review
 
 ## Objective
 
@@ -318,4 +318,4 @@ This handoff becomes closed only when:
 
 Until those conditions are satisfied, status remains:
 
-`Implementation complete — PR #7 open (draft)`.
+`Implementation complete — PR #7 open and ready for review`.
