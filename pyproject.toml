@@ -9,6 +9,9 @@ description = "Geometry-aware sensor-array modeling, DOA estimation, and FPGA/So
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 
+[project.scripts]
+geodoa = "geodoa.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "mypy",
