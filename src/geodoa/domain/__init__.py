@@ -6,6 +6,13 @@ from geodoa.domain.geometry import (
     SensorChannel1D,
     SortedGeometryView,
 )
+from geodoa.domain.ula import (
+    ULAGenerationCode,
+    ULAGenerationError,
+    ULAGenerationSpec,
+    ULAPlacementPolicy,
+    generate_ula,
+)
 
 __all__ = [
     "GeometryDiagnosticCode",
@@ -14,4 +21,9 @@ __all__ = [
     "LinearArrayGeometry",
     "SensorChannel1D",
     "SortedGeometryView",
+    "ULAGenerationCode",
+    "ULAGenerationError",
+    "ULAGenerationSpec",
+    "ULAPlacementPolicy",
+    "generate_ula",
 ]
