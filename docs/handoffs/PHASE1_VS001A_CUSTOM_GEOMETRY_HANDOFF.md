@@ -9,8 +9,8 @@
 - Branch: `feat/vs001a-custom-geometry-inspection`
 - Base commit: `17d0ea942126bd59dcd6e0d58a86b93ed3e2bf40`
 - Pull Request: #7
-- Merge Commit: Pending
-- Status: Implementation complete — PR #7 open and ready for review
+- Merge Commit: `3e21cae71fcc387d255ee8457ce399b17cb95bb2`
+- Status: Closed — merged via PR #7
 
 ## Objective
 
@@ -316,6 +316,18 @@ This handoff becomes closed only when:
 6. local `main` is synchronized with `origin/main`;
 7. the final worktree is clean.
 
-Until those conditions are satisfied, status remains:
+All VS-001A closure conditions were satisfied after PR #7 merged.
 
-`Implementation complete — PR #7 open and ready for review`.
+Closure evidence:
+
+- PR #7: merged;
+- merge commit: `3e21cae71fcc387d255ee8457ce399b17cb95bb2`;
+- GitHub Actions: PASS on Python 3.12, 3.13, and 3.14;
+- feature branch: removed locally and remotely;
+- local `main`: synchronized with `origin/main` at the merge commit before
+  creation of the documentation-only closeout branch;
+- post-merge worktree: verified clean before closeout work began.
+
+Final VS-001A status:
+
+`Closed — merged via PR #7`.
