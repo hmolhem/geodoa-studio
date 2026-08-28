@@ -9,8 +9,8 @@
 * Branch: `feat/vs001b-ula-generation`
 * Base commit: `f6b4b755d495fbefb9243f0db5f752aaaed65c59`
 * Pull Request: #9
-* Merge Commit: Ready for review
-* Status: Ready for review
+* Merge Commit: `4c87ce8b196a93d7d6d79756d64411a6321fefbf`
+* Status: Closed — merged via PR #9
 
 Implementation checkpoints:
 
@@ -535,6 +535,18 @@ This handoff becomes closed only when:
 6. local `main` is synchronized with `origin/main`;
 7. the final post-merge worktree is clean.
 
-Until those conditions are satisfied, the VS-001B status remains:
+All VS-001B closure conditions were satisfied after PR #9 merged.
 
-`Ready for review`.
+Closure evidence:
+
+- PR #9: merged;
+- merge commit: `4c87ce8b196a93d7d6d79756d64411a6321fefbf`;
+- GitHub Actions: PASS on the supported Python matrix;
+- feature branch: removed locally and remotely;
+- local `main`: synchronized with `origin/main` at the merge commit before
+  creation of the documentation-only closeout branch;
+- post-merge worktree: verified clean before closeout work began.
+
+Final VS-001B status:
+
+`Closed — merged via PR #9`.
