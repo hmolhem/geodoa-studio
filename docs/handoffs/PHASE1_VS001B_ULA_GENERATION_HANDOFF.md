@@ -8,8 +8,8 @@
 * Bounded slice: VS-001B — ULA Generation and Equivalence
 * Branch: `feat/vs001b-ula-generation`
 * Base commit: `f6b4b755d495fbefb9243f0db5f752aaaed65c59`
-* Pull Request: Pending
-* Merge Commit: Pending
+* Pull Request: #9
+* Merge Commit: Ready for review
 * Status: Ready for review
 
 Implementation checkpoints:
