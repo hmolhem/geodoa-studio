@@ -27,3 +27,4 @@ independent branches or pull requests.
 | 002 | Phase 0B — Python Engineering Toolchain | `chore/phase0-python-toolchain` | #2 | Closed | `PHASE0B_PYTHON_ENGINEERING_TOOLCHAIN_HANDOFF.md` |
 | 003 | Phase 0C — Scientific Foundations and Contracts | `docs/phase0c-scientific-conventions` | #4 | Closed | `PHASE0C_SCIENTIFIC_FOUNDATIONS_HANDOFF.md` |
 | 004 | Phase 1 VS-001A — Validated Custom 1-D Geometry Inspection | `feat/vs001a-custom-geometry-inspection` | #7 | Closed | `PHASE1_VS001A_CUSTOM_GEOMETRY_HANDOFF.md` |
+| 005 | Phase 1 VS-001B — ULA Generation and Equivalence | `feat/vs001b-ula-generation` | Pending | Ready for review | `PHASE1_VS001B_ULA_GENERATION_HANDOFF.md` |
