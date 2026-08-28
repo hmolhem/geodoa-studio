@@ -75,11 +75,11 @@ alternate numerical or hardware backends.
 | Scientific contracts ADR-001 through ADR-004 | Accepted — Phase 0C closed |
 | Golden Reference Problem definitions GRP-001 through GRP-018 | Established as independent scientific evidence |
 | Initial validation profile VP-001 | Accepted as the governed Phase-1 target |
-| Custom 1-D geometry creation, validation, inspection, and basic physical metrics | Implemented in the first Phase-1 vertical slice |
+| Custom and ULA 1-D geometry creation, validation, inspection, and basic physical metrics | Implemented across the first two Phase-1 vertical slices |
 | Steering/manifold kernels | Not yet implemented |
 | Snapshot, covariance, eigenspace, and DOA kernels | Not yet implemented |
 | Monte Carlo engine and publication evidence pipeline | Not yet implemented |
-| CLI | Initial custom 1-D geometry inspection command implemented |
+| CLI | Custom and ULA 1-D geometry inspection commands implemented |
 | GUI and notebook workflows | Not yet implemented |
 | Fixed-point model and FPGA/SoC backend | Not yet implemented |
 
@@ -223,6 +223,57 @@ geodoa geometry inspect-custom `
   --sensor RX0 0.00 `
   --sensor RX1 0.15
 ```
+
+A Uniform Linear Array can also be generated and inspected from explicit
+physical construction parameters:
+
+```powershell
+geodoa geometry inspect-ula `
+  --sensor-count 4 `
+  --spacing-m 0.25 `
+  --anchor-m 0.0 `
+  --placement centroid
+
+The first Phase-1 headless use case inspects an explicitly declared custom
+1-D physical geometry while preserving authoritative channel identity and
+ordering:
+
+```powershell
+geodoa geometry inspect-custom `
+  --sensor RX2 0.30 `
+  --sensor RX0 0.00 `
+  --sensor RX1 0.15
+```
+
+The command reports the authoritative channels, a non-destructive sorted
+geometric view with explicit permutations, physical centroid/aperture/adjacent
+spacing metrics, the default declared-geometry-centroid phase reference, and
+typed diagnostics. Its JSON output is an inspection result, not yet a stable
+canonical configuration or persistence schema.
+
+A Uniform Linear Array can also be generated and inspected from explicit
+physical construction parameters:
+
+```powershell
+geodoa geometry inspect-ula `
+  --sensor-count 4 `
+  --spacing-m 0.25 `
+  --anchor-m 0.0 `
+  --placement centroid
+```
+
+ULA generation supports explicit `centroid` and `first_sensor` placement
+policies. Generated arrays use deterministic channel identities (`RX0`,
+`RX1`, ...), preserve the existing `LinearArrayGeometry` representation, and
+reuse the same physical-metric, sorted-view, diagnostic, and default
+phase-reference inspection path as custom geometry.
+
+The ULA construction anchor is not silently treated as the spatial phase
+reference. The accepted default phase reference remains the declared geometry
+centroid.
+
+As with `inspect-custom`, the JSON output from `inspect-ula` is an inspection
+result and is not yet a canonical configuration or persistence schema.
 
 The command reports the authoritative channels, a non-destructive sorted
 geometric view with explicit permutations, physical centroid/aperture/adjacent
