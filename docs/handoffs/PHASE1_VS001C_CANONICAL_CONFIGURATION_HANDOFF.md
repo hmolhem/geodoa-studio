@@ -1,0 +1,335 @@
+# GeoDOA Studio — Phase 1 VS-001C Canonical Configuration Handoff
+
+## Milestone Identity
+
+- Project: GeoDOA Studio
+- Phase: Phase 1 — Authoritative Scientific Implementation
+- Planning umbrella: VS-001
+- Bounded slice: VS-001C — Canonical Configuration Round Trip
+- Branch: `feat/vs001c-canonical-configuration`
+- Base commit: `6e8d5c90fde5d86ee4cf4f5725981eafa2df5452`
+- Pull Request: Pending
+- Merge Commit: Pending
+- Status: Ready for review
+
+Implementation checkpoints:
+
+- `68efd7e` — canonical geometry configuration domain contract
+- `42683a7` — strict canonical geometry JSON codec
+- `2776ede` — geometry configuration persistence flow
+- `ea48039` — canonical configuration inspection CLI
+- `c77a96f` — normalize canonical physical numeric encoding
+
+## Objective
+
+VS-001C establishes the first persistent, versioned, deterministic configuration contract for GeoDOA physical 1-D geometry.
+
+The engineering question for this slice is:
+
+> Can GeoDOA preserve an accepted physical geometry, its authoritative sensor identity and ordering, and its construction provenance through a strict deterministic save/load round trip without silently normalizing or reinterpreting the scientific geometry?
+
+The implemented answer is yes for the currently supported custom and ULA geometry families.
+
+## Meaning of Canonical
+
+In VS-001C, `canonical` refers to the configuration schema and deterministic serialization representation.
+
+It does not mean canonicalization of the scientific geometry.
+
+GeoDOA does not silently sort channels, translate coordinates, center geometry, reflect geometry, normalize aperture, deduplicate sensors, relabel sensors, or replace authoritative order with geometric order.
+
+The resolved physical geometry remains authoritative.
+
+## Configuration Domain Contract
+
+The configuration aggregate is `GeometryConfigurationV1`.
+
+It contains:
+
+- an authoritative `LinearArrayGeometry`;
+- explicit construction provenance.
+
+Two construction variants are supported:
+
+- `CustomGeometryConstruction`;
+- `ULAGeometryConstruction`.
+
+ULA provenance contains:
+
+- generator version;
+- sensor count;
+- spacing in meters;
+- anchor in meters;
+- placement policy.
+
+The current ULA generator version is `1`.
+
+The governing rule is:
+
+`resolved physical geometry is authoritative; construction information is provenance`
+
+For persisted ULA configurations, GeoDOA regenerates the ULA from stored construction parameters and verifies exact equality with the stored authoritative physical geometry. A disagreement is rejected with `construction_geometry_mismatch`.
+
+Domain configuration failures include:
+
+- `invalid_construction`;
+- `unsupported_ula_generator_version`;
+- `construction_geometry_mismatch`.
+
+## Canonical JSON V1
+
+Schema identity:
+
+- schema: `geodoa.geometry_configuration`
+- schema version: `1`
+
+The document stores:
+
+- schema identity and version;
+- authoritative physical geometry;
+- explicit position unit `m`;
+- ordered sensor IDs and physical positions;
+- construction provenance.
+
+Derived inspection results are not persisted. Sorted views, permutations, centroid, aperture, adjacent-spacing metrics, diagnostics, and resolved phase-reference position are recomputed after loading.
+
+This avoids multiple persistent sources of scientific truth.
+
+## Strict JSON Boundary
+
+The decoder rejects malformed or ambiguous configuration documents.
+
+Typed JSON-layer failures include:
+
+- `invalid_json`;
+- `duplicate_json_key`;
+- `unsupported_schema`;
+- `unsupported_schema_version`;
+- `invalid_configuration_structure`.
+
+The strict decoder also rejects duplicate keys, NaN, Infinity, -Infinity, unexpected keys, invalid geometry kind, invalid unit declarations, malformed channel structures, malformed construction structures, and invalid ULA placement-policy representations.
+
+Existing geometry, ULA, and configuration-domain validation errors remain visible rather than being silently repaired.
+
+## Deterministic Encoding
+
+Canonical JSON encoding uses:
+
+- sorted object keys;
+- compact separators;
+- UTF-8;
+- disabled nonfinite numeric output.
+
+The required deterministic invariant is:
+
+`encode(decode(encode(configuration))) == encode(configuration)`
+
+During final contract audit, an integer-versus-float boundary defect was found. A runtime physical value such as `0` could initially encode as `0`, while decode/re-encode produced `0.0`. That violated canonical byte stability.
+
+Commit `c77a96f` corrected this by normalizing continuous physical quantities at the serialization boundary:
+
+- `position_m`;
+- `spacing_m`;
+- `anchor_m`.
+
+Discrete fields such as sensor count, schema version, and generator version remain integers.
+
+The final deterministic oracle produced `DETERMINISTIC: True`.
+
+## Persistence Flow
+
+Filesystem persistence is implemented in the application layer:
+
+`GeometryConfigurationV1 -> canonical JSON -> UTF-8 bytes -> file -> UTF-8 bytes -> strict decoder -> GeometryConfigurationV1`
+
+Saving writes the exact canonical UTF-8 bytes generated by the codec.
+
+Loading reconstructs the domain configuration and therefore re-applies the same geometry, ULA, and configuration invariants.
+
+## Application Inspection Flow
+
+A persisted configuration reuses the accepted VS-001A inspection path:
+
+`configuration file -> load_geometry_configuration() -> GeometryConfigurationV1 -> inspect_geometry_configuration() -> existing geometry inspection`
+
+Physical metrics and phase-reference logic are not reimplemented.
+
+## Headless Interface
+
+VS-001C adds:
+
+`geodoa geometry inspect-config --input <path>`
+
+The command loads the canonical configuration, validates schema and domain semantics, preserves authoritative geometry order, reuses the existing inspection pipeline, and reports the established inspection payload.
+
+For ULA configurations, construction provenance including generator version is also reported.
+
+VS-001C deliberately does not add CLI save commands. Save/load persistence is available through the application API.
+
+Selected CLI file-interface failures include:
+
+- `configuration_file_not_found`;
+- `invalid_configuration_utf8`.
+
+Scientific failures continue to report their typed JSON, configuration, geometry, or ULA codes.
+
+## Round-Trip Invariants
+
+A successful round trip preserves:
+
+- sensor identities;
+- authoritative sensor order;
+- physical positions;
+- construction variant;
+- ULA generator version;
+- ULA sensor count;
+- ULA spacing;
+- ULA anchor;
+- ULA placement policy;
+- geometry validation semantics;
+- geometry inspection semantics.
+
+## Deterministic Oracles
+
+### Custom geometry
+
+Authoritative channels:
+
+- `RX2 -> 0.30 m`
+- `RX0 -> 0.00 m`
+- `RX1 -> 0.15 m`
+
+After save/load, authoritative order remains `RX2, RX0, RX1`. The derived sorted view remains separate.
+
+### ULA geometry
+
+Construction:
+
+- sensor count: `4`
+- spacing: `0.25 m`
+- anchor: `-0.50 m`
+- placement policy: `first_sensor`
+- generator version: `1`
+
+Resolved physical geometry:
+
+- `RX0 -> -0.50 m`
+- `RX1 -> -0.25 m`
+- `RX2 -> 0.00 m`
+- `RX3 -> 0.25 m`
+
+After persistence and reload, authoritative geometry and construction provenance remain unchanged. Existing inspection recomputes centroid `-0.125 m`, aperture `0.75 m`, and the declared-geometry-centroid default phase reference.
+
+### Canonical numeric boundary
+
+Integral runtime physical values are encoded in canonical floating representation. For example, `0` and `1` physical positions serialize as `0.0` and `1.0`, and subsequent decode/re-encode is byte-stable.
+
+## Verification Evidence
+
+Final local implementation verification passed for:
+
+- domain tests;
+- application tests;
+- serialization tests;
+- integration tests;
+- full pytest suite;
+- Ruff lint;
+- Ruff format check;
+- mypy;
+- `git diff --check`.
+
+Focused canonical serialization verification: `16 passed`.
+
+The canonical numeric round-trip oracle returned `DETERMINISTIC: True`.
+
+The pull request must also pass the configured GitHub Actions matrix for Python 3.12, 3.13, and 3.14 before merge.
+
+## Files Introduced or Changed
+
+Domain:
+
+- `src/geodoa/domain/configuration.py`
+- `src/geodoa/domain/__init__.py`
+
+Serialization:
+
+- `src/geodoa/serialization/geometry_configuration_json.py`
+- `src/geodoa/serialization/__init__.py`
+
+Application:
+
+- `src/geodoa/application/configuration_persistence.py`
+- `src/geodoa/application/__init__.py`
+
+Interface:
+
+- `src/geodoa/cli.py`
+
+Tests:
+
+- `tests/domain/test_configuration.py`
+- `tests/serialization/test_geometry_configuration_json.py`
+- `tests/application/test_configuration_persistence.py`
+- `tests/integration/test_cli_configuration_inspection.py`
+
+Documentation:
+
+- `README.md`
+- `docs/handoffs/PHASE1_VS001C_CANONICAL_CONFIGURATION_HANDOFF.md`
+- `docs/handoffs/HANDOFF_INDEX.md`
+
+## Explicitly Deferred
+
+Outside VS-001C:
+
+- geometry SHA-256 identity;
+- general GEO-019 equivalence signature;
+- YAML and CSV configuration;
+- GUI and notebook configuration workflows;
+- CLI save commands;
+- atomic filesystem replacement semantics;
+- generalized filesystem error wrapping;
+- active-channel masks;
+- lattice declarations;
+- difference coarray;
+- manifold and frequency configuration;
+- steering-vector configuration;
+- signal/noise scenario configuration;
+- snapshot and covariance configuration;
+- eigenspace and DOA estimator configuration;
+- Monte Carlo configuration;
+- fixed-point and FPGA/SoC configuration.
+
+## Sequencing
+
+Phase-1 sequencing remains:
+
+`VS-001A custom geometry -> VS-001B ULA generation -> VS-001C canonical configuration -> VS-002 lattice/difference-coarray analysis`
+
+VS-001C adds persistence only for the already accepted physical geometry scope. It does not pull later scientific objects into the schema prematurely.
+
+## Rollback
+
+VS-001C is independently reversible.
+
+Reverting this slice removes the geometry configuration aggregate, canonical JSON V1 codec, save/load persistence flow, persisted-configuration inspection CLI, and associated tests/documentation.
+
+Rollback does not modify ADR-001 through ADR-004, GRP-001 through GRP-018, VP-001, VS-001A geometry semantics, or VS-001B ULA generation semantics.
+
+No migration of earlier GeoDOA data is required because no earlier canonical persistent geometry schema existed.
+
+## Closure Condition
+
+This handoff becomes closed only when:
+
+1. the bounded VS-001C pull request is reviewed and merged;
+2. GitHub Actions passes on Python 3.12, 3.13, and 3.14;
+3. the actual PR number is recorded;
+4. the actual merge commit is recorded;
+5. the feature branch is removed locally and remotely;
+6. local `main` is synchronized with `origin/main`;
+7. the final post-merge worktree is clean.
+
+Current status:
+
+`Ready for review — merge pending`.
