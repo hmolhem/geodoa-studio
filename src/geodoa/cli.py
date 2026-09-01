@@ -6,11 +6,18 @@ import sys
 from collections.abc import Sequence
 from typing import Any
 
+from geodoa.application.configuration_persistence import (
+    load_and_inspect_geometry_configuration,
+)
 from geodoa.application.geometry_inspection import (
     GeometryInspectionResult,
     inspect_custom_geometry,
 )
 from geodoa.application.ula_inspection import inspect_ula_geometry
+from geodoa.domain.configuration import (
+    GeometryConfigurationError,
+    ULAGeometryConstruction,
+)
 from geodoa.domain.geometry import (
     GeometryValidationError,
     LinearArrayGeometry,
@@ -20,6 +27,9 @@ from geodoa.domain.ula import (
     ULAGenerationError,
     ULAGenerationSpec,
     ULAPlacementPolicy,
+)
+from geodoa.serialization.geometry_configuration_json import (
+    GeometryConfigurationJSONError,
 )
 
 
@@ -51,6 +61,13 @@ def _build_parser() -> argparse.ArgumentParser:
         "--placement",
         choices=[policy.value for policy in ULAPlacementPolicy],
         required=True,
+    )
+
+    inspect_config_parser = geometry_subparsers.add_parser("inspect-config")
+    inspect_config_parser.add_argument(
+        "--input",
+        required=True,
+        help="Path to a canonical GeoDOA geometry configuration JSON file.",
     )
 
     return parser
@@ -218,6 +235,56 @@ def _run_inspect_ula(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_inspect_config(args: argparse.Namespace) -> int:
+    try:
+        result = load_and_inspect_geometry_configuration(args.input)
+    except GeometryConfigurationJSONError as exc:
+        return _print_error(exc.code.value, str(exc))
+    except GeometryValidationError as exc:
+        return _print_error(exc.code.value, str(exc))
+    except GeometryConfigurationError as exc:
+        return _print_error(exc.code.value, str(exc))
+    except FileNotFoundError:
+        return _print_error(
+            "configuration_file_not_found",
+            f"Configuration file was not found: {args.input!r}.",
+        )
+    except UnicodeDecodeError:
+        return _print_error(
+            "invalid_configuration_utf8",
+            "Configuration file is not valid UTF-8.",
+        )
+
+    construction = result.configuration.construction
+
+    generation: dict[str, Any] | None = None
+    geometry_kind = "custom_linear_1d"
+
+    if isinstance(construction, ULAGeometryConstruction):
+        geometry_kind = "ula"
+        generation = {
+            "sensor_count": construction.spec.sensor_count,
+            "spacing_m": construction.spec.spacing_m,
+            "anchor_m": construction.spec.anchor_m,
+            "placement_policy": construction.spec.placement_policy.value,
+            "generator_version": construction.generator_version,
+        }
+
+    print(
+        json.dumps(
+            _inspection_payload(
+                result.inspection,
+                geometry_kind=geometry_kind,
+                generation=generation,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -228,6 +295,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         if args.geometry_command == "inspect-ula":
             return _run_inspect_ula(args)
+
+        if args.geometry_command == "inspect-config":
+            return _run_inspect_config(args)
 
     parser.error("Unsupported command.")
     return 2
