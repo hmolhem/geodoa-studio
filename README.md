@@ -69,17 +69,18 @@ alternate numerical or hardware backends.
 
 | Capability | State |
 |---|---|
-| Repository structure and governance | Complete — Phase 0A closed |
-| Python packaging and engineering toolchain | Complete — Phase 0B closed |
+| Repository structure and governance | Complete â€” Phase 0A closed |
+| Python packaging and engineering toolchain | Complete â€” Phase 0B closed |
 | Ruff, mypy, pytest, and GitHub Actions matrix | Operational on Python 3.12, 3.13, and 3.14 |
-| Scientific contracts ADR-001 through ADR-004 | Accepted — Phase 0C closed |
+| Scientific contracts ADR-001 through ADR-004 | Accepted â€” Phase 0C closed |
 | Golden Reference Problem definitions GRP-001 through GRP-018 | Established as independent scientific evidence |
 | Initial validation profile VP-001 | Accepted as the governed Phase-1 target |
-| Custom and ULA 1-D geometry creation, validation, inspection, and basic physical metrics | Implemented across the first two Phase-1 vertical slices |
+| Custom and ULA 1-D geometry creation, validation, inspection, and basic physical metrics | Implemented through VS-001B |
+| Canonical 1-D geometry configuration V1, deterministic JSON round trip, and persistence | Implemented in VS-001C |
 | Steering/manifold kernels | Not yet implemented |
 | Snapshot, covariance, eigenspace, and DOA kernels | Not yet implemented |
 | Monte Carlo engine and publication evidence pipeline | Not yet implemented |
-| CLI | Custom and ULA 1-D geometry inspection commands implemented |
+| CLI | Custom geometry, ULA geometry, and persisted canonical configuration inspection implemented |
 | GUI and notebook workflows | Not yet implemented |
 | Fixed-point model and FPGA/SoC backend | Not yet implemented |
 
@@ -92,7 +93,7 @@ implemented scientific capability.
 The governed first scientific profile is:
 
 ```text
-VP-001 — Phase-1 Ideal Far-Field Narrowband 1-D DOA Validation Profile
+VP-001 â€” Phase-1 Ideal Far-Field Narrowband 1-D DOA Validation Profile
 ```
 
 Its baseline measurement model is
@@ -213,9 +214,9 @@ pytest
 The same quality gate runs in GitHub Actions for every pull request targeting
 `main` and for pushes to `main`.
 
-The first Phase-1 headless use case inspects an explicitly declared custom
-1-D physical geometry while preserving authoritative channel identity and
-ordering:
+The first Phase-1 headless workflows operate on the same validated physical geometry core.
+
+An explicitly declared custom 1-D geometry can be inspected while preserving authoritative channel identity and ordering:
 
 ```powershell
 geodoa geometry inspect-custom `
@@ -224,35 +225,7 @@ geodoa geometry inspect-custom `
   --sensor RX1 0.15
 ```
 
-A Uniform Linear Array can also be generated and inspected from explicit
-physical construction parameters:
-
-```powershell
-geodoa geometry inspect-ula `
-  --sensor-count 4 `
-  --spacing-m 0.25 `
-  --anchor-m 0.0 `
-  --placement centroid
-
-The first Phase-1 headless use case inspects an explicitly declared custom
-1-D physical geometry while preserving authoritative channel identity and
-ordering:
-
-```powershell
-geodoa geometry inspect-custom `
-  --sensor RX2 0.30 `
-  --sensor RX0 0.00 `
-  --sensor RX1 0.15
-```
-
-The command reports the authoritative channels, a non-destructive sorted
-geometric view with explicit permutations, physical centroid/aperture/adjacent
-spacing metrics, the default declared-geometry-centroid phase reference, and
-typed diagnostics. Its JSON output is an inspection result, not yet a stable
-canonical configuration or persistence schema.
-
-A Uniform Linear Array can also be generated and inspected from explicit
-physical construction parameters:
+A Uniform Linear Array can be generated and inspected from explicit physical construction parameters:
 
 ```powershell
 geodoa geometry inspect-ula `
@@ -262,24 +235,30 @@ geodoa geometry inspect-ula `
   --placement centroid
 ```
 
-ULA generation supports explicit `centroid` and `first_sensor` placement
-policies. Generated arrays use deterministic channel identities (`RX0`,
-`RX1`, ...), preserve the existing `LinearArrayGeometry` representation, and
-reuse the same physical-metric, sorted-view, diagnostic, and default
-phase-reference inspection path as custom geometry.
+ULA generation supports explicit `centroid` and `first_sensor` placement policies. The construction anchor remains distinct from the accepted default spatial phase reference, which is the centroid of the full declared nominal geometry.
 
-The ULA construction anchor is not silently treated as the spatial phase
-reference. The accepted default phase reference remains the declared geometry
-centroid.
+VS-001C adds the first canonical geometry configuration schema and deterministic JSON persistence path.
 
-As with `inspect-custom`, the JSON output from `inspect-ula` is an inspection
-result and is not yet a canonical configuration or persistence schema.
+A persisted configuration can be loaded and inspected with:
 
-The command reports the authoritative channels, a non-destructive sorted
-geometric view with explicit permutations, physical centroid/aperture/adjacent
-spacing metrics, the default declared-geometry-centroid phase reference, and
-typed diagnostics. Its JSON output is an inspection result, not yet a stable
-canonical configuration or persistence schema.
+```powershell
+geodoa geometry inspect-config `
+  --input .\geometry.json
+```
+
+Canonical configuration V1 preserves the authoritative ordered physical geometry and explicit construction provenance.
+
+Derived values such as sorted views, permutations, centroid, aperture, spacing metrics, diagnostics, and resolved default phase reference are recomputed after loading rather than stored as competing sources of truth.
+
+For persisted ULA configurations, the stored construction specification is verified against the authoritative resolved geometry.
+
+The canonical JSON codec uses strict schema validation, duplicate-key rejection, nonfinite-number rejection, deterministic key ordering, compact encoding, and canonical floating-point representation for continuous physical quantities.
+
+The deterministic serialization invariant is:
+
+`encode(decode(encode(configuration))) == encode(configuration)`
+
+VS-001C provides save/load persistence through the application API and `inspect-config` through the CLI. CLI save commands remain intentionally deferred.
 
 ## Documentation Map
 

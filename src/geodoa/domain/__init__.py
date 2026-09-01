@@ -1,3 +1,11 @@
+from geodoa.domain.configuration import (
+    CURRENT_ULA_GENERATOR_VERSION,
+    CustomGeometryConstruction,
+    GeometryConfigurationCode,
+    GeometryConfigurationError,
+    GeometryConfigurationV1,
+    ULAGeometryConstruction,
+)
 from geodoa.domain.geometry import (
     GeometryDiagnosticCode,
     GeometryValidationCode,
@@ -26,4 +34,10 @@ __all__ = [
     "ULAGenerationSpec",
     "ULAPlacementPolicy",
     "generate_ula",
+    "CURRENT_ULA_GENERATOR_VERSION",
+    "CustomGeometryConstruction",
+    "GeometryConfigurationCode",
+    "GeometryConfigurationError",
+    "GeometryConfigurationV1",
+    "ULAGeometryConstruction",
 ]
