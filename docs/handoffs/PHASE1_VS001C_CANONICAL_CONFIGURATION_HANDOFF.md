@@ -1,24 +1,24 @@
-# GeoDOA Studio — Phase 1 VS-001C Canonical Configuration Handoff
+# GeoDOA Studio â€” Phase 1 VS-001C Canonical Configuration Handoff
 
 ## Milestone Identity
 
 - Project: GeoDOA Studio
-- Phase: Phase 1 — Authoritative Scientific Implementation
+- Phase: Phase 1 â€” Authoritative Scientific Implementation
 - Planning umbrella: VS-001
-- Bounded slice: VS-001C — Canonical Configuration Round Trip
+- Bounded slice: VS-001C â€” Canonical Configuration Round Trip
 - Branch: `feat/vs001c-canonical-configuration`
 - Base commit: `6e8d5c90fde5d86ee4cf4f5725981eafa2df5452`
-- Pull Request: Pending
+- Pull Request: #11
 - Merge Commit: Pending
 - Status: Ready for review
 
 Implementation checkpoints:
 
-- `68efd7e` — canonical geometry configuration domain contract
-- `42683a7` — strict canonical geometry JSON codec
-- `2776ede` — geometry configuration persistence flow
-- `ea48039` — canonical configuration inspection CLI
-- `c77a96f` — normalize canonical physical numeric encoding
+- `68efd7e` â€” canonical geometry configuration domain contract
+- `42683a7` â€” strict canonical geometry JSON codec
+- `2776ede` â€” geometry configuration persistence flow
+- `ea48039` â€” canonical configuration inspection CLI
+- `c77a96f` â€” normalize canonical physical numeric encoding
 
 ## Objective
 
@@ -332,4 +332,4 @@ This handoff becomes closed only when:
 
 Current status:
 
-`Ready for review — merge pending`.
+`Ready for review â€” merge pending`.
