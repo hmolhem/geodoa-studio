@@ -1,3 +1,10 @@
+from geodoa.application.configuration_persistence import (
+    GeometryConfigurationInspectionResult,
+    inspect_geometry_configuration,
+    load_and_inspect_geometry_configuration,
+    load_geometry_configuration,
+    save_geometry_configuration,
+)
 from geodoa.application.geometry_inspection import (
     DefaultPhaseReference1D,
     GeometryInspectionResult,
@@ -16,4 +23,9 @@ __all__ = [
     "inspect_custom_geometry",
     "ULAInspectionResult",
     "inspect_ula_geometry",
+    "GeometryConfigurationInspectionResult",
+    "inspect_geometry_configuration",
+    "load_and_inspect_geometry_configuration",
+    "load_geometry_configuration",
+    "save_geometry_configuration",
 ]
