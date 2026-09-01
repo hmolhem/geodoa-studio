@@ -157,7 +157,7 @@ def _configuration_document(
         "channels": [
             {
                 "sensor_id": channel.sensor_id,
-                "position_m": channel.position_m,
+                "position_m": float(channel.position_m),
             }
             for channel in configuration.geometry.channels
         ],
@@ -176,8 +176,8 @@ def _configuration_document(
             "generator_version": construction.generator_version,
             "parameters": {
                 "sensor_count": construction.spec.sensor_count,
-                "spacing_m": construction.spec.spacing_m,
-                "anchor_m": construction.spec.anchor_m,
+                "spacing_m": float(construction.spec.spacing_m),
+                "anchor_m": float(construction.spec.anchor_m),
                 "placement_policy": construction.spec.placement_policy.value,
             },
         }

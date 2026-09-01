@@ -285,3 +285,27 @@ def test_decoder_detects_ula_construction_geometry_mismatch() -> None:
     assert (
         exc_info.value.code is GeometryConfigurationCode.CONSTRUCTION_GEOMETRY_MISMATCH
     )
+
+
+def test_deterministic_encoding_normalizes_integral_physical_values() -> None:
+    spec = ULAGenerationSpec(
+        sensor_count=2,
+        spacing_m=1,
+        anchor_m=0,
+        placement_policy=ULAPlacementPolicy.FIRST_SENSOR,
+    )
+
+    configuration = GeometryConfigurationV1(
+        geometry=generate_ula(spec),
+        construction=ULAGeometryConstruction(spec=spec),
+    )
+
+    encoded_1 = encode_geometry_configuration_json(configuration)
+    encoded_2 = encode_geometry_configuration_json(
+        decode_geometry_configuration_json(encoded_1)
+    )
+
+    assert encoded_2 == encoded_1
+    assert '"position_m":0.0' in encoded_1
+    assert '"spacing_m":1.0' in encoded_1
+    assert '"anchor_m":0.0' in encoded_1
